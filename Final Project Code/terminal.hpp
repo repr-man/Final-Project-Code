@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <ios>
 #include <limits>
+#include <ostream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -118,19 +119,31 @@ public:
         #endif
     }
 
+    /// Prompts the user for input and returns the result.  Handles EOF and
+    /// and Ctrl-C properly.
+    ///
+    /// The return value is typed.  So, it you want get an int from the user,
+    /// you would write:
+    /// ```
+    /// int choice = terminal.promptForInput<int>();
+    /// ```
+    /// It will automatically loop until the user enters a valid value of the
+    /// appropriate type.
     template <typename T>
-    T promptForInput(T defaultValue) const {
+    T promptForInput() const {
         T input;
 
         while(true) {
-            std::cout << "══>> ";
+            std::cout << "═══> ";
             std::cin >> input;
 
-            if(std::cin.eof())
+            if(std::cin.eof()) {
+                std::cout << std::endl;
                 exit(0);
+            }
 
             if(std::cin.fail()) {
-                std::cout << "Invalid input.  Please enter a " << std::endl;
+                std::cout << "Invalid input.  Please try again." << std::endl;
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
