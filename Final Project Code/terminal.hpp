@@ -160,7 +160,7 @@ public:
         auto fullWidth = N + 1;
 
         // Calculate the preferred width of each column.
-        auto columnWidths = array<int, N>();
+        auto columnWidths = std::array<int, N>();
         for(int i = 0; i < N; ++i) {
             auto width = colNames[i].size();
             for(auto& row : rows) {
