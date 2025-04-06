@@ -1,0 +1,23 @@
+book;A Boring Book;Edward Exemplar;Pedagogical House Publishing;-1
+book;The Enigmatic Waterfall;Alice Johnson;Willow Creek Press;-1
+journal;Quantum Physics Today;Bob Williams;Academic Frontiers;-1
+magazine;Culinary Delights Monthly;Carol Davis;Global Publications;-1
+book;Shadows of the Ancient Forest;David Garcia;Evergreen Books;-1
+journal;International Finance Review;Emily Rodriguez;Capital Insights;-1
+magazine;Tech Innovations Weekly;Frank Martinez;Future Media Group;-1
+book;The Secret Garden's Legacy;Grace Anderson;Heritage Publishing;-1
+journal;Journal of Applied Mathematics;Henry Wilson;Scientific Press;-1
+magazine;World Affairs Quarterly;Ivy Thomas;International Media;-1
+book;Echoes in the Silent Valley;Jack Taylor;Valley View Books;-1
+book;Whispers of the Forgotten City;Kelly Moore;Mystic Publications;-1
+journal;Advances in Chemical Engineering;Larry Jackson;Process Innovations;-1
+magazine;Fitness & Wellness Insights;Megan White;Healthy Living Media;-1
+book;The Lighthouse Keeper's Secret;Nathan Harris;Coastal Publishing;-1
+journal;Sociological Perspectives Today;Olivia Martin;Community Studies;-1
+magazine;Creative Arts Showcase Magazine;Peter Thompson;Artistic Visions;-1
+book;Beneath the Crimson Moon;Quinn Garcia;Lunar Press;-1
+journal;Environmental Science Digest;Rachel Rodriguez;Eco Research Group;-1
+magazine;Global Travel Adventures;Samuel Martinez;Wanderlust Media;-1
+book;The Alchemist's Hidden Chamber;Tina Anderson;Alchemy Books;-1
+journal;The Journal of Economic Growth;Victoria Wilson;Economic Insights;-1
+magazine;The Art of Living Magazine;William Garcia;Creative Living Media;-1
