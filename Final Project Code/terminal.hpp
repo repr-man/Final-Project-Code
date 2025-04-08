@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include <iomanip>
 #include <ios>
 #include <limits>
 #include <ostream>
@@ -76,10 +77,10 @@ class Terminal {
         auto oldAlignment = std::cout.flags();
         std::cout << alignment << startChar;
         for(int i = 0; i < widths.size() - 1; ++i) {
-            std::cout << setw(widths[i]) << items[i];
+            std::cout << std::setw(widths[i]) << items[i];
             std::cout << middleChar;
         }
-        std::cout << setw(widths.back()) << items.back();
+        std::cout << std::setw(widths.back()) << items.back();
         std::cout << endChar << std::endl;
         std::cout.flags(oldAlignment);
     }
@@ -134,22 +135,19 @@ public:
         T input;
 
         while(true) {
-            std::cout << "═══> ";
+            std::cout << "══> ";
             std::cin >> input;
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
                 exit(0);
-            }
-
-            if(std::cin.fail()) {
+            } else if(std::cin.fail()) {
                 std::cout << "Invalid input.  Please try again." << std::endl;
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            }
+            } else
+                return input;
         }
-
-        return input;
     }
 
     void printOptions(
@@ -177,7 +175,7 @@ public:
         for(int i = 0; i < N; ++i) {
             auto width = colNames[i].size();
             for(auto& row : rows) {
-                width = max(width, row[i].size());
+                width = std::max(width, row[i].size());
             }
             columnWidths[i] = width;
             fullWidth += width;
@@ -187,7 +185,7 @@ public:
             // We need to shrink the width of some columns proportionally.
             auto adjustedWidth = N + 1;
             for(int i = 0; i < columnWidths.size(); ++i) {
-                columnWidths[i] = max(minTableCellWidth, columnWidths[i] * terminalWidth / fullWidth);
+                columnWidths[i] = std::max(minTableCellWidth, columnWidths[i] * terminalWidth / fullWidth);
                 adjustedWidth += columnWidths[i];
                 if(colNames[i].size() > columnWidths[i]) {
                     trimAndRecolor(colNames[i], columnWidths[i]);
