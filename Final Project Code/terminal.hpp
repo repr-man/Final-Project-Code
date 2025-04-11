@@ -17,9 +17,11 @@
 
 #ifdef _WIN32
 #include <windows.h>
+constexpr bool isWindows = true;
 #else
 #include <sys/ioctl.h>
 #include <unistd.h>
+constexpr bool isWindows = false;
 #endif
 
 
@@ -28,18 +30,21 @@ concept IsString = std::is_convertible_v<S, std::string>;
 
 /// Encapsulates IO-related components of the program.
 class Terminal {
+    constexpr static auto minTableCellWidth = 5;
+    
+    int terminalWidth = 0;
+
+    #ifdef _WIN32
+    unsigned long consoleMode;
+    constexpr static auto promptArrow = "==> ";
+    #else
+    constexpr static auto promptArrow = "══> ";
     constexpr static std::string_view reset = "\x1b[0m";
     constexpr static std::string_view colorFade1 = "\x1b[38;2;223;223;223m";
     constexpr static std::string_view colorFade2 = "\x1b[38;2;191;191;191m";
     constexpr static std::string_view colorFade3 = "\x1b[38;2;159;159;159m";
     constexpr static std::string_view colorFade4 = "\x1b[38;2;127;127;127m";
     constexpr static std::string_view colorFade5 = "\x1b[38;2;95;95;95m";
-    constexpr static auto minTableCellWidth = 5;
-    
-    int terminalWidth = 0;
-
-    #ifdef _WIN32
-    int consoleMode;
     #endif
 
     /// Draws a border row of a table.
@@ -135,7 +140,7 @@ public:
         T input;
 
         while(true) {
-            std::cout << "══> ";
+            std::cout << promptArrow;
             std::cin >> input;
 
             if(std::cin.eof()) {
@@ -204,19 +209,31 @@ public:
         }
 
         // Draw the table.
-        drawTableRow<N>("━", "┏", "┳", "┓", columnWidths);
-        drawTableRow<N>("┃", "┃", "┃", columnWidths, colNames, std::internal);
-        drawTableRow<N>("━", "┞", "╇", "┩", columnWidths);
-        for(int i = 0; i < rows.size() - 1; ++i) {
-            drawTableRow<N>("│", "│", "│", columnWidths, rows[i]);
-            drawTableRow<N>("─", "├", "┼", "┤", columnWidths);
+        if constexpr(isWindows) {
+            drawTableRow<N>("-", "+", "+", "+", columnWidths);
+            drawTableRow<N>("|", "|", "|", columnWidths, colNames, std::internal);
+            drawTableRow<N>("-", "+", "+", "+", columnWidths);
+            for(int i = 0; i < rows.size() - 1; ++i) {
+                drawTableRow<N>("|", "|", "|", columnWidths, rows[i]);
+                drawTableRow<N>("-", "+", "+", "+", columnWidths);
+            }
+            drawTableRow<N>("|", "|", "|", columnWidths, rows.back());
+            drawTableRow<N>("-", "+", "+", "+", columnWidths);
+        } else {
+            drawTableRow<N>("━", "┏", "┳", "┓", columnWidths);
+            drawTableRow<N>("┃", "┃", "┃", columnWidths, colNames, std::internal);
+            drawTableRow<N>("━", "┞", "╇", "┩", columnWidths);
+            for(int i = 0; i < rows.size() - 1; ++i) {
+                drawTableRow<N>("│", "│", "│", columnWidths, rows[i]);
+                drawTableRow<N>("─", "├", "┼", "┤", columnWidths);
+            }
+            drawTableRow<N>("│", "│", "│", columnWidths, rows.back());
+            drawTableRow<N>("─", "└", "┴", "┘", columnWidths);
         }
-        drawTableRow<N>("│", "│", "│", columnWidths, rows.back());
-        drawTableRow<N>("─", "└", "┴", "┘", columnWidths);
     }
 
 
-    
+
     /// An interface for types that can provide information to a table.
     /// `N` is the number of columns of data the type provides.
     template <int N>
