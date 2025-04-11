@@ -16,6 +16,7 @@
 
 
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
 constexpr bool isWindows = true;
 #else
@@ -37,6 +38,12 @@ class Terminal {
     #ifdef _WIN32
     unsigned long consoleMode;
     constexpr static auto promptArrow = "==> ";
+    constexpr static std::string_view reset;
+    constexpr static std::string_view colorFade1;
+    constexpr static std::string_view colorFade2;
+    constexpr static std::string_view colorFade3;
+    constexpr static std::string_view colorFade4;
+    constexpr static std::string_view colorFade5;
     #else
     constexpr static auto promptArrow = "══> ";
     constexpr static std::string_view reset = "\x1b[0m";
