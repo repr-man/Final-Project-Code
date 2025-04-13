@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "terminal.hpp"
+#include "library.hpp"
 
 using namespace std;
 
@@ -40,6 +42,7 @@ class SearchFunction {
 
 int main()
 {
+    Terminal term = Terminal();
     int choice;
     while (true) {
         cout << "\nLibrary Management System\n";
