@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #include "terminal.hpp"
-#include "library.hpp"
 
 using namespace std;
 
@@ -24,7 +23,63 @@ private:
 public:
     Admin(string user, string pass) : username(user), password(pass) {}
 
-}; // end of class Admin
+    bool login(string inputUser, string inputPass) {
+        return (inputUser == username && inputPass == password);
+    }
+
+    void showMenu() {
+        int choice;
+        while (true) {
+            cout << "\n--- Admin Menu ---\n";
+            cout << "1. Register New User\n";
+            cout << "2. Edit Inventory\n";
+            cout << "3. Edit User Information\n";
+            cout << "4. Help User Borrow a book\n";
+            cout << "5. Search Function\n";
+            cout << "6. Active Users\n";
+            cout << "7. Return Book\n";
+            cout << "8. Logout\n";
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice) {
+            case 1:
+                cout << "";
+                // Add function call here
+                break;
+            case 2:
+                cout << "Editing Inventory...\n";
+                // Add function call here
+                break;
+            case 3:
+                cout << "Editing User Information...\n";
+                // Add function call here
+                break;
+            case 4:
+                cout << "Borrowing books...\n";
+                // Add function call here
+                break;
+            case 5:
+                cout << "Searching...\n";
+                // Add function call here
+                break;
+            case 6: 
+                cout << "Viewing all registered users...\n";
+                // add function call here
+                break;
+            case 7: 
+                cout << "Returning books...\n";
+                // add function call here
+                break;
+            case 8:
+                cout << "Logging out...\n";
+                return;
+            default:
+                cout << "Invalid choice. Try again.\n";
+            }
+        }
+    }
+}; // end of admin class
 
 class Borrowing {
 
@@ -32,7 +87,52 @@ class Borrowing {
 
 
 class UserLogin {
+private:
+    string username, password;
 
+public:
+    UserLogin(string user, string pass) : username(user), password(pass) {}
+
+    bool login(string inputUser, string inputPass) {
+        return (inputUser == username && inputPass == password);
+    }
+
+    void showMenu() {
+        int choice;
+        while (true) {
+            cout << "\n--- User Menu ---\n";
+            cout << "1. View Available Books\n";
+            cout << "2. Search Function\n";
+            cout << "3. Print User Summary\n";
+            cout << "4. Edit User Information\n";
+            cout << "5. Logout\n";
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice) {
+            case 1:
+                cout << "Displaying available books...\n";
+                
+                break;
+            case 2:
+                cout << "Searching...\n";
+                
+                break;
+            case 3:
+                cout << "User Summary...\n";
+                
+                break;
+            case 4: 
+                cout << "Edit User Information...\n";
+                    break;
+            case 5:
+                cout << "Logging out...\n";
+                return;
+            default:
+                cout << "Invalid choice. Try again.\n";
+            }
+        }
+    }
 }; // end of class UserLogin
 
 class SearchFunction {
@@ -54,11 +154,43 @@ int main()
         case 1: // register new users
             
             break;
-        case 2: // Admin (Librarian) Login
-            
+        case 2: { // Admin (Librarian) Login
+            string user, pass;
+            cout << "Enter admin username: ";
+            cin >> user;
+            cout << "Enter admin password: ";
+            cin >> pass;
+
+            Admin admin("admin", "admin123"); // Hardcoded admin credentials for now
+
+            if (admin.login(user, pass)) {
+                cout << "Login successful.\n";
+                admin.showMenu();
+            }
+            else {
+                cout << "Invalid login.\n";
+            }
             break;
-        case 3: // User Login
+        }
+
+        case 3: { // User Login
+            string user, pass;
+            cout << "Enter username: ";
+            cin >> user;
+            cout << "Enter password: ";
+            cin >> pass;
+
+            UserLogin u("user", "pass123"); // Example credentials
+
+            if (u.login(user, pass)) {
+                cout << "User login successful.\n";
+                u.showMenu();
+            }
+            else {
+                cout << "Invalid username or password.\n";
+            }
             break;
+        }
         case 4: //Exit Program
             cout << "Exiting system.\n";
             return 0;
