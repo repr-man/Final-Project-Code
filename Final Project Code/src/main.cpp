@@ -9,11 +9,45 @@
 using namespace std;
 
 class RegisterUser {
-public: 
+public:
     string firstName, lastName, address, phone, email, password, userType;
     int libraryID;
-    RegisterUser(string fn, string ln, string addr, string ph, string em, string pass, string type, int id)
-        : firstName(fn), lastName(ln), address(addr), phone(ph), email(em), password(pass), userType(type), libraryID(id) {
+
+    RegisterUser() {}
+
+    void promptUserData(int nextID) {
+        libraryID = nextID;
+
+        cout << "Enter First Name: ";
+        std::getline(cin >> std::ws, firstName);
+
+        cout << "Enter Last Name: ";
+        std::getline(cin, lastName);
+
+        cout << "Enter Address: ";
+        std::getline(cin, address);
+
+        cout << "Enter Phone Number: ";
+        std::getline(cin, phone);
+
+        cout << "Enter Email: ";
+        std::getline(cin, email);
+
+        cout << "Enter Password: ";
+        std::getline(cin, password);
+
+        cout << "Enter User Type (e.g. student, faculty): ";
+        std::getline(cin, userType);
+    }
+
+    void printSummary() const {
+        cout << "\nUser Registered Successfully:\n";
+        cout << "ID: " << libraryID << "\n";
+        cout << "Name: " << firstName << " " << lastName << "\n";
+        cout << "Address: " << address << "\n";
+        cout << "Phone: " << phone << "\n";
+        cout << "Email: " << email << "\n";
+        cout << "User Type: " << userType << "\n";
     }
 }; // end of class RegisterUser
 
@@ -28,6 +62,7 @@ public:
     }
 
     void showMenu() {
+        Terminal t;
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
@@ -151,9 +186,16 @@ int main()
         cin >> choice;
 
         switch (choice) {
-        case 1: // register new users
-            
+        case 1: {// register new users
+            static int nextID = 1000; // we could also load from a file for persistence
+            RegisterUser newUser;
+            newUser.promptUserData(nextID++);
+            newUser.printSummary();
+
+            // we can also push this to a vector of users or write to a file here
+
             break;
+        }
         case 2: { // Admin (Librarian) Login
             string user, pass;
             cout << "Enter admin username: ";
