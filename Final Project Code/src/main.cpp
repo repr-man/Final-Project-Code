@@ -94,10 +94,13 @@ public:
                 cout << "Borrowing books...\n";
                 // Add function call here
                 break;
-            case 5:
+            case 5: /* {// this sends them to the SearchFunction Class
                 cout << "Searching...\n";
-                // Add function call here
+                SearchFunction sf;
+                sf.searchBooks();
                 break;
+            }
+            */
             case 6: 
                 cout << "Viewing all registered users...\n";
                 // add function call here
@@ -149,10 +152,13 @@ public:
                 cout << "Displaying available books...\n";
                 
                 break;
-            case 2:
+            case 2: /* {// This sends them to the Search Function Class
                 cout << "Searching...\n";
-                
+                SearchFunction sf;
+                sf.searchBooks();
                 break;
+            }
+            */
             case 3:
                 cout << "User Summary...\n";
                 
@@ -170,9 +176,64 @@ public:
     }
 }; // end of class UserLogin
 
-class SearchFunction {
+class SearchFunction { /*We need to add a part where the user can use this class to search for other Users*/
+public:
+        /*void searchBooks() { //allows users and admin to search for books
+            string keyword, filter;
+            cout << "\nSearch by (type (book, magazine, journal) / title / author / publisher): ";
+            cin >> filter;
+            cout << "Enter keyword: ";
+            cin.ignore(); // this will remove leftover newline
+            getline(cin, keyword);
 
-}; // end of class SearchFunction
+            ifstream file("books.txt");
+            if (!file) {
+                cout << "Failed to open books.txt\n";
+                return;
+            }
+
+            string line;
+            bool found = false;
+
+            while (getline(file, line)) {
+                stringstream ss(line);
+                string type, title, author, publisher, isBorrowedStr;
+
+                getline(ss, type, ';');
+                getline(ss, title, ';');
+                getline(ss, author, ';');
+                getline(ss, publisher, ';');
+                getline(ss, isBorrowedStr);
+
+                bool match = false;
+                if (filter == "type" && title.find(keyword) != string::npos)
+                    match = true;
+                else if (filter == "title" && title.find(keyword) != string::npos)
+                    match = true;
+                else if (filter == "author" && author.find(keyword) != string::npos)
+                    match = true;
+                else if (filter == "publisher" && publisher.find(keyword) != string::npos)
+                    match = true;
+
+                if (match) {
+                    found = true;
+                    cout << "\n--- Book Found ---\n";
+                    cout << "Type: " << type
+                        << "Title: " << title
+                        << "\nAuthor: " << author
+                        << "\nPublisher: " << publisher
+                        << "\nBorrowed: " << (isBorrowedStr == "1" ? "Yes" : "No") << "\n";
+                }
+            }
+
+            if (!found) {
+                cout << "No book matched your search.\n";
+            }
+
+            file.close();
+        }
+        */
+    }; // end of class SearchFunction
 
 
 int main()
