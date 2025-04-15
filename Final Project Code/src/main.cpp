@@ -4,22 +4,28 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 #include "terminal.hpp"
 
 using namespace std;
 
-class RegisterUser {
+class RegisterUser { //hacving a problem opening user.txt for writting but otherwise the code runs
 public:
     string firstName, lastName, address, phone, email, password, userType;
+    string schoolID; 
     int libraryID;
+    bool isActive = true;  
 
     RegisterUser() {}
 
     void promptUserData(int nextID) {
         libraryID = nextID;
 
+        cout << "Enter User Type (e.g. student, faculty): ";
+        std::getline(cin >> std::ws, userType);
+
         cout << "Enter First Name: ";
-        std::getline(cin >> std::ws, firstName);
+        std::getline(cin, firstName);
 
         cout << "Enter Last Name: ";
         std::getline(cin, lastName);
@@ -36,18 +42,41 @@ public:
         cout << "Enter Password: ";
         std::getline(cin, password);
 
-        cout << "Enter User Type (e.g. student, faculty): ";
-        std::getline(cin, userType);
+        cout << "Enter School ID (e.g. campus ID): ";
+        std::getline(cin, schoolID);
     }
 
     void printSummary() const {
         cout << "\nUser Registered Successfully:\n";
-        cout << "ID: " << libraryID << "\n";
+        cout << "ID: " << setw(10) << setfill('0') << libraryID << "\n";
         cout << "Name: " << firstName << " " << lastName << "\n";
         cout << "Address: " << address << "\n";
         cout << "Phone: " << phone << "\n";
         cout << "Email: " << email << "\n";
         cout << "User Type: " << userType << "\n";
+        cout << "School ID: " << schoolID << "\n";
+    }
+
+    void saveToFile(const string& filename = "Final Project Code Take2/data/users.txt") const {
+        ofstream outFile(filename, ios::app); // append mode
+        if (!outFile) {
+            cerr << "Error: Could not open " << filename << " for writing.\n";
+            return;
+        }
+
+        // Format libraryID with leading zeroes (10 digits)
+        outFile << setw(10) << setfill('0') << libraryID << ";"
+            << userType << ";"
+            << firstName << ";"
+            << lastName << ";"
+            << address << ";"
+            << phone << ";"
+            << email << ";"
+            << password << ";"
+            << schoolID << ";"
+            << isActive << "\n";
+
+        outFile.close();
     }
 }; // end of class RegisterUser
 
@@ -99,8 +128,8 @@ public:
                 SearchFunction sf;
                 sf.searchBooks();
                 break;
-            }
-            */
+            }*/
+           
             case 6: 
                 cout << "Viewing all registered users...\n";
                 // add function call here
@@ -157,8 +186,8 @@ public:
                 SearchFunction sf;
                 sf.searchBooks();
                 break;
-            }
-            */
+            } */
+            
             case 3:
                 cout << "User Summary...\n";
                 
@@ -177,8 +206,8 @@ public:
 }; // end of class UserLogin
 
 class SearchFunction { /*We need to add a part where the user can use this class to search for other Users*/
-public:
-        /*void searchBooks() { //allows users and admin to search for books
+public: /*
+        void searchBooks() { //allows users and admin to search for books
             string keyword, filter;
             cout << "\nSearch by (type (book, magazine, journal) / title / author / publisher): ";
             cin >> filter;
@@ -248,13 +277,11 @@ int main()
 
         switch (choice) {
         case 1: {// register new users
-            static int nextID = 1000; // we could also load from a file for persistence
+            static int nextID = 1; // Replace with a function that finds next ID if needed
             RegisterUser newUser;
             newUser.promptUserData(nextID++);
             newUser.printSummary();
-
-            // we can also push this to a vector of users or write to a file here
-
+            newUser.saveToFile("Final Code Project Take2/data/users.txt");
             break;
         }
         case 2: { // Admin (Librarian) Login
