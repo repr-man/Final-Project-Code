@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <ranges>
@@ -9,6 +10,7 @@
 #include "inventoryitem.hpp"
 #include "user.hpp"
 #include "librarian.hpp"
+#include "zip_view.hpp"
 
 class Library {
     std::vector<InventoryItem> inventory{};
@@ -27,10 +29,12 @@ class Library {
 
     // Creates a view of `std::string_view`s that are split by a delimiter.
     static auto splitBy(const std::string_view text, const char delimiter) {
-        return std::views::split(text, delimiter) | std::views::transform([](auto&& it){
+        return std::views::split(text, delimiter)
+        | std::views::transform([](auto&& it){
             auto [start, end] = it;
             return std::string_view(start, end);
-        });
+        })
+        | std::views::filter([](auto&& it){ return !it.empty(); });
     }
 
 public:
@@ -76,5 +80,61 @@ public:
                 std::string(*it++)
             ));
         }
+    }
+
+    auto searchInventory(
+        std::vector<InventoryItem::FieldTag> fields,
+        std::vector<std::string> values
+    ) const {
+        assert(fields.size() == values.size());
+
+        std::vector<InventoryItem> results;
+        for(auto& item : inventory) {
+            for(const auto& [field, value] : c9::zip(fields, values)) {
+                if(!item.matches(field, value)) {
+                    break;
+                }
+                results.push_back(item);
+            }
+        }
+        return results;
+        end:;
+    }
+
+    auto searchUsers(
+        std::vector<User::FieldTag> fields,
+        std::vector<std::string> values
+    ) const {
+        assert(fields.size() == values.size());
+
+        std::vector<User> results;
+        for(auto& user : users) {
+            for(const auto& [field, value] : c9::zip(fields, values)) {
+                if(!user.matches(field, value)) goto end;
+            }
+            results.push_back(user);
+        end:;
+        }
+        return results;
+    }
+
+    auto searchLibrarians(
+        std::vector<Librarian::FieldTag> fields,
+        std::vector<std::string> values
+    ) const {
+        assert(fields.size() == values.size());
+
+        std::vector<Librarian> results;
+        for(auto& librarian : librarians) {
+            for(const auto& [field, value] : c9::zip(fields, values)) {
+                if(!librarian.matches(field, value)) {
+                    goto end;
+                }
+            }
+            results.push_back(librarian);
+        end:;
+        }
+
+        return results;
     }
 }; 
