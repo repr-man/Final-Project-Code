@@ -82,7 +82,7 @@ public:
         }
     }
 
-    auto searchInventory(
+    auto search(
         std::vector<InventoryItem::FieldTag> fields,
         std::vector<std::string> values
     ) const {
@@ -101,7 +101,7 @@ public:
         end:;
     }
 
-    auto searchUsers(
+    auto search(
         std::vector<User::FieldTag> fields,
         std::vector<std::string> values
     ) const {
@@ -118,7 +118,7 @@ public:
         return results;
     }
 
-    auto searchLibrarians(
+    auto search(
         std::vector<Librarian::FieldTag> fields,
         std::vector<std::string> values
     ) const {
