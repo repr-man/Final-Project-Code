@@ -1,6 +1,8 @@
  // Final Project Code.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <cstdio>
+#include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -59,12 +61,12 @@ public:
         cout << "School ID: " << schoolID << "\n";
     }
 
-    void saveToFile(const string& filename = "Final Project Code/data/users.txt") const {
-        ofstream outFile(filename, ios::app); // append mode
-        if (!outFile) {
-            cerr << "Error: Could not open " << filename << " for writing.\n";
-            return;
-        }
+     void saveToFile(const string& filename = "Final Project Code/data/users.txt") const {
+         ofstream outFile(filename, ios::app); // append mode
+         if (!outFile) {
+             cerr << "Error: Could not open " << filename << " for writing.\n";
+             return;
+         }
 
         // Format libraryID with leading zeroes (10 digits)
         outFile << setw(10) << setfill('0') << libraryID << ";"
@@ -76,7 +78,7 @@ public:
             << email << ";"
             << password << ";"
             << schoolID << ";"
-            << isActive << "\n";
+            << isActive << std::endl;
 
         outFile.close();
     }
