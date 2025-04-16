@@ -1,74 +1,80 @@
 #pragma once
 
-#include <iostream>
-#include <fstream> 
-#include <sstream>
+#include <filesystem>
+#include <fstream>
+#include <ranges>
+#include <string_view>
 #include <vector>
+
 #include "inventoryitem.hpp"
+#include "user.hpp"
+#include "librarian.hpp"
 
 class Library {
-    std::vector<InventoryItem> inventory;
-    std::vector<User> users;
-    std::vector<Librarian> librarians;
+    std::vector<InventoryItem> inventory{};
+    std::vector<User> users{};
+    std::vector<Librarian> librarians{};
+
+    /// Reads the entire contents of a file into a buffer.
+    static std::string readFile(const std::string& filename) {
+        auto path = std::filesystem::current_path().append(filename);
+        auto file = std::ifstream(path);
+        return std::string(
+            std::istreambuf_iterator<char>(file),
+            std::istreambuf_iterator<char>()
+        );
+    }
+
+    // Creates a view of `std::string_view`s that are split by a delimiter.
+    static auto splitBy(const std::string_view text, const char delimiter) {
+        return std::views::split(text, delimiter) | std::views::transform([](auto&& it){
+            auto [start, end] = it;
+            return std::string_view(start, end);
+        });
+    }
 
 public:
 	Library() {
-        std::string buffer;
-        buffer.reserve(1024);
+        auto bookFileText = readFile("Final Project Code/data/book.txt");
+        for(auto line : splitBy(bookFileText, '\n')) {
+            auto segments = splitBy(line, ';');
+            auto it = segments.begin();
+            inventory.push_back(InventoryItem(
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::stoi(std::string(*it++))
+            ));
+        }
 
-		auto bookFile = std::fstream("Final Project Code/data/book.txt");
-        if (!bookFile) {
-            throw "Failed to open book.txt file.";
+        auto usersFileText = readFile("Final Project Code/data/users.txt");
+        for(auto line : splitBy(usersFileText, '\n')) {
+            auto segments = splitBy(line, ';');
+            auto it = segments.begin();
+            users.push_back(User(
+                std::stol(std::string(*it++)),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++),
+                std::stol(std::string(*it++)),
+                std::stoi(std::string(*it++))
+            ));
         }
-        while(bookFile.getline(buffer.data(), 1024, '\n').good()) {
-            std::string type, name, author, publisher, borrower;
-            auto line = std::stringstream(buffer);
-            std::getline(line, type, ';');
-            std::getline(line, name, ';');
-            std::getline(line, author, ';');
-            std::getline(line, publisher, ';');
-            std::getline(line, borrower);
-            inventory.push_back(InventoryItem(type, name, author, publisher, borrower));
-        }
-        bookFile.close();
 
-		auto userFile = std::fstream("Final Project Code/data/users.txt");
-        if (!userFile) {
-            throw "Failed to open book.txt file.";
+        auto librariansFileText = readFile("Final Project Code/data/librarians.txt");
+        for(auto line : splitBy(librariansFileText, '\n')) {
+            auto segments = splitBy(line, ';');
+            auto it = segments.begin();
+            librarians.push_back(Librarian(
+                std::string(*it++),
+                std::string(*it++),
+                std::string(*it++)
+            ));
         }
-        while(userFile.getline(buffer.data(), 1024, '\n').good()) {
-            std::string buf;
-            int id, institutionId;
-            std::string role, first, last, address, phone, email, password, numCheckedOut;
-            auto line = std::stringstream(buffer);
-            line >> id;
-            line.ignore(1);
-            std::getline(line, role, ';');
-            std::getline(line, first, ';');
-            std::getline(line, last, ';');
-            std::getline(line, address, ';');
-            std::getline(line, phone, ';');
-            std::getline(line, email, ';');
-            std::getline(line, password, ';');
-            line >> institutionId;
-            line.ignore(1);
-            line >> numCheckedOut;
-            inventory.push_back(User(id, role, first, last, address, phone, email, password, numCheckedOut));
-        }
-        userFile.close();
-
-		auto librariansFile = std::fstream("Final Project Code/data/librarians.txt");
-        if (!librariansFile) {
-            throw "Failed to open librarians.txt file.";
-        }
-        while(librariansFile.getline(buffer.data(), 1024, '\n').good()) {
-            std::string first, last, password;
-            auto line = std::stringstream(buffer);
-            std::getline(line, first, ';');
-            std::getline(line, last, ';');
-            std::getline(line, password);
-            inventory.push_back(Librarian(first, last, password));
-        }
-        librariansFile.close();
     }
 }; 
