@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -6,29 +8,30 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <vector> 
 #include <filesystem>
 
 using namespace std;
 
-// Giving errors so it isn't included 
+// add the information of the user once we type in the user's name
 class Borrowing {
 public:
     void borrowBook() {
-        string userID, bookTitle;
-        cout << "Enter User ID: ";
-        cin >> userID;
+        string username, bookTitle;
+        cout << "Enter User Name: ";
+        cin >> username;
         cin.ignore();
 
         // Count how many books this user has already borrowed
-        ifstream booksFile("books.txt");
+        ifstream booksFile("book.txt");
         if (!booksFile) {
-            cout << "Could not open books.txt\n";
+            cout << "Could not open book.txt\n";
             return;
         }
 
         string line;
         int borrowedCount = 0;
-        std::vector<string> bookLines;
+        vector<string> bookLines;
 
         while (getline(booksFile, line)) {
             stringstream ss(line);
@@ -40,7 +43,7 @@ public:
             getline(ss, publisher, ';');
             getline(ss, borrowedBy);
 
-            if (borrowedBy == userID) {
+            if (borrowedBy == username) {
                 borrowedCount++;
             }
 
@@ -76,7 +79,7 @@ public:
                 }
                 else {
                     // Update the line with the new userID
-                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + userID;
+                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + username;
                     found = true;
                     break;
                 }
@@ -89,12 +92,12 @@ public:
         }
 
         // Rewrite books.txt with updated data
-        ofstream outFile("books.txt");
+        ofstream outFile("book.txt");
         for (const string& updatedLine : bookLines) {
             outFile << updatedLine << "\n";
         }
         outFile.close();
 
-        cout << "Book successfully borrowed by User " << userID << ".\n";
+        cout << "Book successfully borrowed by User " << username << ".\n";
     }
 }; // end of class Borrowing 

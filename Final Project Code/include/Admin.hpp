@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -6,7 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <filesystem>
-
+#include "Borrowing.hpp"
 
 
 using namespace std;
@@ -49,15 +50,14 @@ public:
                 cout << "Editing User Information...\n";
                 // Add function call here
                 break;
-            case 4: /* {
+            case 4: {
                 cout << "Borrowing books...\n";
                 Borrowing b;
                 b.borrowBook();
 
                 break;
             }// end of case 4
-            */
-                break;
+            
             case 5: // this sends them to the SearchFunction Class
 
                 break;

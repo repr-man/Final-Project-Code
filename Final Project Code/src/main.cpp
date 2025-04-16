@@ -12,6 +12,7 @@
 #include "terminal.hpp"
 #include "RegisterUser.hpp"
 #include "SearchFunction.hpp"
+#include "Borrowing.hpp"
 #include "UserLogin.hpp"
 #include "Admin.hpp"
 
