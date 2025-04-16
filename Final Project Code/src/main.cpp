@@ -3,13 +3,15 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <iomanip>
 #include "terminal.hpp"
+#include <filesystem>
 
 using namespace std;
 
-class RegisterUser { //hacving a problem opening user.txt for writting but otherwise the code runs
+class RegisterUser { 
 public:
     string firstName, lastName, address, phone, email, password, userType;
     string schoolID; 
@@ -57,7 +59,7 @@ public:
         cout << "School ID: " << schoolID << "\n";
     }
 
-    void saveToFile(const string& filename = "Final Project Code Take2/data/users.txt") const {
+    void saveToFile(const string& filename = "Final Project Code/data/users.txt") const {
         ofstream outFile(filename, ios::app); // append mode
         if (!outFile) {
             cerr << "Error: Could not open " << filename << " for writing.\n";
@@ -108,7 +110,7 @@ public:
 
             switch (choice) {
             case 1:
-                cout << "";
+                cout << "Registering new user...";
                 // Add function call here
                 break;
             case 2:
@@ -235,7 +237,7 @@ public: /*
                 getline(ss, isBorrowedStr);
 
                 bool match = false;
-                if (filter == "type" && title.find(keyword) != string::npos)
+                if (filter == "type" && type.find(keyword) != string::npos)
                     match = true;
                 else if (filter == "title" && title.find(keyword) != string::npos)
                     match = true;
@@ -281,28 +283,56 @@ int main()
             RegisterUser newUser;
             newUser.promptUserData(nextID++);
             newUser.printSummary();
-            newUser.saveToFile("Final Code Project Take2/data/users.txt");
+            newUser.saveToFile("Final Project Code/data/users.txt");
             break;
         }
-        case 2: { // Admin (Librarian) Login
-            string user, pass;
-            cout << "Enter admin username: ";
-            cin >> user;
+        case 2: { // Admin login (librarian) /*having issues with opening librarians.txt file*/
+
+            string inputFirst, inputLast, inputPass;
+            cout << "Enter admin first name: ";
+            getline(cin >> ws, inputFirst);
+
+            cout << "Enter admin last name: ";
+            getline(cin >> ws, inputLast);
+
             cout << "Enter admin password: ";
-            cin >> pass;
+            getline(cin >> ws, inputPass);
 
-            Admin admin("admin", "admin123"); // Hardcoded admin credentials for now
+            ifstream adminFile("Final Project Code/data/librarians.txt"); 
+            if (!adminFile) {
+                cerr << "Failed to open librarian file. Check the path.\n";
+                break;
+            }
 
-            if (admin.login(user, pass)) {
-                cout << "Login successful.\n";
+            string line;
+            bool authenticated = false;
+
+            while (getline(adminFile, line)) {
+                stringstream ss(line);
+                string first, last, storedPass;
+
+                getline(ss, first, ';');
+                getline(ss, last, ';');
+                getline(ss, storedPass);
+
+                if (inputFirst == first && inputLast == last && inputPass == storedPass) {
+                    authenticated = true;
+                    break;
+                }
+            }
+
+            if (authenticated) {
+                cout << "Admin login successful.\n";
+                string fullName = inputFirst + " " + inputLast;
+                Admin admin(fullName, inputPass);
                 admin.showMenu();
             }
             else {
-                cout << "Invalid login.\n";
+                cout << "Invalid admin credentials.\n";
             }
+
             break;
         }
-
         case 3: { // User Login
             string user, pass;
             cout << "Enter username: ";
