@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <filesystem>
 #include "Borrowing.hpp"
+#include "RegisterUser.hpp"
 
 
 using namespace std;
@@ -40,7 +41,7 @@ public:
             switch (choice) {
             case 1:
                 cout << "Registering new user...";
-                // Add function call here
+                registerNewUser();
                 break;
             case 2:
                 cout << "Editing Inventory...\n";
@@ -77,6 +78,37 @@ public:
                 cout << "Invalid choice. Try again.\n";
             }
         }
+    }
+private: 
+    int generateNextLibraryID() {
+        ifstream inFile("Final Project Code/data/users.txt");
+        string line;
+        int lastID = 0;
+
+        while (getline(inFile, line)) {
+            if (!line.empty()) {
+                stringstream ss(line);
+                string idPart;
+                if (getline(ss, idPart, ';')) {
+                    try {
+                        lastID = stoi(idPart);
+                    }
+                    catch (const exception& e) {
+                        cerr << "Invalid ID in file: " << idPart << " - " << e.what() << endl;
+                    }
+                }
+            }
+        }
+
+        return lastID + 1;
+    }
+
+    void registerNewUser() {
+        int nextID = generateNextLibraryID();  
+        RegisterUser newUser;
+        newUser.promptUserData(nextID);
+        newUser.printSummary();
+        newUser.saveToFile();
     }
 }; // end of admin class
 
