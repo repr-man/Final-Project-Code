@@ -8,266 +8,14 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include "terminal.hpp"
 #include <filesystem>
+#include "terminal.hpp"
+#include "RegisterUser.hpp"
+#include "SearchFunction.hpp"
+#include "UserLogin.hpp"
+#include "Admin.hpp"
 
 using namespace std;
-
-class RegisterUser { 
-public:
-    string firstName, lastName, address, phone, email, password, userType;
-    string schoolID; 
-    int libraryID;
-    bool isActive = true;  
-
-    RegisterUser() {}
-
-    void promptUserData(int nextID) {
-        libraryID = nextID;
-
-        cout << "Enter User Type (e.g. student, faculty): ";
-        std::getline(cin >> std::ws, userType);
-
-        cout << "Enter First Name: ";
-        std::getline(cin, firstName);
-
-        cout << "Enter Last Name: ";
-        std::getline(cin, lastName);
-
-        cout << "Enter Address: ";
-        std::getline(cin, address);
-
-        cout << "Enter Phone Number: ";
-        std::getline(cin, phone);
-
-        cout << "Enter Email: ";
-        std::getline(cin, email);
-
-        cout << "Enter Password: ";
-        std::getline(cin, password);
-
-        cout << "Enter School ID (e.g. campus ID): ";
-        std::getline(cin, schoolID);
-    }
-
-    void printSummary() const {
-        cout << "\nUser Registered Successfully:\n";
-        cout << "ID: " << setw(10) << setfill('0') << libraryID << "\n";
-        cout << "Name: " << firstName << " " << lastName << "\n";
-        cout << "Address: " << address << "\n";
-        cout << "Phone: " << phone << "\n";
-        cout << "Email: " << email << "\n";
-        cout << "User Type: " << userType << "\n";
-        cout << "School ID: " << schoolID << "\n";
-    }
-
-     void saveToFile(const string& filename = "Final Project Code/data/users.txt") const {
-         ofstream outFile(filename, ios::app); // append mode
-         if (!outFile) {
-             cerr << "Error: Could not open " << filename << " for writing.\n";
-             return;
-         }
-
-        // Format libraryID with leading zeroes (10 digits)
-        outFile << setw(10) << setfill('0') << libraryID << ";"
-            << userType << ";"
-            << firstName << ";"
-            << lastName << ";"
-            << address << ";"
-            << phone << ";"
-            << email << ";"
-            << password << ";"
-            << schoolID << ";"
-            << isActive << std::endl;
-
-        outFile.close();
-    }
-}; // end of class RegisterUser
-
-class Admin {
-private:
-    string username, password;
-public:
-    Admin(string user, string pass) : username(user), password(pass) {}
-
-    bool login(string inputUser, string inputPass) {
-        return (inputUser == username && inputPass == password);
-    }
-
-    void showMenu() {
-        Terminal t;
-        int choice;
-        while (true) {
-            cout << "\n--- Admin Menu ---\n";
-            cout << "1. Register New User\n";
-            cout << "2. Edit Inventory\n";
-            cout << "3. Edit User Information\n";
-            cout << "4. Help User Borrow a book\n";
-            cout << "5. Search Function\n";
-            cout << "6. Active Users\n";
-            cout << "7. Return Book\n";
-            cout << "8. Logout\n";
-            cout << "Enter your choice: ";
-            cin >> choice;
-
-            switch (choice) {
-            case 1:
-                cout << "Registering new user...";
-                // Add function call here
-                break;
-            case 2:
-                cout << "Editing Inventory...\n";
-                // Add function call here
-                break;
-            case 3:
-                cout << "Editing User Information...\n";
-                // Add function call here
-                break;
-            case 4:
-                cout << "Borrowing books...\n";
-                // Add function call here
-                break;
-            case 5: /* {// this sends them to the SearchFunction Class
-                cout << "Searching...\n";
-                SearchFunction sf;
-                sf.searchBooks();
-                break;
-            }*/
-           
-            case 6: 
-                cout << "Viewing all registered users...\n";
-                // add function call here
-                break;
-            case 7: 
-                cout << "Returning books...\n";
-                // add function call here
-                break;
-            case 8:
-                cout << "Logging out...\n";
-                return;
-            default:
-                cout << "Invalid choice. Try again.\n";
-            }
-        }
-    }
-}; // end of admin class
-
-class Borrowing {
-
-}; // end of class Borrowing 
-
-
-class UserLogin {
-private:
-    string username, password;
-
-public:
-    UserLogin(string user, string pass) : username(user), password(pass) {}
-
-    bool login(string inputUser, string inputPass) {
-        return (inputUser == username && inputPass == password);
-    }
-
-    void showMenu() {
-        int choice;
-        while (true) {
-            cout << "\n--- User Menu ---\n";
-            cout << "1. View Available Books\n";
-            cout << "2. Search Function\n";
-            cout << "3. Print User Summary\n";
-            cout << "4. Edit User Information\n";
-            cout << "5. Logout\n";
-            cout << "Enter your choice: ";
-            cin >> choice;
-
-            switch (choice) {
-            case 1:
-                cout << "Displaying available books...\n";
-                
-                break;
-            case 2: /* {// This sends them to the Search Function Class
-                cout << "Searching...\n";
-                SearchFunction sf;
-                sf.searchBooks();
-                break;
-            } */
-            
-            case 3:
-                cout << "User Summary...\n";
-                
-                break;
-            case 4: 
-                cout << "Edit User Information...\n";
-                    break;
-            case 5:
-                cout << "Logging out...\n";
-                return;
-            default:
-                cout << "Invalid choice. Try again.\n";
-            }
-        }
-    }
-}; // end of class UserLogin
-
-class SearchFunction { /*We need to add a part where the user can use this class to search for other Users*/
-public: /*
-        void searchBooks() { //allows users and admin to search for books
-            string keyword, filter;
-            cout << "\nSearch by (type (book, magazine, journal) / title / author / publisher): ";
-            cin >> filter;
-            cout << "Enter keyword: ";
-            cin.ignore(); // this will remove leftover newline
-            getline(cin, keyword);
-
-            ifstream file("books.txt");
-            if (!file) {
-                cout << "Failed to open books.txt\n";
-                return;
-            }
-
-            string line;
-            bool found = false;
-
-            while (getline(file, line)) {
-                stringstream ss(line);
-                string type, title, author, publisher, isBorrowedStr;
-
-                getline(ss, type, ';');
-                getline(ss, title, ';');
-                getline(ss, author, ';');
-                getline(ss, publisher, ';');
-                getline(ss, isBorrowedStr);
-
-                bool match = false;
-                if (filter == "type" && type.find(keyword) != string::npos)
-                    match = true;
-                else if (filter == "title" && title.find(keyword) != string::npos)
-                    match = true;
-                else if (filter == "author" && author.find(keyword) != string::npos)
-                    match = true;
-                else if (filter == "publisher" && publisher.find(keyword) != string::npos)
-                    match = true;
-
-                if (match) {
-                    found = true;
-                    cout << "\n--- Book Found ---\n";
-                    cout << "Type: " << type
-                        << "Title: " << title
-                        << "\nAuthor: " << author
-                        << "\nPublisher: " << publisher
-                        << "\nBorrowed: " << (isBorrowedStr == "1" ? "Yes" : "No") << "\n";
-                }
-            }
-
-            if (!found) {
-                cout << "No book matched your search.\n";
-            }
-
-            file.close();
-        }
-        */
-    }; // end of class SearchFunction
-
 
 int main()
 {
@@ -287,8 +35,8 @@ int main()
             newUser.printSummary();
             newUser.saveToFile("Final Project Code/data/users.txt");
             break;
-        }
-        case 2: { // Admin login (librarian) /*having issues with opening librarians.txt file*/
+        }//end of case 1
+        case 2: { // Admin login (librarian) 
 
             string inputFirst, inputLast, inputPass;
             cout << "Enter admin first name: ";
@@ -334,25 +82,59 @@ int main()
             }
 
             break;
-        }
-        case 3: { // User Login
-            string user, pass;
-            cout << "Enter username: ";
-            cin >> user;
-            cout << "Enter password: ";
-            cin >> pass;
+        }//end of case 2
 
-            UserLogin u("user", "pass123"); // Example credentials
+        case 3: { // User Login using User ID
+            string inputID, inputPassword;
+            cout << "Enter your User ID (10 digits): ";
+            cin >> inputID;
+            cout << "Enter your password: ";
+            cin >> inputPassword;
 
-            if (u.login(user, pass)) {
+            ifstream userFile("Final Project Code/data/users.txt");
+            if (!userFile) {
+                cerr << "Error: Could not open users.txt.\n";
+                break;
+            }
+
+            string line;
+            bool authenticated = false;
+
+            while (getline(userFile, line)) {
+                stringstream ss(line);
+                string libraryID, userType, firstName, lastName, address, phone, email, password, schoolID, isActive;
+
+                getline(ss, libraryID, ';');
+                getline(ss, userType, ';');
+                getline(ss, firstName, ';');
+                getline(ss, lastName, ';');
+                getline(ss, address, ';');
+                getline(ss, phone, ';');
+                getline(ss, email, ';');
+                getline(ss, password, ';');
+                getline(ss, schoolID, ';');
+                getline(ss, isActive);
+
+                if (inputID == libraryID && inputPassword == password && isActive == "1") {
+                    authenticated = true;
+                    break;
+                }
+            }
+
+            userFile.close();
+
+            if (authenticated) {
                 cout << "User login successful.\n";
+                UserLogin u(inputID, inputPassword);
                 u.showMenu();
             }
             else {
-                cout << "Invalid username or password.\n";
+                cout << "Invalid User ID or password.\n";
             }
+
             break;
-        }
+        }// end of case 3
+
         case 4: //Exit Program
             cout << "Exiting system.\n";
             return 0;
