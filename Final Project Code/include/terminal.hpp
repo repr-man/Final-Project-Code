@@ -7,6 +7,7 @@
 #include <ios>
 #include <limits>
 #include <ostream>
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -148,15 +149,18 @@ public:
 
         while(true) {
             std::cout << promptArrow;
-            std::cin >> input;
+            std::string buf;
+            std::getline(std::cin, buf);
+            auto str = std::stringstream(buf);
+            str >> input;
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
                 exit(0);
-            } else if(std::cin.fail()) {
+            } else if(std::cin.fail() || str.fail()) {
                 std::cout << "Invalid input.  Please try again." << std::endl;
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                str.clear();
+                str.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             } else
                 return input;
         }
