@@ -1,10 +1,16 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 
 class InventoryItem {
+public:
     std::string type, name, author, publisher;
     int borrowerID;
+
+    static constexpr int Offset = 0;
+    inline static const std::filesystem::path SaveFileLocation
+        = std::filesystem::current_path().append("Final Project Code/data/book.txt");
 
     enum class FieldTag {
         Type,
@@ -13,7 +19,6 @@ class InventoryItem {
         Publisher,
         BorrowerID
     };
-public:
     static constexpr auto Type = FieldTag::Type;
     static constexpr auto Name = FieldTag::Name;
     static constexpr auto Author = FieldTag::Author;
@@ -52,5 +57,13 @@ public:
         }
     }
 
+    std::string serialize() const {
+        return type + ';' +
+            name + ';' +
+            author + ';' +
+            publisher + ';' +
+            std::to_string(borrowerID);
+    }
+    
     friend class Library;
 };

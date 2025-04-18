@@ -1,11 +1,17 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 
 class User {
+public:
     std::string role, first, last, address, phone, email, password;
     long id, institutionId;
     int numCheckedOut;
+
+    static constexpr int Offset = 1;
+    inline static const std::filesystem::path SaveFileLocation
+        = std::filesystem::current_path().append("Final Project Code/data/users.txt");
 
     enum class FieldTag {
         Role,
@@ -19,7 +25,6 @@ class User {
         NumCheckedOut
     };
 
-public:
     static constexpr auto Role = FieldTag::Role;
     static constexpr auto First = FieldTag::First;
     static constexpr auto Last = FieldTag::Last;
@@ -75,6 +80,19 @@ public:
                 return numCheckedOut == stoi(value);
         }
         throw "Unreachable";
+    }
+
+    std::string serialize() const {
+        return std::to_string(id) + ';' +
+            role + ';' +
+            first + ';' +
+            last + ';' +
+            address + ';' +
+            phone + ';' +
+            email + ';' +
+            password + ';' +
+            std::to_string(institutionId) + ';' +
+            std::to_string(numCheckedOut);
     }
 
     friend class Library;
