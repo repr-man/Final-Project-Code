@@ -369,3 +369,6 @@ build.ninja
 .ninja_log
 compile_flags.txt
 main
+
+main.exe
+.vscode/
