@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <string>
 
-class Librarian {
+#include "printable.hpp"
+
+class Librarian : public Printable<3> {
 public:
     std::string first, last, password;
 
@@ -45,6 +47,14 @@ public:
         return first + ';' +
             last + ';' +
             password;
+    }
+
+    std::array<std::string, 3> providePrintableData() const override {
+        return {
+            first,
+            last,
+            password
+        };
     }
     
     friend class Library;

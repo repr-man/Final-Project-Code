@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <string>
 
-class InventoryItem {
+#include "printable.hpp"
+
+class InventoryItem : public Printable<5> {
 public:
     std::string type, name, author, publisher;
     int borrowerID;
@@ -63,6 +65,16 @@ public:
             author + ';' +
             publisher + ';' +
             std::to_string(borrowerID);
+    }
+    
+    std::array<std::string, 5> providePrintableData() const override {
+        return {
+            type,
+            name,
+            author,
+            publisher,
+            std::to_string(borrowerID)
+        };
     }
     
     friend class Library;
