@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "resultlist.hpp"
+#include "printable.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -25,7 +27,6 @@ constexpr bool isWindows = true;
 #include <unistd.h>
 constexpr bool isWindows = false;
 #endif
-
 
 template <typename S>
 concept IsString = std::is_convertible_v<S, std::string>;
@@ -245,15 +246,6 @@ public:
 
 
 
-    /// An interface for types that can provide information to a table.
-    /// `N` is the number of columns of data the type provides.
-    template <int N>
-    class Printable {
-    public:
-        virtual ~Printable() {}
-        virtual std::array<std::string, N> providePrintableData() = 0;
-    };
-
     /// Prints a table of objects that implement the `Printable` interface.
     template <typename T, IsString... ColumnNames>
     requires std::is_base_of_v<Printable<sizeof...(ColumnNames)>, T>
@@ -266,6 +258,25 @@ public:
         tmp.reserve(rows.size());
         for(auto& row : rows) {
             tmp.push_back(row.providePrintableData());
+        }
+        printTable(
+            std::move(tmp),
+            columnNames...
+        );
+    }
+
+    /// Prints a table of objects that implement the `Printable` interface from a `ResultList`.
+    template <typename T, IsString... ColumnNames>
+    requires std::is_base_of_v<Printable<sizeof...(ColumnNames)>, T>
+    void printTable(
+        const ResultList<T>& rows,
+        ColumnNames... columnNames
+    ) const {
+        constexpr int N = sizeof...(ColumnNames);
+        auto tmp = std::vector<std::array<std::string, N>>();
+        tmp.reserve(rows.size());
+        for(int i = 0; i < rows.size(); ++i) {
+            tmp.push_back(rows[i].providePrintableData());
         }
         printTable(
             std::move(tmp),

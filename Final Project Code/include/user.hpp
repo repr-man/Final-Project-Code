@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <string>
 
-class User {
+#include "printable.hpp"
+
+class User : public Printable<10> {
 public:
     std::string role, first, last, address, phone, email, password;
     long id, institutionId;
@@ -14,6 +16,7 @@ public:
         = std::filesystem::current_path().append("Final Project Code/data/users.txt");
 
     enum class FieldTag {
+        ID,
         Role,
         First,
         Last,
@@ -25,6 +28,7 @@ public:
         NumCheckedOut
     };
 
+    static constexpr auto ID = FieldTag::ID;
     static constexpr auto Role = FieldTag::Role;
     static constexpr auto First = FieldTag::First;
     static constexpr auto Last = FieldTag::Last;
@@ -60,6 +64,8 @@ public:
 
     bool matches(FieldTag field, const std::string& value) const noexcept {
         switch (field) {
+            case ID:
+                return id == stol(value);
             case Role:
                 return role == value;
             case First:
@@ -93,6 +99,21 @@ public:
             password + ';' +
             std::to_string(institutionId) + ';' +
             std::to_string(numCheckedOut);
+    }
+
+    std::array<std::string, 10> providePrintableData() const override {
+        return {
+            std::to_string(id),
+            role,
+            first,
+            last,
+            address,
+            phone,
+            email,
+            password,
+            std::to_string(institutionId),
+            std::to_string(numCheckedOut)
+        };
     }
 
     friend class Library;
