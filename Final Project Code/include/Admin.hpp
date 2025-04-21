@@ -30,7 +30,7 @@ public:
             cout << "1. Register New User\n";
             cout << "2. Edit Inventory\n";
             cout << "3. Edit User Information\n";
-            cout << "4. Help User Borrow a book\n";
+            cout << "4. Borrow Book\n";
             cout << "5. Search Function\n";
             cout << "6. Active Users\n";
             cout << "7. Return Book\n";
@@ -39,7 +39,7 @@ public:
             cin >> choice;
 
             switch (choice) {
-            case 1:
+            case 1: 
                 cout << "Registering new user...";
                 registerNewUser();
                 break;
@@ -83,32 +83,25 @@ private:
     int generateNextLibraryID() {
         ifstream inFile("Final Project Code/data/users.txt");
         string line;
-        int lastID = 0;
+        int userCount = 0;
 
         while (getline(inFile, line)) {
             if (!line.empty()) {
-                stringstream ss(line);
-                string idPart;
-                if (getline(ss, idPart, ';')) {
-                    try {
-                        lastID = stoi(idPart);
-                    }
-                    catch (const exception& e) {
-                        cerr << "Invalid ID in file: " << idPart << " - " << e.what() << endl;
-                    }
-                }
+                userCount++;
             }
         }
 
-        return lastID + 1;
+        return userCount + 1;
     }
 
     void registerNewUser() {
         int nextID = generateNextLibraryID();  
         RegisterUser newUser;
-        newUser.promptUserData(nextID);
+        newUser.promptUserData(nextID); 
         newUser.printSummary();
         newUser.saveToFile();
     }
+
+
 }; // end of admin class
 

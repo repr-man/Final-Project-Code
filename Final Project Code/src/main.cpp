@@ -30,15 +30,16 @@ int main()
 
         switch (choice) {
         case 1: {// register new users
-            static int nextID = 1; // Replace with a function that finds next ID if needed
+            int nextID = RegisterUser::generateNextLibraryID(); 
             RegisterUser newUser;
-            newUser.promptUserData(nextID++);
-            newUser.printSummary();
+            newUser.promptUserData(nextID);
             newUser.saveToFile("Final Project Code/data/users.txt");
-            break;
+            newUser.printSummary();
+            return 0;
+            
         }//end of case 1
         case 2: { // Admin login (librarian) 
-
+            cout << "\n--- Admin Login ---\n";
             string inputFirst, inputLast, inputPass;
             cout << "Enter admin first name: ";
             getline(cin >> ws, inputFirst);
@@ -86,6 +87,7 @@ int main()
         }//end of case 2
 
         case 3: { // User Login using User ID
+            cout << "\n--- User Login ---\n";
             string inputID, inputPassword;
             cout << "Enter your User ID (10 digits): ";
             cin >> inputID;

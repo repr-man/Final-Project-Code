@@ -11,6 +11,8 @@
 #include <vector> 
 #include <filesystem>
 
+#include "library.hpp"
+
 using namespace std;
 
 // add the information of the user once we type in the user's name

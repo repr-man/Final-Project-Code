@@ -18,8 +18,23 @@ public:
 
     RegisterUser() {}
 
-    void promptUserData(int nextID) {
+    static int generateNextLibraryID() {
+        ifstream inFile("Final Project Code/data/users.txt");
+        string line;
+        int userCount = 0;
+
+        while (getline(inFile, line)) {
+            if (!line.empty()) {
+                userCount++;
+            }
+        }
+
+        return userCount + 1;
+    }
+
+    void promptUserData(int nextID) { 
         libraryID = nextID;
+
         cout << "\n--- Registering ---\n";
         cout << "Enter User Type (e.g. student, faculty): ";
         std::getline(cin >> std::ws, userType);
@@ -64,7 +79,6 @@ public:
             return;
         }
 
-        // Format libraryID with leading zeroes (10 digits) /*need to change this so that it's randomized for each new registered user*/
         outFile << setw(10) << setfill('0') << libraryID << ";"
             << userType << ";"
             << firstName << ";"
