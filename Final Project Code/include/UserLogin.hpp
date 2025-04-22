@@ -10,15 +10,102 @@
 
 
 using namespace std;
+
 class UserLogin {
 private:
-    string username, password;
+    string userID, password;
 
 public:
-    UserLogin(string user, string pass) : username(user), password(pass) {}
+    UserLogin(string id, string pass) : userID(id), password(pass) {}
 
-    bool login(string inputUser, string inputPass) {
-        return (inputUser == username && inputPass == password);
+    static void attemptLogin() {
+        string inputID, inputPassword;
+
+        cout << "\n--- User Login ---\n";
+        cout << "Enter your Library ID (10 digits): ";
+        getline(cin >> ws, inputID);
+
+        cout << "Enter your password: ";
+        getline(cin >> ws, inputPassword);
+
+        ifstream userFile("data/users.txt");
+        if (!userFile) {
+            cerr << "Error: Could not open users.txt.\n";
+            return;
+        }
+
+        string line;
+        bool authenticated = false;
+
+        while (getline(userFile, line)) {
+            stringstream ss(line);
+            string libraryID, userType, firstName, lastName, address, phone, email, storedPassword, schoolID, booksBorrowed;
+
+            getline(ss, libraryID, ';');
+            getline(ss, userType, ';');
+            getline(ss, firstName, ';');
+            getline(ss, lastName, ';');
+            getline(ss, address, ';');
+            getline(ss, phone, ';');
+            getline(ss, email, ';');
+            getline(ss, storedPassword, ';');
+            getline(ss, schoolID, ';');
+            getline(ss, booksBorrowed); 
+
+            if (inputID == libraryID && inputPassword == storedPassword) {
+                authenticated = true;
+                UserLogin u(inputID, inputPassword);
+                cout << "User login successful.\n";
+                u.showMenu();
+                break;
+            }
+        }
+
+        userFile.close();
+
+        if (!authenticated) {
+            cout << "Invalid Library ID or password.\n";
+        }
+    }
+
+    void printUserSummary() {
+        ifstream userFile("data/users.txt");
+        if (!userFile) {
+            cout << "Could not open users.txt\n";
+            return;
+        }
+
+        string line;
+        while (getline(userFile, line)) {
+            stringstream ss(line);
+            string id, userType, firstName, lastName, address, phone, email, storedPassword, schoolID, booksBorrowed;
+
+            getline(ss, id, ';');
+            getline(ss, userType, ';');
+            getline(ss, firstName, ';');
+            getline(ss, lastName, ';');
+            getline(ss, address, ';');
+            getline(ss, phone, ';');
+            getline(ss, email, ';');
+            getline(ss, storedPassword, ';');
+            getline(ss, schoolID, ';');
+            getline(ss, booksBorrowed); 
+
+            if (id == userID) {
+                cout << "\n--- User Summary ---\n";
+                cout << "User ID: " << id << "\n";
+                cout << "Name: " << firstName << " " << lastName << "\n";
+                cout << "User Type: " << userType << "\n";
+                cout << "Address: " << address << "\n";
+                cout << "Phone: " << phone << "\n";
+                cout << "Email: " << email << "\n";
+                cout << "School ID: " << schoolID << "\n";
+                cout << "Books Borrowed: " << booksBorrowed << "\n";
+                return;
+            }
+        }
+
+        cout << "User not found in records.\n";
     }
 
     void showMenu() {
@@ -35,15 +122,12 @@ public:
             switch (choice) {
             case 1:
                 cout << "Displaying available books...\n";
-
                 break;
-            case 2: // This sends them to the Search Function Class
-
+            case 2:
+                cout << "Search function not yet implemented.\n";
                 break;
-
             case 3:
-                cout << "User Summary...\n";
-
+                printUserSummary();
                 break;
             case 4:
                 cout << "Logging out...\n";

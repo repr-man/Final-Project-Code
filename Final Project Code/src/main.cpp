@@ -81,54 +81,7 @@ void Main::main() try {
             }//end of case 2
 
             case 3: { // User Login using User ID
-                cout << "\n--- User Login ---\n";
-                string inputID, inputPassword;
-                cout << "Enter your User ID (10 digits): ";
-                cin >> inputID;
-                cout << "Enter your password: ";
-                cin >> inputPassword;
-
-                ifstream userFile("data/users.txt");
-                if (!userFile) {
-                    cerr << "Error: Could not open users.txt.\n";
-                    break;
-                }
-
-                string line;
-                bool authenticated = false;
-
-                while (getline(userFile, line)) {
-                    stringstream ss(line);
-                    string libraryID, userType, firstName, lastName, address, phone, email, password, schoolID, isActive;
-
-                    getline(ss, libraryID, ';');
-                    getline(ss, userType, ';');
-                    getline(ss, firstName, ';');
-                    getline(ss, lastName, ';');
-                    getline(ss, address, ';');
-                    getline(ss, phone, ';');
-                    getline(ss, email, ';');
-                    getline(ss, password, ';');
-                    getline(ss, schoolID, ';');
-                    getline(ss, isActive);
-
-                    if (inputID == libraryID && inputPassword == password && isActive == "1") {
-                        authenticated = true;
-                        break;
-                    }
-                }
-
-                userFile.close();
-
-                if (authenticated) {
-                    cout << "User login successful.\n";
-                    UserLogin u(inputID, inputPassword);
-                    u.showMenu();
-                }
-                else {
-                    cout << "Invalid User ID or password.\n";
-                }
-
+                UserLogin::attemptLogin();
                 break;
             }// end of case 3
 
