@@ -14,9 +14,8 @@ using namespace std;
 class SearchFunction { /*We need to add a part where the user can use this class to search for other Users*/
 public:
     auto searchUser(Library& lib, Terminal& term) {
-        cout << "\n--- Search for User ---\n";
         do {
-            term.printOptions("Enter space-separated list of search categories:\n", {
+            term.printOptions("--- Search for User ---", {
                 "ID",
                 "First Name",
                 "Last Name",
@@ -24,10 +23,11 @@ public:
                 "Address",
                 "Phone Number",
                 "Email",
-                "Institution ID",
-                "Exit"
+                "Institution ID"
             });
-            auto rawCategories = term.promptForInput<string>();
+            auto rawCategories = term.promptForInput<string>(
+                "Enter space-separated list of search categories"
+            );
             auto catStream = stringstream(rawCategories);
             vector<User::FieldTag> categories;
             int category;
@@ -58,8 +58,6 @@ public:
                     case 8:
                         categories.push_back(InstitutionID);
                         break;
-                    case 9:
-                        TODO("Implement exiting from search category selection.");
                     default:
                         TODO("Implement error handling for invalid search category.");
                 }

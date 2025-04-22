@@ -174,7 +174,8 @@ public:
         }
     }
 
-    /// Same as `promptForInput` but prints a prompt text first.
+    /// Same as `promptForInput` but prints a prompt text first.  Helps maintain
+    /// stylistic consistency throughout the application.
     template <typename T>
     T promptForInput(std::string_view prompt) const {
         std::cout << prompt << ": ";
