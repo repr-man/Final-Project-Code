@@ -20,13 +20,14 @@ using namespace std;
 
 int main()
 {
-    Terminal term = Terminal();
-    int choice;
-    while (true) {
-        cout << "\nLibrary Management System\n";
-        cout << "1. Register New User\n2. Admin Login\n3. User Login\n4. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+     Library lib;
+     Terminal term = Terminal();
+     int choice;
+     while (true) {
+         cout << "\nLibrary Management System\n";
+         cout << "1. Register New User\n2. Admin Login\n3. User Login\n4. Exit\n";
+         cout << "Enter your choice: ";
+         cin >> choice;
 
         switch (choice) {
         case 1: {// register new users
@@ -76,7 +77,7 @@ int main()
                 cout << "Admin login successful.\n";
                 string fullName = inputFirst + " " + inputLast;
                 Admin admin(fullName, inputPass);
-                admin.showMenu(term);
+                admin.showMenu(lib, term);
             }
             else {
                 cout << "Invalid admin credentials.\n";

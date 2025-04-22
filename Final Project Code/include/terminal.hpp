@@ -5,14 +5,15 @@
 #include <initializer_list>
 #include <iomanip>
 #include <ios>
+#include <iostream>
+#include <istream>
 #include <limits>
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <iostream>
-#include <string>
 #include <vector>
 
 #include "resultlist.hpp"
@@ -148,18 +149,15 @@ public:
     T promptForInput() const {
         T input;
 
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
         while(true) {
             std::cout << promptArrow;
             std::string buf;
+            std::cin >> std::ws;
             std::getline(std::cin, buf);
             auto str = std::stringstream(buf);
             if constexpr (std::is_same_v<T, std::string>) {
                 input = std::string(buf);
-            }
-            else {
+            } else {
                 str >> input;
             }
 
@@ -261,6 +259,11 @@ public:
         std::vector<T>&& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         constexpr int N = sizeof...(ColumnNames);
         auto tmp = std::vector<std::array<std::string, N>>();
         tmp.reserve(rows.size());
@@ -280,6 +283,11 @@ public:
         const ResultList<T>& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         constexpr int N = sizeof...(ColumnNames);
         auto tmp = std::vector<std::array<std::string, N>>();
         tmp.reserve(rows.size());
@@ -300,6 +308,11 @@ public:
         std::initializer_list<T>&& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         printTable(std::vector<T>(rows), columnNames...);
     }
 };

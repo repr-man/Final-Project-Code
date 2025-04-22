@@ -1,15 +1,14 @@
 #pragma once
 #include <cstdio>
-#include <filesystem>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
-#include <iomanip>
-#include <filesystem>
 #include "Borrowing.hpp"
 #include "RegisterUser.hpp"
 #include "Return.hpp"
+#include "SearchFunction.hpp"
+#include "library.hpp"
+#include "terminal.hpp"
 
 
 using namespace std;
@@ -24,7 +23,7 @@ public:
         return (inputUser == username && inputPass == password);
     }
 
-    void showMenu(Terminal &term) {
+    void showMenu(Library& lib, Terminal& term) {
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
@@ -60,7 +59,32 @@ public:
             }// end of case 4
             
             case 5: // this sends them to the SearchFunction Class
-
+                cout << "\n--- Search Menu ---\n";
+                cout << "1. User\n";
+                cout << "2. Inventory\n";
+                cout << "3. Exit\n";
+                cout << "Enter your choice: " << endl;
+                choice = term.promptForInput<int>();
+                    
+                SearchFunction s;
+                switch (choice) {
+                    case 1: {
+                        auto res = s.searchUser(lib, term);
+                        term.printTable(res, "ID", "Role", "First Name", "Last Name", "Address", "Phone Number", "Email", "Password", "Institution ID", "# Items Borrowed");
+                        break;
+                    }
+                    case 2: {
+                        auto res = s.searchInventory(lib, term);
+                        term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
+                        break;
+                    }
+                    case 3:
+                        cout << "Exiting system.\n";
+                        return;
+                    default:
+                        cout << "Invalid choice. Try again.\n";
+                        throw string("Error: Invalid choice.");
+                }
                 break;
 
             case 6:
