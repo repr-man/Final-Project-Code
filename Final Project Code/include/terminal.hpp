@@ -259,6 +259,11 @@ public:
         std::vector<T>&& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         constexpr int N = sizeof...(ColumnNames);
         auto tmp = std::vector<std::array<std::string, N>>();
         tmp.reserve(rows.size());
@@ -278,6 +283,11 @@ public:
         const ResultList<T>& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         constexpr int N = sizeof...(ColumnNames);
         auto tmp = std::vector<std::array<std::string, N>>();
         tmp.reserve(rows.size());
@@ -298,6 +308,11 @@ public:
         std::initializer_list<T>&& rows,
         ColumnNames... columnNames
     ) const {
+        if(rows.size() == 0) {
+            std::cout << "No results found.\n" << std::endl;
+            return;
+        }
+
         printTable(std::vector<T>(rows), columnNames...);
     }
 };
