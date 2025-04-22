@@ -28,7 +28,7 @@ void Main::main() try {
                 int nextID = RegisterUser::generateNextLibraryID(); 
                 RegisterUser newUser;
                 newUser.promptUserData(nextID);
-                newUser.saveToFile("Final Project Code/data/users.txt");
+                newUser.saveToFile("data/users.txt");
                 newUser.printSummary();
                 break;
             }//end of case 1
@@ -44,7 +44,7 @@ void Main::main() try {
                 cout << "Enter admin password: ";
                 getline(cin >> ws, inputPass);
 
-                ifstream adminFile("Final Project Code/data/librarians.txt"); 
+                ifstream adminFile("data/librarians.txt"); 
                 if (!adminFile) {
                     cerr << "Failed to open librarian file. Check the path.\n";
                     break;
@@ -88,7 +88,7 @@ void Main::main() try {
                 cout << "Enter your password: ";
                 cin >> inputPassword;
 
-                ifstream userFile("Final Project Code/data/users.txt");
+                ifstream userFile("data/users.txt");
                 if (!userFile) {
                     cerr << "Error: Could not open users.txt.\n";
                     break;
