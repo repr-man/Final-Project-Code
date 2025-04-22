@@ -12,8 +12,8 @@ public:
     int numCheckedOut;
 
     static constexpr int Offset = 1;
-    inline static const std::filesystem::path SaveFileLocation
-        = std::filesystem::current_path().append("Final Project Code/data/users.txt");
+    inline static const auto SaveFileLocation
+        = std::filesystem::path(Printable<10>::SaveFileLocation) / "users.txt";
 
     enum class FieldTag {
         ID,

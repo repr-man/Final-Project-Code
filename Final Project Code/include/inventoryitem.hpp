@@ -11,8 +11,8 @@ public:
     int borrowerID;
 
     static constexpr int Offset = 0;
-    inline static const std::filesystem::path SaveFileLocation
-        = std::filesystem::current_path().append("Final Project Code/data/book.txt");
+    inline static const auto SaveFileLocation
+        = std::filesystem::path(Printable<5>::SaveFileLocation) / "book.txt";
 
     enum class FieldTag {
         Type,
