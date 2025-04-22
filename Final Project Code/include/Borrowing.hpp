@@ -45,7 +45,7 @@ public:
             getline(ss, schoolID, ';');
             getline(ss, booksBorrowed, ';');
 
-            string fullName = firstName + " " + lastName;
+            string fullName = firstName + lastName;
             if (fullName == username) {
                 userFound = true;
                 cout << "\nUser Found:\n";

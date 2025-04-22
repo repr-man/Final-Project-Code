@@ -28,8 +28,7 @@ public:
             cout << "1. View Available Books\n";
             cout << "2. Search Function\n";
             cout << "3. Print User Summary\n";
-            cout << "4. Edit User Information\n";
-            cout << "5. Logout\n";
+            cout << "4. Logout\n";
             cout << "Enter your choice: ";
             cin >> choice;
 
@@ -47,9 +46,6 @@ public:
 
                 break;
             case 4:
-                cout << "Edit User Information...\n";
-                break;
-            case 5:
                 cout << "Logging out...\n";
                 return;
             default:

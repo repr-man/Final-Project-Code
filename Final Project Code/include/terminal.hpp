@@ -148,6 +148,9 @@ public:
     T promptForInput() const {
         T input;
 
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
         while(true) {
             std::cout << promptArrow;
             std::string buf;

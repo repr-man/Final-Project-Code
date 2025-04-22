@@ -55,7 +55,6 @@ public:
                 cout << "Borrowing books...\n";
                 Borrowing b;
                 b.borrowBook(term);
-
                 break;
             }// end of case 4
             
