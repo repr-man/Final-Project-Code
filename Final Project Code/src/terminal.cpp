@@ -4,7 +4,7 @@ void Terminal::printOptions(
     std::string_view prompt,
     std::initializer_list<std::string_view> options
 ) const {
-    std::cout << prompt << '\n';
+    std::cout << '\n' << prompt << '\n';
     int i = 1;
     for(auto option : options) {
         std::cout << "    " << i << ". " << option << '\n';

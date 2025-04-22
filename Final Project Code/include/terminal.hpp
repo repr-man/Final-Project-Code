@@ -16,8 +16,9 @@
 #include <utility>
 #include <vector>
 
-#include "resultlist.hpp"
+#include "main.hpp"
 #include "printable.hpp"
+#include "resultlist.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -150,7 +151,7 @@ public:
         T input;
 
         while(true) {
-            std::cout << promptArrow;
+            //std::cout << promptArrow;
             std::string buf;
             std::cin >> std::ws;
             std::getline(std::cin, buf);
@@ -163,7 +164,7 @@ public:
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
-                exit(0);
+                Main::safeExit();
             } else if(std::cin.fail() || str.fail()) {
                 std::cout << "Invalid input.  Please try again." << std::endl;
                 str.clear();
@@ -173,11 +174,17 @@ public:
         }
     }
 
+    /// Same as `promptForInput` but prints a prompt text first.
+    template <typename T>
+    T promptForInput(std::string_view prompt) const {
+        std::cout << prompt << ": ";
+        return promptForInput<T>();
+    }
+
     void printOptions(
         std::string_view prompt,
         std::initializer_list<std::string_view> options
     ) const;
-
 
     /// Prints a formatted table of strings.
     ///
