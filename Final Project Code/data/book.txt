@@ -1,4 +1,4 @@
-book;A Boring Book;Edward Exemplar;Pedagogical House Publishing;John Mandler
+book;A Boring Book;Edward Exemplar;Pedagogical House Publishing;-1
 book;The Enigmatic Waterfall;Alice Johnson;Willow Creek Press;-1
 journal;Quantum Physics Today;Bob Williams;Academic Frontiers;-1
 magazine;Culinary Delights Monthly;Carol Davis;Global Publications;-1
