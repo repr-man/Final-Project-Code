@@ -8,24 +8,64 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <vector> 
-#include <filesystem>
+#include <vector>
 
 #include "library.hpp"
 
 using namespace std;
 
-// add the information of the user once we type in the user's name
 class Borrowing {
 public:
-    void borrowBook() {
-        string username, bookTitle;
-        cout << "Enter User Name: ";
-        cin >> username;
-        cin.ignore();
 
-        // Count how many books this user has already borrowed
-        ifstream booksFile("book.txt");
+    void borrowBook(Terminal &term) {
+        string username, bookTitle;
+        cout << "Enter User Name (First and Last): ";
+        username = term.promptForInput<string>();
+
+        // ensure that the user.txt files opens to check if the user exits
+        ifstream userFile("Final Project Code/data/users.txt");
+        if (!userFile) {
+            cout << "Could not open users.txt\n";
+            return;
+        }
+        bool userFound = false;
+        string userLine;
+        while (getline(userFile, userLine)) {
+            stringstream ss(userLine);
+            string id, userType, firstName, lastName, address, phone, email, password, schoolID, booksBorrowed;
+
+            getline(ss, id, ';');
+            getline(ss, userType, ';');
+            getline(ss, firstName, ';');
+            getline(ss, lastName, ';');
+            getline(ss, address, ';');
+            getline(ss, phone, ';');
+            getline(ss, email, ';');
+            getline(ss, password, ';');
+            getline(ss, schoolID, ';');
+            getline(ss, booksBorrowed, ';');
+
+            string fullName = firstName + " " + lastName;
+            if (fullName == username) {
+                userFound = true;
+                cout << "\nUser Found:\n";
+                cout << "ID: " << id << "\n";
+                cout << "Name: " << firstName << " " << lastName << "\n";
+                cout << "Email: " << email << "\n";
+                cout << "Phone: " << phone << "\n";
+                cout << "User Type: " << userType << "\n";
+                break;
+            }
+        }
+        userFile.close();
+
+        if (!userFound) {
+            cout << "User not found in system.\n";
+            return;
+        }
+
+        // make sure that book.txt opens
+        ifstream booksFile("Final Project/data/book.txt");
         if (!booksFile) {
             cout << "Could not open book.txt\n";
             return;
@@ -60,7 +100,7 @@ public:
         }
 
         cout << "Enter the title of the book to borrow: ";
-        getline(cin, bookTitle);
+        bookTitle = term.promptForInput<string>();
 
         // Try to find and update the book in memory
         bool found = false;
@@ -94,7 +134,7 @@ public:
         }
 
         // Rewrite books.txt with updated data
-        ofstream outFile("book.txt");
+        ofstream outFile("Final Project Code/data/book.txt");
         for (const string& updatedLine : bookLines) {
             outFile << updatedLine << "\n";
         }

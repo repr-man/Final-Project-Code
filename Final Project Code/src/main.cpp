@@ -35,8 +35,7 @@ int main()
             newUser.promptUserData(nextID);
             newUser.saveToFile("Final Project Code/data/users.txt");
             newUser.printSummary();
-            return 0;
-            
+            break;
         }//end of case 1
         case 2: { // Admin login (librarian) 
             cout << "\n--- Admin Login ---\n";
@@ -77,7 +76,7 @@ int main()
                 cout << "Admin login successful.\n";
                 string fullName = inputFirst + " " + inputLast;
                 Admin admin(fullName, inputPass);
-                admin.showMenu();
+                admin.showMenu(term);
             }
             else {
                 cout << "Invalid admin credentials.\n";

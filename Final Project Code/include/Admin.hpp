@@ -23,7 +23,7 @@ public:
         return (inputUser == username && inputPass == password);
     }
 
-    void showMenu() {
+    void showMenu(Terminal &term) {
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
@@ -54,7 +54,7 @@ public:
             case 4: {
                 cout << "Borrowing books...\n";
                 Borrowing b;
-                b.borrowBook();
+                b.borrowBook(term);
 
                 break;
             }// end of case 4

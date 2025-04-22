@@ -27,8 +27,4 @@
 9012387654;staff;Christopher;Smith;567 Cherry St;555-909-0101;christopher.smith@example.com;P@sswOrdM3;543210987654321;0
 0123498765;student;Ella;Brown;890 Elm Ave;555-010-1212;ella.brown@example.com;P@sswOrdL0l;210987654321098;0
 0000000011;student;James;Helbringer;8485 China;814-502-5591;jhelbringer@gmail.com;P@ssword01;212121121212;0
-0000000012;student;aixa;escobar;3376 downham;8145025591;aixahelbringer@gmail.com;password;123456789;1
-0000000031;student;aixa;helbringer;a;a;a;a;a;1
-0000000001;a;a;a;a;a;a;a;a;1
-0000000033;a;a;a;a;a;a;a;a;1
-0000000034;a;a;a;a;a;a;a;a;1
+0000000012;student;aixa;escobar;3376 downham;8145025591;aixahelbringer@gmail.com;password;123456789;0
