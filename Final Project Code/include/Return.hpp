@@ -9,26 +9,28 @@
 #include <iomanip>
 #include <vector>
 
+#include<terminal.hpp>
+
 #include "library.hpp"
 
 using namespace std; 
 
-class Borrowing {
+class Return {
 public:
-
-    void ReturnBook(Terminal &term) {
+    void ReturnBook(Terminal& term) {
         string username, bookTitle;
         cout << "Enter User Name (First and Last): ";
         username = term.promptForInput<string>();
 
-        // ensure that the user.txt files opens to check if the user exits
         ifstream userFile("Final Project Code/data/users.txt");
         if (!userFile) {
             cout << "Could not open users.txt\n";
             return;
         }
+
         bool userFound = false;
         string userLine;
+        string userID; 
         while (getline(userFile, userLine)) {
             stringstream ss(userLine);
             string id, userType, firstName, lastName, address, phone, email, password, schoolID, booksBorrowed;
@@ -47,6 +49,7 @@ public:
             string fullName = firstName + " " + lastName;
             if (fullName == username) {
                 userFound = true;
+                userID = id;
                 cout << "\nUser Found:\n";
                 cout << "ID: " << id << "\n";
                 cout << "Name: " << firstName << " " << lastName << "\n";
@@ -63,19 +66,20 @@ public:
             return;
         }
 
-        // make sure that book.txt opens
+        cout << "Enter the title of the book to return: ";
+        bookTitle = term.promptForInput<string>();
+
         ifstream booksFile("Final Project Code/data/book.txt");
         if (!booksFile) {
             cout << "Could not open book.txt\n";
             return;
         }
 
-        cout << "Enter the title of the book to return: ";
-        bookTitle = term.promptForInput<string>();
-
-        // Try to find and update the book in memory
+        vector<string> bookLines;
+        string bookLine;
         bool found = false;
-        for (string& bookLine : bookLines) {
+
+        while (getline(booksFile, bookLine)) {
             stringstream ss(bookLine);
             string type, title, author, publisher, borrowedBy;
 
@@ -86,31 +90,33 @@ public:
             getline(ss, borrowedBy);
 
             if (title == bookTitle) {
-                if (borrowedBy = "-1") {
-                    cout << "Book is already borrowed by another user.\n";
-                    return;
+                if (borrowedBy == "-1") {
+                    cout << "Book is not currently borrowed.\n";
+                }
+                else if (borrowedBy != userID) {
+                    cout << "This book was borrowed by a different user.\n";
                 }
                 else {
-                    // Update the line with the new userID
-                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + "-1";
+                    // Update the book as returned
+                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";-1";
                     found = true;
-                    break;
                 }
             }
+            bookLines.push_back(bookLine);
         }
+        booksFile.close();
 
         if (!found) {
-            cout << "Book not found.\n";
+            cout << "Book not found or not borrowed by this user.\n";
             return;
         }
 
-        // Rewrite books.txt with updated data
         ofstream outFile("Final Project Code/data/book.txt");
-        for (const string& updatedLine : bookLines) {
-            outFile << updatedLine << "\n";
+        for (const string& line : bookLines) {
+            outFile << line << "\n";
         }
         outFile.close();
 
         cout << "Book successfully returned.\n";
-    }
-}; // end of class Return 
+    } // end of Class Return
+

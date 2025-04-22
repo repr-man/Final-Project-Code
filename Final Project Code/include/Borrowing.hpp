@@ -9,6 +9,7 @@
 #include <string>
 #include <iomanip>
 #include <vector>
+#include <terminal.hpp>
 
 #include "library.hpp"
 
@@ -30,6 +31,7 @@ public:
         }
         bool userFound = false;
         string userLine;
+        string userID; 
         while (getline(userFile, userLine)) {
             stringstream ss(userLine);
             string id, userType, firstName, lastName, address, phone, email, password, schoolID, booksBorrowed;
@@ -48,6 +50,7 @@ public:
             string fullName = firstName + " " + lastName;
             if (fullName == username) {
                 userFound = true;
+                userID = id;
                 cout << "\nUser Found:\n";
                 cout << "ID: " << id << "\n";
                 cout << "Name: " << firstName << " " << lastName << "\n";
@@ -85,7 +88,7 @@ public:
             getline(ss, publisher, ';');
             getline(ss, borrowedBy);
 
-            if (borrowedBy == username) {
+            if (borrowedBy == userID) {
                 borrowedCount++;
             }
 
@@ -121,7 +124,7 @@ public:
                 }
                 else {
                     // Update the line with the new userID
-                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + username;
+                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + userID;
                     found = true;
                     break;
                 }
@@ -140,6 +143,6 @@ public:
         }
         outFile.close();
 
-        cout << "Book successfully borrowed by User " << username << ".\n";
+        cout << "Book successfully borrowed by User " << userID << ".\n";
     }
 }; // end of class Borrowing 
