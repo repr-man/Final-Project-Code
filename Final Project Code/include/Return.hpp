@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <cstdio>
@@ -12,12 +11,12 @@
 
 #include "library.hpp"
 
-using namespace std;
+using namespace std; 
 
 class Borrowing {
 public:
 
-    void borrowBook(Terminal &term) {
+    void ReturnBook(Terminal &term) {
         string username, bookTitle;
         cout << "Enter User Name (First and Last): ";
         username = term.promptForInput<string>();
@@ -71,35 +70,7 @@ public:
             return;
         }
 
-        string line;
-        int borrowedCount = 0;
-        vector<string> bookLines;
-
-        while (getline(booksFile, line)) {
-            stringstream ss(line);
-            string type, title, author, publisher, borrowedBy;
-
-            getline(ss, type, ';');
-            getline(ss, title, ';');
-            getline(ss, author, ';');
-            getline(ss, publisher, ';');
-            getline(ss, borrowedBy);
-
-            if (borrowedBy == username) {
-                borrowedCount++;
-            }
-
-            bookLines.push_back(line);
-        }
-
-        booksFile.close();
-
-        if (borrowedCount >= 4) {
-            cout << "This user has already borrowed 4 books.\n";
-            return;
-        }
-
-        cout << "Enter the title of the book to borrow: ";
+        cout << "Enter the title of the book to return: ";
         bookTitle = term.promptForInput<string>();
 
         // Try to find and update the book in memory
@@ -115,13 +86,13 @@ public:
             getline(ss, borrowedBy);
 
             if (title == bookTitle) {
-                if (borrowedBy != "-1") {
+                if (borrowedBy = "-1") {
                     cout << "Book is already borrowed by another user.\n";
                     return;
                 }
                 else {
                     // Update the line with the new userID
-                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + username;
+                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";" + "-1";
                     found = true;
                     break;
                 }
@@ -140,6 +111,6 @@ public:
         }
         outFile.close();
 
-        cout << "Book successfully borrowed by User " << username << ".\n";
+        cout << "Book successfully returned.\n";
     }
-}; // end of class Borrowing 
+}; // end of class Return 

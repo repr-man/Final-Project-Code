@@ -156,7 +156,12 @@ public:
             std::string buf;
             std::getline(std::cin, buf);
             auto str = std::stringstream(buf);
-            str >> input;
+            if constexpr (std::is_same_v<T, std::string>) {
+                input = std::string(buf);
+            }
+            else {
+                str >> input;
+            }
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
