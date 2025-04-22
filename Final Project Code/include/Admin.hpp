@@ -9,6 +9,7 @@
 #include <filesystem>
 #include "Borrowing.hpp"
 #include "RegisterUser.hpp"
+#include "Return.hpp"
 
 
 using namespace std;
@@ -68,7 +69,8 @@ public:
                 break;
             case 7:
                 cout << "Returning books...\n";
-                // add function call here
+                Return r;
+                r.ReturnBook(term);
                 break;
             case 8:
                 cout << "Logging out...\n";
