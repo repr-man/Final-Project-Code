@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <vector>
 
-#include<terminal.hpp>
+#include "terminal.hpp"
 
 #include "library.hpp"
 
@@ -118,5 +118,6 @@ public:
         outFile.close();
 
         cout << "Book successfully returned.\n";
-    } // end of Class Return
+    }
+};
 
