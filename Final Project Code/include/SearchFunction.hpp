@@ -109,16 +109,17 @@ public:
     }
 
     auto searchInventory(Library& lib, Terminal& term) {
-        cout << "\n--- Search for Inventory ---\n";
         do {
-            term.printOptions("Enter space-separated list of search categories:\n", {
+            term.printOptions("--- Search for Inventory ---", {
                 "Type",
                 "Name",
                 "Author",
                 "Publisher",
                 "Borrower ID"
             });
-            auto rawCategories = term.promptForInput<string>();
+            auto rawCategories = term.promptForInput<string>(
+                "Enter space-separated list of search categories"
+            );
             auto catStream = stringstream(rawCategories);
             vector<InventoryItem::FieldTag> categories;
             int category;
