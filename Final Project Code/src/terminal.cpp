@@ -13,6 +13,14 @@ void Terminal::printOptions(
     std::cout << std::endl;
 }
 
+void Terminal::printError(std::string_view message) const {
+    if constexpr(isWindows) {
+        std::cout << "### ERROR ###\n" << message << '\n';
+    } else {
+        std::cout << colorError << "ERROR: " << message << '\n' << reset;
+    }
+}
+
 void Terminal::trimAndRecolor(std::string& str, int width) const {
     if constexpr(isWindows) {
         auto last3 = str[width - 3];

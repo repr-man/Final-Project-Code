@@ -48,6 +48,7 @@ class Terminal {
     constexpr static std::string_view colorFade3;
     constexpr static std::string_view colorFade4;
     constexpr static std::string_view colorFade5;
+    constexpr static std::string_view colorError;
     #else
     constexpr static auto promptArrow = "══> ";
     constexpr static std::string_view reset = "\x1b[0m";
@@ -56,6 +57,7 @@ class Terminal {
     constexpr static std::string_view colorFade3 = "\x1b[38;2;159;159;159m";
     constexpr static std::string_view colorFade4 = "\x1b[38;2;127;127;127m";
     constexpr static std::string_view colorFade5 = "\x1b[38;2;95;95;95m";
+    constexpr static std::string_view colorError = "\x1b[0;31m";
     #endif
 
     /// Draws a border row of a table.
@@ -186,6 +188,8 @@ public:
         std::string_view prompt,
         std::initializer_list<std::string_view> options
     ) const;
+
+    void printError(std::string_view message) const;
 
     /// Prints a formatted table of strings.
     ///
