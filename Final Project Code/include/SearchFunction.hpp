@@ -11,10 +11,10 @@
 
 using namespace std;
 
-class SearchFunction { /*We need to add a part where the user can use this class to search for other Users*/
+class SearchFunction {
 public:
     auto searchUser(Library& lib, Terminal& term) {
-        do {
+    retry: {
             term.printOptions("--- Search for User ---", {
                 "ID",
                 "First Name",
@@ -31,8 +31,13 @@ public:
             auto catStream = stringstream(rawCategories);
             vector<User::FieldTag> categories;
             int category;
-            while (catStream >> category) {
+            while (true) {
                 using enum User::FieldTag;
+                if (!(catStream >> category)) {
+                    if (catStream.eof()) { break; }
+                    term.printError("Invalid non-integer category. Please try again.");
+                    goto retry;
+                }
                 switch (category) {
                     case 1:
                         categories.push_back(ID);
@@ -59,7 +64,12 @@ public:
                         categories.push_back(InstitutionID);
                         break;
                     default:
-                        TODO("Implement error handling for invalid search category.");
+                        term.printError(
+                            "Invalid search category '"s
+                            + to_string(category)
+                            + "'. Please try again."
+                        );
+                        goto retry;
                 }
             }
 
@@ -105,11 +115,11 @@ public:
             }
 
             return lib.search(categories, std::move(queries));
-        } while (false);
+        }
     }
 
     auto searchInventory(Library& lib, Terminal& term) {
-        do {
+    retry: {
             term.printOptions("--- Search for Inventory ---", {
                 "Type",
                 "Name",
@@ -123,8 +133,13 @@ public:
             auto catStream = stringstream(rawCategories);
             vector<InventoryItem::FieldTag> categories;
             int category;
-            while (catStream >> category) {
+            while (true) {
                 using enum InventoryItem::FieldTag;
+                if (!(catStream >> category)) {
+                    if (catStream.eof()) { break; }
+                    term.printError("Invalid non-integer category. Please try again.");
+                    goto retry;
+                }
                 switch (category) {
                     case 1:
                         categories.push_back(Type);
@@ -142,7 +157,12 @@ public:
                         categories.push_back(BorrowerID);
                         break;
                     default:
-                        TODO("Implement error handling for invalid search category.");
+                        term.printError(
+                            "Invalid search category '"s
+                            + to_string(category)
+                            + "'. Please try again."
+                        );
+                        goto retry;
                 }
             }
 
@@ -175,6 +195,6 @@ public:
                 }
             }
             return lib.search(categories, std::move(queries));
-        } while (false);
+        }
     }
 };
