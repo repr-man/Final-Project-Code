@@ -51,6 +51,15 @@ public:
         std::vector<std::string> values
     );
 
+    /// Returns a list of all the inventory items in the library.
+    ResultList<InventoryItem> allInventory() {
+        auto vec = std::vector<InventoryItem*>(inventory.size());
+        for(int i = 0; i < inventory.size(); ++i) {
+            vec.push_back(&inventory[i]);
+        }
+        return ResultList<InventoryItem>(*this, std::move(vec));
+    }
+
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
     void flushVector();
