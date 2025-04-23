@@ -16,8 +16,9 @@
 #include <utility>
 #include <vector>
 
-#include "resultlist.hpp"
+#include "main.hpp"
 #include "printable.hpp"
+#include "resultlist.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -47,6 +48,7 @@ class Terminal {
     constexpr static std::string_view colorFade3;
     constexpr static std::string_view colorFade4;
     constexpr static std::string_view colorFade5;
+    constexpr static std::string_view colorError;
     #else
     constexpr static auto promptArrow = "══> ";
     constexpr static std::string_view reset = "\x1b[0m";
@@ -55,6 +57,7 @@ class Terminal {
     constexpr static std::string_view colorFade3 = "\x1b[38;2;159;159;159m";
     constexpr static std::string_view colorFade4 = "\x1b[38;2;127;127;127m";
     constexpr static std::string_view colorFade5 = "\x1b[38;2;95;95;95m";
+    constexpr static std::string_view colorError = "\x1b[0;31m";
     #endif
 
     /// Draws a border row of a table.
@@ -150,7 +153,7 @@ public:
         T input;
 
         while(true) {
-            std::cout << promptArrow;
+            //std::cout << promptArrow;
             std::string buf;
             std::cin >> std::ws;
             std::getline(std::cin, buf);
@@ -163,7 +166,7 @@ public:
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
-                exit(0);
+                Main::safeExit();
             } else if(std::cin.fail() || str.fail()) {
                 std::cout << "Invalid input.  Please try again." << std::endl;
                 str.clear();
@@ -173,11 +176,20 @@ public:
         }
     }
 
+    /// Same as `promptForInput` but prints a prompt text first.  Helps maintain
+    /// stylistic consistency throughout the application.
+    template <typename T>
+    T promptForInput(std::string_view prompt) const {
+        std::cout << prompt << ": ";
+        return promptForInput<T>();
+    }
+
     void printOptions(
         std::string_view prompt,
         std::initializer_list<std::string_view> options
     ) const;
 
+    void printError(std::string_view message) const;
 
     /// Prints a formatted table of strings.
     ///

@@ -10,8 +10,8 @@ public:
     std::string first, last, password;
 
     static constexpr int Offset = 2;
-    inline static const std::filesystem::path SaveFileLocation
-        = std::filesystem::current_path().append("Final Project Code/data/librarians.txt");
+    inline static const auto SaveFileLocation
+        = std::filesystem::path(Printable<3>::SaveFileLocation) / "librarians.txt";
 
     enum class FieldTag {
         First,

@@ -4,13 +4,21 @@ void Terminal::printOptions(
     std::string_view prompt,
     std::initializer_list<std::string_view> options
 ) const {
-    std::cout << prompt << '\n';
+    std::cout << '\n' << prompt << '\n';
     int i = 1;
     for(auto option : options) {
         std::cout << "    " << i << ". " << option << '\n';
         ++i;
     }
     std::cout << std::endl;
+}
+
+void Terminal::printError(std::string_view message) const {
+    if constexpr(isWindows) {
+        std::cout << "### ERROR ###\n" << message << '\n';
+    } else {
+        std::cout << colorError << "ERROR: " << message << '\n' << reset;
+    }
 }
 
 void Terminal::trimAndRecolor(std::string& str, int width) const {
