@@ -18,6 +18,7 @@
 
 #include "email.hpp"
 #include "main.hpp"
+#include "phone.hpp"
 #include "printable.hpp"
 #include "resultlist.hpp"
 
@@ -114,6 +115,7 @@ class Terminal {
     };
 
     friend Email::Email(std::string&&);
+    friend Phone::Phone(std::string&&);
 
 public:
     Terminal() {
