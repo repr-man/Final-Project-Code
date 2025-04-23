@@ -106,7 +106,7 @@ public:
     }
 private: 
     int generateNextLibraryID() {
-        ifstream inFile("Final Project Code/data/users.txt");
+        ifstream inFile("data/users.txt");
         string line;
         int userCount = 0;
 
