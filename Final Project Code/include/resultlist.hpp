@@ -16,11 +16,17 @@ class ResultList {
     ResultList(Library& lib, std::vector<T*>&& items) : items(items), lib(lib) {}
     
 public:
+    ResultList(Library& lib) : lib(lib) {}
     ResultList(ResultList& lib) = delete;
     ResultList(const ResultList& other) = delete;
 
     ResultList& operator=(const ResultList& other) = delete;
-    ResultList& operator=(ResultList&& other) = delete;
+    ResultList& operator=(ResultList&& other) {
+        items = std::move(other.items);
+        modified = other.modified;
+        other.modified = false;
+        return *this;
+    }
     
     ~ResultList();
     
