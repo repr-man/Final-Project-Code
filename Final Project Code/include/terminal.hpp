@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "email.hpp"
 #include "main.hpp"
 #include "printable.hpp"
 #include "resultlist.hpp"
@@ -103,10 +104,16 @@ class Terminal {
         std::cout.flags(oldAlignment);
     }
 
-
-
     /// Implements the fade effect on overly large cell content.
     void trimAndRecolor(std::string& str, int width) const;
+
+    class InvalidInput {
+        std::string_view msg;
+    public:
+        InvalidInput(std::string_view msg) : msg(msg) {}
+    };
+
+    friend Email::Email(std::string&&);
 
 public:
     Terminal() {
