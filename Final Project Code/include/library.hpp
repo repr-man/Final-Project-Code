@@ -35,6 +35,8 @@ class Library {
 public:
 	Library();
 
+    ~Library();
+
     /// Searches the library for inventory items based on the given fields.
     ResultList<InventoryItem> search(
         std::vector<InventoryItem::FieldTag> fields,
@@ -59,6 +61,7 @@ public:
         std::vector<std::string> values
     );
 
+
     /// Returns a list of all the inventory items in the library.
     ResultList<InventoryItem> allInventory() {
         auto vec = std::vector<InventoryItem*>(inventory.size());
@@ -67,6 +70,8 @@ public:
         }
         return ResultList<InventoryItem>(*this, std::move(vec));
     }
+
+    void addInventory(const std::string& type, const std::string& name, const std::string& author, const std::string& publisher, const std::string& borrowerID);
 
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
