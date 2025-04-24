@@ -27,35 +27,13 @@ public:
         std::string&& first,
         std::string&& last,
         std::string&& password
-    ) : first(first),
-        last(last),
-        password(password)
-    {}
+    );
 
-    bool matches(FieldTag field, const std::string& value) const {
-        switch (field) {
-            case First:
-                return first == value;
-            case Last:
-                return last == value;
-            case Password:
-                return password == value;
-        }
-    }
+    bool matches(FieldTag field, const std::string& value) const;
 
-    std::string serialize() const {
-        return first + ';' +
-            last + ';' +
-            password;
-    }
+    std::string serialize() const;
 
-    std::array<std::string, 3> providePrintableData() const override {
-        return {
-            first,
-            last,
-            password
-        };
-    }
+    std::array<std::string, 3> providePrintableData() const override;
     
     friend class Library;
 };

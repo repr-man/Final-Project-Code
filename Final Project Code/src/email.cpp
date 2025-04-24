@@ -1,9 +1,11 @@
 #include "email.hpp"
+#include "terminal.hpp"
 
+#include <ranges>
 #include <string>
 #include <string_view>
 
-static int eatIPv4Segment(std::string_view str) {
+int Email::eatIPv4Segment(std::string_view str) {
     for (int i = 0; i < 3; ++i) {
         if (str[i] == '.') {
             return i;
@@ -63,7 +65,7 @@ Email::Email(std::string&& e) : email(e) {
         }
         bool sawPeriod = false;
         for (int i = sectionPos; i < em.size(); ++i) {
-            switch (c) {
+            switch (em[i]) {
                 case '!':
                 case '#':
                 case '$':
@@ -111,8 +113,8 @@ Email::Email(std::string&& e) : email(e) {
                     throw Terminal::InvalidInput("Invalid character in email local-part.");
             }
         }
-    doneLocalPart:
     }
+    doneLocalPart:
     if (sectionPos - localPartStart > 64) {
         throw Terminal::InvalidInput("Email local-part must be at most 64 characters long.");
     }
@@ -140,7 +142,7 @@ Email::Email(std::string&& e) : email(e) {
         throw Terminal::InvalidInput("Email must contain a domain.");
     }
 
-    if (em.substr(sectionPos).starts_with("[IPV6") {
+    if (em.substr(sectionPos).starts_with("[IPV6")) {
         throw Terminal::InvalidInput("IPv6 addresses not yet supported.");
     } else if (em[sectionPos] == '[') {
         // IPv4 address
@@ -171,7 +173,7 @@ Email::Email(std::string&& e) : email(e) {
         }
 
         try {
-            auto tmp = std::stoi(domain);
+            auto tmp = std::stoi(std::string(domain));
             throw Terminal::InvalidInput("Email domain must not be a number.");
         } catch (...) {}
 
@@ -182,7 +184,7 @@ Email::Email(std::string&& e) : email(e) {
             if (label.size() == 0) {
                 throw Terminal::InvalidInput("Email label must not be empty.");
             }
-            if (label.starts_with("-") || label.ends_with("-")) {
+            if (label[0] == '-' || label[label.size() - 1] == '-') {
                 throw Terminal::InvalidInput(
                     "Email label must not start or end with a hyphen."
                 );
