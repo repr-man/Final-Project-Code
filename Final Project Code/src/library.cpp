@@ -144,8 +144,8 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
-void Library::addInventory(const string& type, const string& name, const string& author, const string& publisher, const string& borrowerID) {
-    InventoryItem newItem(type, name, author, publisher, std::stoi(borrowerID));
+void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
+    InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
     
 }

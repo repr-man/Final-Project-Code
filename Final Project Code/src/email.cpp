@@ -85,9 +85,20 @@ Email::Email(std::string&& e) : email(e) {
                 case '|':
                 case '}':
                 case '~':
-                case '0' ... '9':
-                case 'A' ... 'Z':
-                case 'a' ... 'z':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case 'A':
+                case 'Z':
+                case 'a':
+                case 'z':
                     sawPeriod = false;
                     break;
                 case '(':
@@ -110,6 +121,10 @@ Email::Email(std::string&& e) : email(e) {
                 case '\0':
                     throw Terminal::InvalidInput("Email local-part must contain '@domain'.");
                 default:
+                    if ((em[i] >= 'a' && em[i] <= 'z') || (em[i] >= 'A' && em[i] <= 'Z')) {
+                        sawPeriod = false;
+                        break;
+                    }
                     throw Terminal::InvalidInput("Invalid character in email local-part.");
             }
         }
@@ -191,12 +206,26 @@ Email::Email(std::string&& e) : email(e) {
             }
             for (auto c : label) {
                 switch (c) {
-                    case 'a' ... 'z':
-                    case 'A' ... 'Z':
-                    case '0' ... '9':
+                case 'a':
+                    case 'z':
+                    case 'A':
+                    case 'Z':
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
                     case '-':
                         break;
                     default:
+                        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                            break; 
+                        }
                         throw Terminal::InvalidInput("Invalid character in email label.");
                 }
             }

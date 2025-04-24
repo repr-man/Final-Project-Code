@@ -152,7 +152,7 @@ private:
 
             string borrowed = "-1"; 
 
-            lib.addInventory(type, name, author, publisher, borrowed);
+            lib.addInventory(std::move(type), std::move(name), std::move(author), std::move(publisher), std::move(borrowed));
             cout << "Item added successfully!\n";
             break;
         }

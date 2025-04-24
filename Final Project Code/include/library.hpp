@@ -71,7 +71,7 @@ public:
         return ResultList<InventoryItem>(*this, std::move(vec));
     }
 
-    void addInventory(const std::string& type, const std::string& name, const std::string& author, const std::string& publisher, const std::string& borrowerID);
+    void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
