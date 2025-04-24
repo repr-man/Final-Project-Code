@@ -86,6 +86,16 @@ Library::Library() {
         ));
     }
 
+    auto historyFileText = readFile("Final Project Code/data/history.txt");
+    for(auto line : splitBy(historyFileText, '\n')) {
+        auto segments = splitBy(line, ';');
+        auto it = segments.begin();
+        history.push_back(HistoryItem(
+            std::stol(std::string(*it++)),
+            std::string(*it++)
+        ));
+    }
+
     auto librariansFileText = readFile("Final Project Code/data/librarians.txt");
     for(auto line : splitBy(librariansFileText, '\n')) {
         auto segments = splitBy(line, ';');
@@ -116,6 +126,14 @@ ResultList<User> Library::search(
     return searchVector(fields, values, users);
 }
 
+/// Searches the library for history items based on the given fields.
+ResultList<HistoryItem> Library::search(
+    std::vector<HistoryItem::FieldTag> fields,
+    std::vector<std::string> values
+) {
+    return searchVector(fields, values, history);
+}
+
 /// Searches the library for librarians based on the given fields.
 ResultList<Librarian> Library::search(
     std::vector<Librarian::FieldTag> fields,
@@ -128,5 +146,6 @@ ResultList<Librarian> Library::search(
 void Library::flush() {
     Library::flushVector<InventoryItem>();
     Library::flushVector<User>();
+    Library::flushVector<HistoryItem>();
     Library::flushVector<Librarian>();
 }
