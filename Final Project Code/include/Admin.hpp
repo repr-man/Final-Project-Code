@@ -45,7 +45,7 @@ public:
                 break;
             case 2:
                 cout << "Editing Inventory...\n";
-                // Add function call here
+                editInventory(lib, term);
                 break;
             case 3:
                 cout << "Editing User Information...\n";
@@ -125,6 +125,47 @@ private:
         newUser.promptUserData(nextID); 
         newUser.printSummary();
         newUser.saveToFile();
+    }
+
+    void editInventory(Library& lib, Terminal& term) {
+        int choice;
+        cout << "\n--- Inventory Menu ---\n";
+        cout << "1. Add New Item\n";
+        cout << "2. Delete Item\n";
+        cout << "3. Back to Admin Menu\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // Clear newline from input buffer
+
+        switch (choice) {
+        case 1: {
+            string type, name, author, publisher;
+
+            cout << "Enter type: ";
+            getline(cin, type);
+            cout << "Enter name/title: ";
+            getline(cin, name);
+            cout << "Enter author: ";
+            getline(cin, author);
+            cout << "Enter publisher: ";
+            getline(cin, publisher);
+
+            string borrowed = "-1"; 
+
+            lib.addInventory(type, name, author, publisher, borrowed);
+            cout << "Item added successfully!\n";
+            break;
+        }
+        case 2: {
+            // for deleting an iteam
+            break;
+        }
+        case 3:
+            cout << "Returning to Admin Menu...\n";
+            break;
+        default:
+            cout << "Invalid choice.\n";
+        }
     }
 
 

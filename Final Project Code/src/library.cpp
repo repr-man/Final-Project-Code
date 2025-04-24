@@ -2,6 +2,8 @@
 #include "zip_view.hpp"
 #include <fstream>
 
+using namespace std;
+
 /// Reads the entire contents of a file into a buffer.
 std::string Library::readFile(const std::string& filename) {
     auto path = std::filesystem::current_path().append(filename);
@@ -124,9 +126,20 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
+void Library::addInventory(const string& type, const string& name, const string& author, const string& publisher, const string& borrowerID) {
+    InventoryItem newItem(type, name, author, publisher, std::stoi(borrowerID));
+    inventory.push_back(newItem);
+    
+}
+
+Library::~Library() { 
+    flush();
+}
+
 // Writes all the contents to disk.
 void Library::flush() {
     Library::flushVector<InventoryItem>();
     Library::flushVector<User>();
     Library::flushVector<Librarian>();
 }
+
