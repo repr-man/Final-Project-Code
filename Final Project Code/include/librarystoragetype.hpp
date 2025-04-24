@@ -7,12 +7,14 @@
 #include "inventoryitem.hpp"
 #include "librarian.hpp"
 #include "user.hpp"
+#include "history.hpp"
 
 template <typename T>
 concept LibraryStorageType = (
     std::is_same_v<T, User> ||
     std::is_same_v<T, InventoryItem> ||
-    std::is_same_v<T, Librarian>) &&
+    std::is_same_v<T, Librarian> ||
+    std::is_same_v<T, HistoryItem>) &&
     requires (T t) {
         typename T::FieldTag;
         { T::Offset } -> std::convertible_to<int>;

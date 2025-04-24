@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "inventoryitem.hpp"
+#include "history.hpp"
 #include "librarian.hpp"
 #include "librarystoragetype.hpp"
 #include "resultlist.hpp"
@@ -14,6 +15,7 @@
 class Library {
     std::vector<InventoryItem> inventory{};
     std::vector<User> users{};
+    std::vector<HistoryItem> history{};
     std::vector<Librarian> librarians{};
 
     /// Reads the entire contents of a file into a buffer.
@@ -47,11 +49,27 @@ public:
         std::vector<std::string> values
     );
 
+    /// Searches the library for history items based on the given fields.
+    ResultList<HistoryItem> search(
+        std::vector<HistoryItem::FieldTag> fields,
+        std::vector<std::string> values
+    );
+
     /// Searches the library for librarians based on the given fields.
     ResultList<Librarian> search(
         std::vector<Librarian::FieldTag> fields,
         std::vector<std::string> values
     );
+
+
+    /// Returns a list of all the inventory items in the library.
+    ResultList<InventoryItem> allInventory() {
+        auto vec = std::vector<InventoryItem*>(inventory.size());
+        for(int i = 0; i < inventory.size(); ++i) {
+            vec.push_back(&inventory[i]);
+        }
+        return ResultList<InventoryItem>(*this, std::move(vec));
+    }
 
     void addInventory(const std::string& type, const std::string& name, const std::string& author, const std::string& publisher, const std::string& borrowerID);
 
