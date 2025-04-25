@@ -144,11 +144,28 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
+// to add inventory
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
-    
+
 }
+
+// the const and void are used in the delete inventory
+const std::vector<InventoryItem>& Library::getInventory() const {
+    return inventory;
+}
+
+void Library::removeInventory(size_t index) {
+    if (index < inventory.size()) {
+        inventory.erase(inventory.begin() + index);
+    }
+    else {
+        std::cerr << "Invalid inventory index.\n";
+    }
+}
+
+
 
 Library::~Library() { 
     flush();

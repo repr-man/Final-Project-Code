@@ -164,7 +164,34 @@ private:
             break;
         }
         case 2: {
-            // for deleting an iteam
+            const auto& items = lib.getInventory();
+
+            if (items.empty()) {
+                cout << "No items in inventory to delete.\n";
+                break;
+            }
+
+            cout << "\n--- Current Inventory ---\n";
+            for (size_t i = 0; i < items.size(); ++i) {
+                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n"; // You can customize this
+            }
+
+            int delIndex;
+            cout << "Enter the number of the item to delete (0 to cancel): ";
+            while (!(cin >> delIndex) || delIndex < 0 || delIndex > static_cast<int>(items.size())) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid choice. Enter a valid item number: ";
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (delIndex == 0) {
+                cout << "Delete cancelled.\n";
+                break;
+            }
+
+            lib.removeInventory(delIndex - 1);
+            cout << "Item deleted successfully.\n";
             break;
         }
         case 3:
