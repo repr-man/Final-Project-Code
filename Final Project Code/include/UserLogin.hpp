@@ -1,9 +1,12 @@
 #pragma once
 
+#include "SearchFunction.hpp"
+#include "inventoryitem.hpp"
+#include "library.hpp"
+#include "terminal.hpp"
+#include "user.hpp"
 #include <cstdio>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 
 
@@ -11,119 +14,83 @@ using namespace std;
 
 class UserLogin {
 private:
+    Library& lib;
+    Terminal& term;
     string userID, password;
 
 public:
-    UserLogin(string id, string pass) : userID(id), password(pass) {}
+    UserLogin(Library& lib, Terminal& term, string id, string pass) : lib(lib), term(term), userID(id), password(pass) {}
 
-    static void attemptLogin() {
+    static void attemptLogin(Library& lib, Terminal& term) {
         string inputID, inputPassword;
 
-        cout << "\n--- User Login ---\n";
-        cout << "Enter your Library ID (10 digits): ";
-        getline(cin >> ws, inputID);
-
-        cout << "Enter your password: ";
-        getline(cin >> ws, inputPassword);
-
-        ifstream userFile("data/users.txt");
-        if (!userFile) {
-            cerr << "Error: Could not open users.txt.\n";
-            return;
-        }
-
-        string line;
-        bool authenticated = false;
-
-        while (getline(userFile, line)) {
-            stringstream ss(line);
-            string libraryID, userType, firstName, lastName, address, phone, email, storedPassword, schoolID, booksBorrowed;
-
-            getline(ss, libraryID, ';');
-            getline(ss, userType, ';');
-            getline(ss, firstName, ';');
-            getline(ss, lastName, ';');
-            getline(ss, address, ';');
-            getline(ss, phone, ';');
-            getline(ss, email, ';');
-            getline(ss, storedPassword, ';');
-            getline(ss, schoolID, ';');
-            getline(ss, booksBorrowed); 
-
-            if (inputID == libraryID && inputPassword == storedPassword) {
-                authenticated = true;
-                UserLogin u(inputID, inputPassword);
-                cout << "User login successful.\n";
-                u.showMenu();
-                break;
+        while (true) {
+            cout << "\n--- User Login ---\n";
+            inputID = to_string(term.promptForInput<long>("Enter your Library ID (10 digits)"));
+            inputPassword = term.promptForInput<string>("Enter your password");
+            auto res = lib.search({User::ID, User::Password}, {inputID, inputPassword});
+            if (res.size() == 0) {
+                cout << "Invalid Library ID or password.\n";
+                continue;
             }
+            break;
         }
 
-        userFile.close();
-
-        if (!authenticated) {
-            cout << "Invalid Library ID or password.\n";
-        }
+        UserLogin u(lib, term, inputID, inputPassword);
+        cout << "User login successful.\n";
+        u.showMenu();
     }
 
     void printUserSummary() {
-        ifstream userFile("data/users.txt");
-        if (!userFile) {
-            cout << "Could not open users.txt\n";
+        const auto res = lib.search({User::ID}, {userID});
+        if (res.size() == 0) {
+            cout << "User not found in records.\n";
             return;
         }
 
-        string line;
-        while (getline(userFile, line)) {
-            stringstream ss(line);
-            string id, userType, firstName, lastName, address, phone, email, storedPassword, schoolID, booksBorrowed;
+        cout << "\n--- User Summary ---\n";
+        cout << "User ID: " << res[0].id << "\n";
+        cout << "Name: " << res[0].first << " " << res[0].last << "\n";
+        cout << "User Type: " << res[0].role << "\n";
+        cout << "Address: " << res[0].address << "\n";
+        cout << "Phone: " << res[0].phone << "\n";
+        cout << "Email: " << res[0].email << "\n";
+        cout << "School ID: " << res[0].institutionId << "\n";
+        cout << "Books Borrowed: " << res[0].numCheckedOut << "\n";
 
-            getline(ss, id, ';');
-            getline(ss, userType, ';');
-            getline(ss, firstName, ';');
-            getline(ss, lastName, ';');
-            getline(ss, address, ';');
-            getline(ss, phone, ';');
-            getline(ss, email, ';');
-            getline(ss, storedPassword, ';');
-            getline(ss, schoolID, ';');
-            getline(ss, booksBorrowed); 
-
-            if (id == userID) {
-                cout << "\n--- User Summary ---\n";
-                cout << "User ID: " << id << "\n";
-                cout << "Name: " << firstName << " " << lastName << "\n";
-                cout << "User Type: " << userType << "\n";
-                cout << "Address: " << address << "\n";
-                cout << "Phone: " << phone << "\n";
-                cout << "Email: " << email << "\n";
-                cout << "School ID: " << schoolID << "\n";
-                cout << "Books Borrowed: " << booksBorrowed << "\n";
-                return;
-            }
+        const auto books = lib.search({InventoryItem::BorrowerID}, {userID});
+        if (books.size() != 0) {
+            term.printTable(books, "Type", "Name", "Author", "Publisher", "Borrower ID");
         }
-
-        cout << "User not found in records.\n";
     }
 
     void showMenu() {
-        int choice;
         while (true) {
             cout << "\n--- User Menu ---\n";
             cout << "1. View Available Books\n";
             cout << "2. Search Function\n";
             cout << "3. Print User Summary\n";
             cout << "4. Logout\n";
-            cout << "Enter your choice: ";
-            cin >> choice;
+            int choice = term.promptForInput<int>("Enter your choice");
 
             switch (choice) {
             case 1:
                 cout << "Displaying available books...\n";
+                term.printTable(
+                    lib.allInventory(),
+                    "Type", "Name", "Author", "Publisher", "Borrower ID"
+                );
                 break;
-            case 2:
+            case 2: {
                 cout << "Search function not yet implemented.\n";
+                const auto res = SearchFunction().searchInventory(lib, term);
+                if (res.size() == 0) {
+                    cout << "No results found.\n";
+                    break;
+                }
+                term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
                 break;
+            }
             case 3:
                 printUserSummary();
                 break;
