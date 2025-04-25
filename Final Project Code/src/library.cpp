@@ -1,8 +1,4 @@
 #include "library.hpp"
-#include "zip_view.hpp"
-#include <fstream>
-#include <iterator>
-#include <vector>
 
 using namespace std;
 
@@ -45,8 +41,8 @@ ResultList<T> Library::searchVector(
 
     std::vector<T*> results;
     for(auto& item: vec) {
-        for(const auto& [field, value] : c9::zip(fields, values)) {
-            if(!item.matches(field, value)) {
+        for(int i = 0; i < fields.size(); ++i) {
+            if(!item.matches(fields[i], values[i])) {
                 goto end;
             }
         }
