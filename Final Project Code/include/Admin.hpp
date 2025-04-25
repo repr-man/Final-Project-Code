@@ -36,7 +36,14 @@ public:
             cout << "7. Return Book\n";
             cout << "8. Logout\n";
             cout << "Enter your choice: ";
-            cin >> choice;
+            if (!(cin >> choice)) {
+                cin.clear(); // Clear error state
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Flush buffer
+                cout << "Invalid input. Please enter a number.\n";
+                continue; // Prompt again
+            }
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear newline after valid input
 
             switch (choice) {
             case 1: 

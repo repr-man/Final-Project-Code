@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <string_view>
 #include <vector>
-
 #include "inventoryitem.hpp"
 #include "history.hpp"
 #include "librarian.hpp"
