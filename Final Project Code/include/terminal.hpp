@@ -177,7 +177,7 @@ public:
                 std::cout << std::endl;
                 Main::safeExit();
             } else if(std::cin.fail() || str.fail()) {
-                std::cout << "Invalid input.  Please try again." << std::endl;
+                std::cout << "Invalid input.  Please try again: ";
                 str.clear();
                 str.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             } else
