@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <filesystem>
+#include <ranges>
 #include <string_view>
 #include <vector>
 #include "inventoryitem.hpp"
