@@ -1,4 +1,5 @@
 #pragma once
+#include "user.hpp"
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -19,7 +20,7 @@ public:
     RegisterUser() {}
 
     static int generateNextLibraryID() {
-        ifstream inFile("Final Project Code/data/users.txt");
+        ifstream inFile(User::SaveFileLocation);
         string line;
         int userCount = 0;
 
@@ -72,10 +73,10 @@ public:
         cout << "School ID: " << schoolID << "\n";
     }
 
-    void saveToFile(const string& filename = "Final Project Code/data/users.txt") const {
-        ofstream outFile(filename, ios::app); // append mode
+    void saveToFile() const {
+        ofstream outFile(User::SaveFileLocation, ios::app); // append mode
         if (!outFile) {
-            cerr << "Error: Could not open " << filename << " for writing.\n";
+            cerr << "Error: Could not open " << User::SaveFileLocation << " for writing.\n";
             return;
         }
 

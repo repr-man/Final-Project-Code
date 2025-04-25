@@ -18,7 +18,7 @@ class Library {
     std::vector<Librarian> librarians{};
 
     /// Reads the entire contents of a file into a buffer.
-    static std::string readFile(const std::string& filename);
+    static std::string readFile(const std::filesystem::path& filename);
 
     /// Creates a view of `std::string_view`s that are split by a delimiter.
     static auto splitBy(const std::string_view text, const char delimiter);
@@ -30,6 +30,14 @@ class Library {
         std::vector<std::string>& values,
         std::vector<T>& vec
     );
+
+    template <typename T> requires LibraryStorageType<T>
+    void remove(T* item);
+
+    friend class ResultList<InventoryItem>;
+    friend class ResultList<User>;
+    friend class ResultList<HistoryItem>;
+    friend class ResultList<Librarian>;
 
 public:
 	Library();
@@ -63,7 +71,8 @@ public:
 
     /// Returns a list of all the inventory items in the library.
     ResultList<InventoryItem> allInventory() {
-        auto vec = std::vector<InventoryItem*>(inventory.size());
+        auto vec = std::vector<InventoryItem*>();
+        vec.reserve(inventory.size());
         for(int i = 0; i < inventory.size(); ++i) {
             vec.push_back(&inventory[i]);
         }
@@ -72,11 +81,6 @@ public:
 
     // to add an inventory item
     void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
-
-    // to delete an inventory item
-    const std::vector<InventoryItem>& getInventory() const;
-    void removeInventory(size_t index);
-
 
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
