@@ -164,33 +164,28 @@ private:
             break;
         }
         case 2: {
-            const auto& items = lib.getInventory();
-
-            if (items.empty()) {
+            auto items = lib.allInventory();
+            if (items.size() == 0) {
                 cout << "No items in inventory to delete.\n";
                 break;
             }
 
             cout << "\n--- Current Inventory ---\n";
-            for (size_t i = 0; i < items.size(); ++i) {
-                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n"; // You can customize this
-            }
+            term.printTable(items, "Type", "Name", "Author", "Publisher", "Borrower ID");
 
-            int delIndex;
-            cout << "Enter the number of the item to delete (0 to cancel): ";
-            while (!(cin >> delIndex) || delIndex < 0 || delIndex > static_cast<int>(items.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid item number: ";
+            int delIndex = term.promptForInput<int>(
+                "Enter the number of the item to delete (0 to cancel)"
+            );
+            while (delIndex < 0 || delIndex > items.size()) {
+                delIndex = term.promptForInput<int>("Invalid choice. Enter a valid item number");
             }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
             if (delIndex == 0) {
                 cout << "Delete cancelled.\n";
                 break;
             }
 
-            lib.removeInventory(delIndex - 1);
+            items.remove(delIndex - 1);
             cout << "Item deleted successfully.\n";
             break;
         }
