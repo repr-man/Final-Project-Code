@@ -7,9 +7,8 @@
 using namespace std;
 
 /// Reads the entire contents of a file into a buffer.
-std::string Library::readFile(const std::string& filename) {
-    auto path = std::filesystem::current_path().append(filename);
-    std::ifstream file = std::ifstream(path);
+std::string Library::readFile(const std::filesystem::path& filename) {
+    std::ifstream file = std::ifstream(filename);
     return std::string(
         std::istreambuf_iterator<char>(file),
         std::istreambuf_iterator<char>()
