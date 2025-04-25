@@ -57,7 +57,7 @@ ResultList<T> Library::searchVector(
 }
 
 Library::Library() {
-    auto bookFileText = readFile("Final Project Code/data/book.txt");
+    auto bookFileText = readFile(InventoryItem::SaveFileLocation);
     for(auto line : splitBy(bookFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -70,7 +70,7 @@ Library::Library() {
         ));
     }
 
-    auto usersFileText = readFile("Final Project Code/data/users.txt");
+    auto usersFileText = readFile(User::SaveFileLocation);
     for(auto line : splitBy(usersFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -88,7 +88,7 @@ Library::Library() {
         ));
     }
 
-    auto historyFileText = readFile("Final Project Code/data/history.txt");
+    auto historyFileText = readFile(HistoryItem::SaveFileLocation);
     for(auto line : splitBy(historyFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -98,7 +98,7 @@ Library::Library() {
         ));
     }
 
-    auto librariansFileText = readFile("Final Project Code/data/librarians.txt");
+    auto librariansFileText = readFile(Librarian::SaveFileLocation);
     for(auto line : splitBy(librariansFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();

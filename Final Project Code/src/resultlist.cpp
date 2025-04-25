@@ -32,4 +32,5 @@ int ResultList<T>::size() const {
 
 template class ResultList<InventoryItem>;
 template class ResultList<User>;
+template class ResultList<HistoryItem>;
 template class ResultList<Librarian>;
