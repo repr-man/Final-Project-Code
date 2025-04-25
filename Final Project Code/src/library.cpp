@@ -156,7 +156,7 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
         std::stoi(borrowerID)
     );
     inventory.push_back(newItem);
-
+    flushVector<InventoryItem>();
 }
 
 template <typename T> requires LibraryStorageType<T>
