@@ -20,15 +20,7 @@ void Main::main() try {
     while (true) {
         cout << "\nLibrary Management System\n";
         cout << "1. Register New User\n2. Admin Login\n3. User Login\n4. Exit\n";
-        cout << "Enter your choice: ";
-        if (!(cin >> choice)) {
-            cin.clear(); // Clear error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Flush buffer
-            cout << "Invalid input. Please enter a number.\n";
-            continue; // Prompt again
-        }
-
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear newline after valid input
+        choice = term.promptForInput<int>("Enter your choice");
 
         switch (choice) {
             case 1: {// register new users
