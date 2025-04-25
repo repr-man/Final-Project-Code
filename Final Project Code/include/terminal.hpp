@@ -243,7 +243,7 @@ public:
 
             if(adjustedWidth > terminalWidth) {
                 std::cout << "Your terminal window is too small to display the table." << std::endl;
-                exit(-1);
+                Main::safeExit();
             }
         }
 
