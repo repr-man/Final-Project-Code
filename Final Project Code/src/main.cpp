@@ -62,7 +62,7 @@ void Main::main() try {
             }//end of case 2
 
             case 3: { // User Login using User ID
-                UserLogin::attemptLogin();
+                UserLogin::attemptLogin(lib, term);
                 break;
             }// end of case 3
 
