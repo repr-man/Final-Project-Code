@@ -9,6 +9,7 @@
 #include "SearchFunction.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
+#include "user.hpp"
 
 
 using namespace std;
@@ -113,7 +114,7 @@ public:
     }
 private: 
     int generateNextLibraryID() {
-        ifstream inFile("data/users.txt");
+        ifstream inFile(User::SaveFileLocation);
         string line;
         int userCount = 0;
 
