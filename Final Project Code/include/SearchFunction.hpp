@@ -78,36 +78,28 @@ public:
                 using enum User::FieldTag;
                 switch (category) {
                     case ID:
-                        cout << "\nEnter User ID:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter User ID"));
                         break;
                     case First:
-                        cout << "\nEnter First Name:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter First Name"));
                         break;
                     case Last:
-                        cout << "\nEnter Last Name:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Last Name"));
                         break;
                     case Role:
-                        cout << "\nEnter Role:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Role"));
                         break;
                     case Address:
-                        cout << "\nEnter Address:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Address"));
                         break;
                     case Phone:
-                        cout << "\nEnter Phone Number:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Phone Number"));
                         break;
                     case Email:
-                        cout << "\nEnter Email:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Email"));
                         break;
                     case InstitutionID:
-                        cout << "\nEnter Institution ID:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Institution ID"));
                         break;
                     default:
                         UNREACHABLE;
@@ -171,24 +163,19 @@ public:
                 using enum InventoryItem::FieldTag;
                 switch (category) {
                     case Type:
-                        cout << "\nEnter Type:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Type"));
                         break;
                     case Name:
-                        cout << "\nEnter Name:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Name"));
                         break;
                     case Author:
-                        cout << "\nEnter Author:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Author"));
                         break;
                     case Publisher:
-                        cout << "\nEnter Publisher:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Publisher"));
                         break;
                     case BorrowerID:
-                        cout << "\nEnter Borrower ID:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        queries.push_back(term.promptForInput<string>("Enter Borrower ID"));
                         break;
                     default:
                         UNREACHABLE;
