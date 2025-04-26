@@ -33,4 +33,3 @@ std::array<std::string, 3> Librarian::providePrintableData() const {
         password
     };
 }
-
