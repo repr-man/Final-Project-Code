@@ -77,4 +77,3 @@ std::array<std::string, 10> User::providePrintableData() const {
         std::to_string(numCheckedOut)
     };
 }
-
