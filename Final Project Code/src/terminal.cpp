@@ -7,7 +7,7 @@ void Terminal::printOptions(
     std::cout << '\n' << prompt << '\n';
     int i = 1;
     for(auto option : options) {
-        std::cout << "    " << i << ". " << option << '\n';
+        std::cout << i << ". " << option << '\n';
         ++i;
     }
     std::cout << std::endl;
