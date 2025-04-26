@@ -1,11 +1,53 @@
 #pragma once
 
 #include <cctype>
+#include <filesystem>
 #include <ranges>
 #include <string>
 #include <string_view>
 
 constexpr std::string_view validateIdentity(std::string_view str) {
+    return "";
+}
+
+template <int lo, int hi>
+constexpr std::string_view validateNumRange(std::string_view str) {
+    int val = std::stoi(std::string(str));
+    if (val < lo || val > hi) {
+        constexpr static auto low = std::to_string(lo);
+        constexpr static auto high = std::to_string(hi);
+        constexpr static auto res = "Input must be a number in range [" + low + "-" + high + "].";
+        return res;
+    }
+}
+
+constexpr std::string_view validateLibraryID(std::string_view str) {
+    if (str.size() < 10) {
+        return "Library ID must be at least 10 digits.";
+    } else if (str.size() > 10) {
+        return "Library ID must be at most 10 digits.";
+    }
+    for (auto c : str) {
+        if (!std::isdigit(c)) {
+            return "Library ID must be 10 numbers (0-9).";
+        }
+    }
+    return "";
+}
+
+constexpr std::string_view validateRole(std::string_view role) {
+    if (role != "student" && role != "faculty" && role != "staff") {
+        return "Role must be one of: 'student', 'faculty', 'staff'.";
+    }
+    return "";
+}
+
+constexpr std::string_view validateInstitutionID(std::string_view str) {
+    for (auto c : str) {
+        if (!std::isdigit(c)) {
+            return "Institution ID must be a number.";
+        }
+    }
     return "";
 }
 
