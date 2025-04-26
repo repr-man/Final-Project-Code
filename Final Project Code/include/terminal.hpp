@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <initializer_list>
 #include <iomanip>
 #include <ios>
@@ -16,11 +17,10 @@
 #include <utility>
 #include <vector>
 
-#include "email.hpp"
 #include "main.hpp"
-#include "phone.hpp"
 #include "printable.hpp"
 #include "resultlist.hpp"
+#include "validators.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -108,15 +108,6 @@ class Terminal {
     /// Implements the fade effect on overly large cell content.
     void trimAndRecolor(std::string& str, int width) const;
 
-    class InvalidInput {
-        std::string_view msg;
-    public:
-        InvalidInput(std::string_view msg) : msg(msg) {}
-    };
-
-    friend Email::Email(std::string&&);
-    friend Phone::Phone(std::string&&);
-
 public:
     Terminal() {
         #ifdef _WIN32
@@ -157,15 +148,22 @@ public:
     /// ```
     /// It will automatically loop until the user enters a valid value of the
     /// appropriate type.
-    template <typename T>
+    template <typename T, auto validator = validateIdentity>
     T promptForInput() const {
         T input;
 
         while(true) {
-            //std::cout << promptArrow;
             std::string buf;
             std::cin >> std::ws;
             std::getline(std::cin, buf);
+
+            auto stuff = validator(buf);
+            if(stuff.size() > 0) {
+                printError(stuff);
+                std::cout << "Please try again: ";
+                continue;
+            }
+
             auto str = std::stringstream(buf);
             if constexpr (std::is_same_v<T, std::string>) {
                 input = std::string(buf);
@@ -187,10 +185,10 @@ public:
 
     /// Same as `promptForInput` but prints a prompt text first.  Helps maintain
     /// stylistic consistency throughout the application.
-    template <typename T>
+    template <typename T, auto validator = validateIdentity>
     T promptForInput(std::string_view prompt) const {
         std::cout << prompt << ": ";
-        return promptForInput<T>();
+        return promptForInput<T, validator>();
     }
 
     void printOptions(
