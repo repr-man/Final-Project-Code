@@ -26,20 +26,24 @@ public:
                 "Email",
                 "Institution ID"
             });
-            auto rawCategories = term.promptForInput<string>(
+            auto rawCategories = term.promptForInput<
+                vector<int>,
+                validateNumRange<1, 8>
+            >(
                 "Enter space-separated list of search categories"
             );
-            auto catStream = stringstream(rawCategories);
+            //auto catStream = stringstream(rawCategories);
             vector<User::FieldTag> categories;
-            int category;
-            while (true) {
-                using enum User::FieldTag;
-                if (!(catStream >> category)) {
-                    if (catStream.eof()) { break; }
-                    term.printError("Invalid non-integer category. Please try again.");
-                    goto retry;
-                }
+            //int category;
+            //while (true) {
+            //    if (!(catStream >> category)) {
+            //        if (catStream.eof()) { break; }
+            //        term.printError("Invalid non-integer category. Please try again.");
+            //        goto retry;
+            //    }
+            for (auto& category : rawCategories) {
                 switch (category) {
+                    using enum User::FieldTag;
                     case 1:
                         categories.push_back(ID);
                         break;
@@ -76,35 +80,39 @@ public:
 
             vector<string> queries;
             for (auto& category : categories) {
-                using enum User::FieldTag;
+                std::string res;
                 switch (category) {
+                    using enum User::FieldTag;
                     case ID:
-                        queries.push_back(term.promptForInput<string>("Enter User ID"));
+                        res = term.promptForInput<string, validateLibraryID>("Enter User ID");
                         break;
                     case First:
-                        queries.push_back(term.promptForInput<string>("Enter First Name"));
+                        res = term.promptForInput<string>("Enter First Name");
                         break;
                     case Last:
-                        queries.push_back(term.promptForInput<string>("Enter Last Name"));
+                        res = term.promptForInput<string>("Enter Last Name");
                         break;
                     case Role:
-                        queries.push_back(term.promptForInput<string>("Enter Role"));
+                        res = term.promptForInput<string, validateRole>("Enter Role");
                         break;
                     case Address:
-                        queries.push_back(term.promptForInput<string>("Enter Address"));
+                        res = term.promptForInput<string>("Enter Address");
                         break;
                     case Phone:
-                        queries.push_back(term.promptForInput<string>("Enter Phone Number"));
+                        res = term.promptForInput<string, validatePhone>("Enter Phone Number");
                         break;
                     case Email:
-                        queries.push_back(term.promptForInput<string, validateEmail>("Enter Email"));
+                        res = term.promptForInput<string, validateEmail>("Enter Email");
                         break;
                     case InstitutionID:
-                        queries.push_back(term.promptForInput<string>("Enter Institution ID"));
+                        res = term.promptForInput<string, validateInstitutionID>(
+                            "Enter Institution ID"
+                        );
                         break;
                     default:
                         UNREACHABLE;
                 }
+                queries.push_back(std::move(res));
             }
 
             return lib.search(categories, std::move(queries));
@@ -127,13 +135,13 @@ public:
             vector<InventoryItem::FieldTag> categories;
             int category;
             while (true) {
-                using enum InventoryItem::FieldTag;
                 if (!(catStream >> category)) {
                     if (catStream.eof()) { break; }
                     term.printError("Invalid non-integer category. Please try again.");
                     goto retry;
                 }
                 switch (category) {
+                    using enum InventoryItem::FieldTag;
                     case 1:
                         categories.push_back(Type);
                         break;
@@ -161,26 +169,30 @@ public:
 
             vector<string> queries;
             for (auto& category : categories) {
-                using enum InventoryItem::FieldTag;
+                std::string res;
                 switch (category) {
+                    using enum InventoryItem::FieldTag;
                     case Type:
-                        queries.push_back(term.promptForInput<string>("Enter Type"));
+                        res = term.promptForInput<string>("Enter Type");
                         break;
                     case Name:
-                        queries.push_back(term.promptForInput<string>("Enter Name"));
+                        res = term.promptForInput<string>("Enter Name");
                         break;
                     case Author:
-                        queries.push_back(term.promptForInput<string>("Enter Author"));
+                        res = term.promptForInput<string>("Enter Author");
                         break;
                     case Publisher:
-                        queries.push_back(term.promptForInput<string>("Enter Publisher"));
+                        res = term.promptForInput<string>("Enter Publisher");
                         break;
                     case BorrowerID:
-                        queries.push_back(term.promptForInput<string>("Enter Borrower ID"));
+                        res = term.promptForInput<string, validateLibraryID>(
+                            "Enter Borrower ID"
+                        );
                         break;
                     default:
                         UNREACHABLE;
                 }
+                queries.push_back(std::move(res));
             }
             return lib.search(categories, std::move(queries));
         }
