@@ -10,6 +10,7 @@ public:
     std::string type, name, author, publisher;
     int borrowerID;
     
+
     static constexpr int Offset = 0;
     inline static const auto SaveFileLocation
         = std::filesystem::current_path().filename() == "Final-Project-Code"

@@ -145,7 +145,6 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
-// to add inventory
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     InventoryItem newItem(
         std::move(type),
@@ -155,7 +154,6 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
         std::stoi(borrowerID)
     );
     inventory.push_back(newItem);
-    flushVector<InventoryItem>();
 }
 
 template <typename T> requires LibraryStorageType<T>
