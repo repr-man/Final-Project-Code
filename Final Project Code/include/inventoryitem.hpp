@@ -10,7 +10,6 @@ public:
     std::string type, name, author, publisher;
     int borrowerID;
     
-    // I added this for the deleting inventory items section
     std::string getName() const { return name; }
     std::string getAuthor() const { return author; }
 
