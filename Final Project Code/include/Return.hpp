@@ -9,11 +9,9 @@
 #include <iomanip>
 #include <vector>
 
-#include "inventoryitem.hpp"
 #include "terminal.hpp"
 
 #include "library.hpp"
-#include "user.hpp"
 
 using namespace std;
 /* When a user returns a book subtract one to the borrowedbooks count */
@@ -24,7 +22,7 @@ public:
         cout << "Enter User Name (First and Last): ";
         username = term.promptForInput<string>();
 
-        ifstream userFile(User::SaveFileLocation);
+        ifstream userFile("data/users.txt");
         if (!userFile) {
             cout << "Could not open users.txt\n";
             return;
@@ -78,7 +76,7 @@ public:
         cout << "Enter the title of the book to return: ";
         bookTitle = term.promptForInput<string>();
 
-        ifstream booksFile(InventoryItem::SaveFileLocation);
+        ifstream booksFile("data/book.txt");
         if (!booksFile) {
             cout << "Could not open book.txt\n";
             return;
@@ -122,7 +120,7 @@ public:
         }
 
         // Rewrite book file
-        ofstream outFile(InventoryItem::SaveFileLocation);
+        ofstream outFile("data/book.txt");
         for (const string& line : bookLines) {
             outFile << line << "\n";
         }
@@ -149,7 +147,7 @@ public:
                 phone + ";" + email + ";" + password + ";" + schoolID + ";" + to_string(booksBorrowed);
         }
 
-        ofstream outUsers(User::SaveFileLocation);
+        ofstream outUsers("data/users.txt");
         for (const string& updatedUser : userLines) {
             outUsers << updatedUser << "\n";
         }
