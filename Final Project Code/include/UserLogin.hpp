@@ -1,5 +1,6 @@
 #pragma once
 
+#include "user.hpp"
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -26,7 +27,7 @@ public:
         cout << "Enter your password: ";
         getline(cin >> ws, inputPassword);
 
-        ifstream userFile("data/users.txt");
+        ifstream userFile(User::SaveFileLocation);
         if (!userFile) {
             cerr << "Error: Could not open users.txt.\n";
             return;
@@ -67,7 +68,7 @@ public:
     }
 
     void printUserSummary() {
-        ifstream userFile("data/users.txt");
+        ifstream userFile(User::SaveFileLocation);
         if (!userFile) {
             cout << "Could not open users.txt\n";
             return;

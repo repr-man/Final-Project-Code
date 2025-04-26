@@ -2,8 +2,6 @@
 
 using namespace std;
 
-
-
 InventoryItem::InventoryItem(
     std::string&& type,
     std::string&& name,
@@ -49,4 +47,3 @@ std::array<std::string, 5> InventoryItem::providePrintableData() const {
         std::to_string(borrowerID)
     };
 }
-
