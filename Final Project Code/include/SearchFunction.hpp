@@ -8,6 +8,7 @@
 #include "terminal.hpp"
 #include "user.hpp"
 #include "util.hpp"
+#include "validators.hpp"
 
 using namespace std;
 
@@ -96,7 +97,7 @@ public:
                         queries.push_back(term.promptForInput<string>("Enter Phone Number"));
                         break;
                     case Email:
-                        queries.push_back(term.promptForInput<string>("Enter Email"));
+                        queries.push_back(term.promptForInput<string, validateEmail>("Enter Email"));
                         break;
                     case InstitutionID:
                         queries.push_back(term.promptForInput<string>("Enter Institution ID"));
