@@ -9,11 +9,9 @@ class Librarian : public Printable<3> {
 public:
     std::string first, last, password;
 
-    static constexpr int Offset = 3;
+    static constexpr int Offset = 2;
     inline static const auto SaveFileLocation
-        = std::filesystem::current_path().filename() == "Final-Project-Code"
-        ? std::filesystem::current_path() / "Final Project Code" / "data" / "librarians.txt"
-        : std::filesystem::current_path() / "data" / "librarians.txt";
+        = std::filesystem::path(Printable<3>::SaveFileLocation) / "librarians.txt";
 
     enum class FieldTag {
         First,

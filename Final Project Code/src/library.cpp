@@ -1,14 +1,13 @@
 #include "library.hpp"
 #include "zip_view.hpp"
 #include <fstream>
-#include <iterator>
-#include <vector>
 
 using namespace std;
 
 /// Reads the entire contents of a file into a buffer.
-std::string Library::readFile(const std::filesystem::path& filename) {
-    std::ifstream file = std::ifstream(filename);
+std::string Library::readFile(const std::string& filename) {
+    auto path = std::filesystem::current_path().append(filename);
+    std::ifstream file = std::ifstream(path);
     return std::string(
         std::istreambuf_iterator<char>(file),
         std::istreambuf_iterator<char>()
@@ -58,7 +57,7 @@ ResultList<T> Library::searchVector(
 }
 
 Library::Library() {
-    auto bookFileText = readFile(InventoryItem::SaveFileLocation);
+    auto bookFileText = readFile("Final Project Code/data/book.txt");
     for(auto line : splitBy(bookFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -71,7 +70,7 @@ Library::Library() {
         ));
     }
 
-    auto usersFileText = readFile(User::SaveFileLocation);
+    auto usersFileText = readFile("Final Project Code/data/users.txt");
     for(auto line : splitBy(usersFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -89,7 +88,7 @@ Library::Library() {
         ));
     }
 
-    auto historyFileText = readFile(HistoryItem::SaveFileLocation);
+    auto historyFileText = readFile("Final Project Code/data/history.txt");
     for(auto line : splitBy(historyFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -99,7 +98,7 @@ Library::Library() {
         ));
     }
 
-    auto librariansFileText = readFile(Librarian::SaveFileLocation);
+    auto librariansFileText = readFile("Final Project Code/data/librarians.txt");
     for(auto line : splitBy(librariansFileText, '\n')) {
         auto segments = splitBy(line, ';');
         auto it = segments.begin();
@@ -147,27 +146,24 @@ ResultList<Librarian> Library::search(
 
 // to add inventory
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
-    InventoryItem newItem(
-        std::move(type),
-        std::move(name),
-        std::move(author),
-        std::move(publisher),
-        std::stoi(borrowerID)
-    );
+    InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
+
 }
 
-template <typename T> requires LibraryStorageType<T>
-void Library::remove(T* item) {
-    auto vec = (std::vector<T>*)(this) + T::Offset;
-    int idx = item - &*vec->cbegin();
-    vec->erase(vec->begin() + idx);
+const std::vector<InventoryItem>& Library::getInventory() const {
+    return inventory;
 }
 
-template void Library::remove<InventoryItem>(InventoryItem* item);
-template void Library::remove<User>(User* item);
-template void Library::remove<HistoryItem>(HistoryItem* item);
-template void Library::remove<Librarian>(Librarian* item);
+void Library::removeInventory(size_t index) {
+    if (index < inventory.size()) {
+        inventory.erase(inventory.begin() + index);
+    }
+    else {
+        std::cerr << "Invalid inventory index.\n";
+    }
+}
+
 
 
 Library::~Library() { 
@@ -181,4 +177,3 @@ void Library::flush() {
     Library::flushVector<HistoryItem>();
     Library::flushVector<Librarian>();
 }
-

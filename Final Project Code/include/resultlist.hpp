@@ -35,7 +35,5 @@ public:
 
     int size() const;
 
-    void remove(int index);
-
     friend class Library;
 };

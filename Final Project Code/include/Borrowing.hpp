@@ -7,11 +7,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "inventoryitem.hpp"
 #include "terminal.hpp"
 
 #include "library.hpp"
-#include "user.hpp"
 
 using namespace std;
 /* When a user borrows a book add one to the borrowedbooks count */
@@ -24,7 +22,7 @@ public:
         username = term.promptForInput<string>();
 
         // Read users
-        ifstream userFile(User::SaveFileLocation);
+        ifstream userFile("data/users.txt");
         if (!userFile) {
             cout << "Could not open users.txt\n";
             return;
@@ -81,7 +79,7 @@ public:
         }
 
         // Read books
-        ifstream booksFile(InventoryItem::SaveFileLocation);
+        ifstream booksFile("data/book.txt");
         if (!booksFile) {
             cout << "Could not open book.txt\n";
             return;
@@ -123,7 +121,7 @@ public:
         }
 
         // Write updated books
-        ofstream outBooks(InventoryItem::SaveFileLocation);
+        ofstream outBooks("data/book.txt");
         for (const string& updatedLine : bookLines) {
             outBooks << updatedLine << "\n";
         }
@@ -150,7 +148,7 @@ public:
         }
 
         // Write updated users
-        ofstream outUsers(User::SaveFileLocation);
+        ofstream outUsers("data/users.txt");
         for (const string& updatedUser : userLines) {
             outUsers << updatedUser << "\n";
         }

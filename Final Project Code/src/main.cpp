@@ -35,29 +35,56 @@ void Main::main() try {
                 int nextID = RegisterUser::generateNextLibraryID(); 
                 RegisterUser newUser;
                 newUser.promptUserData(nextID);
-                newUser.saveToFile();
+                newUser.saveToFile("data/users.txt");
                 newUser.printSummary();
                 break;
             }//end of case 1
 
             case 2:  {  // Admin login (librarian) 
                 cout << "\n--- Admin Login ---\n";
-                string inputFirst = term.promptForInput<string>("Enter admin first name");
-                string inputLast = term.promptForInput<string>("Enter admin last name");
-                string inputPass = term.promptForInput<string>("Enter admin password");
+                string inputFirst, inputLast, inputPass;
+                cout << "Enter admin first name: ";
+                getline(cin >> ws, inputFirst);
 
-                auto res = lib.search(
-                    {Librarian::First, Librarian::Last, Librarian::Password},
-                    {inputFirst, inputLast, inputPass}
-                );
-                if (res.size() == 0) {
-                    cout << "Invalid admin credentials.\n";
-                    continue;
+                cout << "Enter admin last name: ";
+                getline(cin >> ws, inputLast);
+
+                cout << "Enter admin password: ";
+                getline(cin >> ws, inputPass);
+
+                ifstream adminFile("data/librarians.txt");
+                if (!adminFile) {
+                    cerr << "Failed to open librarian file. Check the path.\n";
+                    break;
                 }
 
-                cout << "Admin login successful.\n";
-                Admin admin(inputFirst + " " + inputLast, inputPass);
-                admin.showMenu(lib, term);
+                string line;
+                bool authenticated = false;
+
+                while (getline(adminFile, line)) {
+                    stringstream ss(line);
+                    string first, last, storedPass;
+
+                    getline(ss, first, ';');
+                    getline(ss, last, ';');
+                    getline(ss, storedPass);
+
+                    if (inputFirst == first && inputLast == last && inputPass == storedPass) {
+                        authenticated = true;
+                        break;
+                    }
+                }
+
+                if (authenticated) {
+                    cout << "Admin login successful.\n";
+                    string fullName = inputFirst + " " + inputLast;
+                    Admin admin(fullName, inputPass);
+                    admin.showMenu(lib, term);
+                }
+                else {
+                    cout << "Invalid admin credentials.\n";
+                }
+
                 break;
             }//end of case 2
 
