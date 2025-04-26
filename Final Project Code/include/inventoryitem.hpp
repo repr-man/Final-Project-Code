@@ -10,12 +10,12 @@ public:
     std::string type, name, author, publisher;
     int borrowerID;
     
+    std::string getName() const { return name; }
+    std::string getAuthor() const { return author; }
 
     static constexpr int Offset = 0;
     inline static const auto SaveFileLocation
-        = std::filesystem::current_path().filename() == "Final-Project-Code"
-        ? std::filesystem::current_path() / "Final Project Code" / "data" / "book.txt"
-        : std::filesystem::current_path() / "data" / "book.txt";
+        = std::filesystem::path(Printable<5>::SaveFileLocation) / "book.txt";
 
     enum class FieldTag {
         Type,
