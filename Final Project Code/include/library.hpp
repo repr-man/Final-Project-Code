@@ -79,7 +79,8 @@ public:
     const std::vector<InventoryItem>& getInventory() const;
     void removeInventory(size_t index);
 
-
+    void addHistory(long userID, std::string&& name);
+    
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
     void flushVector();
