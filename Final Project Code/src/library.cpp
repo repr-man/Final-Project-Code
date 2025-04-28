@@ -214,11 +214,6 @@ void Library::remove(T* item) {
     vec->erase(vec->begin() + idx);
 }
 
-// user managment
-void Library::addUser(User&& user) {
-    users.push_back(std::move(user));
-}
-
 void Library::removeUser(size_t index) {
     if (index < users.size()) {
         users.erase(users.begin() + index);

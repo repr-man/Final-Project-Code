@@ -45,15 +45,7 @@ public:
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear newline after valid input
 
             switch (choice) {
-<<<<<<< Updated upstream
             case 1:
-=======
-            case 1: 
-                cout << "Registering new user...";
-                registerNewUser(lib);
-                break;
-            case 2:
->>>>>>> Stashed changes
                 cout << "Editing Inventory...\n";
                 editInventory(lib, term);
                 break;
@@ -128,18 +120,13 @@ private:
         return userCount + 1;
     }
 
-<<<<<<< Updated upstream
-    /*void registerNewUser() {
-=======
     void registerNewUser(Library& lib) {
->>>>>>> Stashed changes
         int nextID = generateNextLibraryID();  
         RegisterUser newUser;
         newUser.promptUserData(nextID); 
         newUser.printSummary();
-<<<<<<< Updated upstream
-        newUser.saveToFile();
-    }*/
+        newUser.saveToFile(lib);
+    }
 
     void editUserInfo(Library& lib, Terminal& term) {
         int choice;
@@ -164,7 +151,7 @@ private:
             RegisterUser newUser;
             newUser.promptUserData(nextID);
             newUser.printSummary();
-            newUser.saveToFile("data/users.txt");
+            newUser.saveToFile(lib);
             cout << "New user registered successfully!\n";
             break;
         }
@@ -249,9 +236,6 @@ private:
         default:
             cout << "Invalid choice.\n";
         }
-=======
-        newUser.saveToFile(lib);
->>>>>>> Stashed changes
     }
 
 
