@@ -76,11 +76,23 @@ public:
     // to add an inventory item
     void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
+    // to delete an inventory item
     const std::vector<InventoryItem>& getInventory() const;
     void removeInventory(size_t index);
 
+
     void addHistory(long userID, std::string&& name);
     
+    //user management 
+    void addUser(User&& user);
+    void removeUser(size_t index);
+    void saveUsers();
+    void updateUser(size_t index,  std::string& firstName, std::string& lastName,
+         std::string& address, std::string& phone,  std::string& email);
+    const std::vector<User>& getUsers() const;
+
+
+
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
     void flushVector();

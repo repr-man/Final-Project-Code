@@ -159,6 +159,7 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
 
 }
 
+// the following two loops are for deleting inventory
 const std::vector<InventoryItem>& Library::getInventory() const {
     return inventory;
 }
@@ -182,6 +183,51 @@ void Library::remove(T* item) {
     auto vec = (std::vector<T>*)(this) + T::Offset;
     int idx = item - &*vec->cbegin();
     vec->erase(vec->begin() + idx);
+}
+
+// user managment
+void Library::addUser(User&& user) {
+    users.push_back(std::move(user));
+}
+
+void Library::removeUser(size_t index) {
+    if (index < users.size()) {
+        users.erase(users.begin() + index);
+    }
+    else {
+        std::cerr << "Invalid user index.\n";
+    }
+}
+
+void Library::saveUsers() {
+    std::ofstream outFile(User::SaveFileLocation);
+    if (!outFile) {
+        std::cerr << "Failed to open users file for saving.\n";
+        return;
+    }
+
+    for (const auto& user : Library::users) {
+        outFile << user.serialize() << '\n';
+    }
+}
+
+void Library::updateUser(size_t index, std::string& firstName, std::string& lastName, std::string& address, std::string& phone, std::string& email)
+{
+    if (index < users.size()) {
+        users[index].first = firstName;
+        users[index].last = lastName;
+        users[index].address = address;
+        users[index].phone = phone;
+        users[index].email = email;
+        saveUsers();
+    }
+    else {
+        std::cerr << "Invalid user index.\n";
+    }
+}
+
+const std::vector<User>& Library::getUsers() const {
+    return users;
 }
 
 
