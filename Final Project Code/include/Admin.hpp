@@ -62,7 +62,7 @@ public:
             case 4: {
                 cout << "Borrowing books...\n";
                 Borrowing b;
-                b.borrowBook(term);
+                b.borrowBook(lib, term);
                 break;
             }// end of case 4
             
@@ -101,7 +101,7 @@ public:
             case 7:
                 cout << "Returning books...\n";
                 Return r;
-                r.ReturnBook(term);
+                r.ReturnBook(lib, term);
                 break;
             case 8:
                 cout << "Logging out...\n";
