@@ -2,7 +2,7 @@
 
 #include <array>
 #include <string>
-
+#include <filesystem>
 #include "printable.hpp"
 
 class HistoryItem : public Printable<2> {

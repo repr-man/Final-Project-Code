@@ -110,6 +110,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,10 +136,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-        <ClInclude Include="*.hpp" />
+    <ClInclude Include="*.hpp" />
   </ItemGroup>
   <ItemGroup>
-        <ClCompile Include="src\*.cpp" />
+    <ClCompile Include="src\*.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

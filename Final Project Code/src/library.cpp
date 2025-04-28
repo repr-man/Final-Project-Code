@@ -4,13 +4,14 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
 /// Reads the entire contents of a file into a buffer.
-std::string Library::readFile(const std::string& filename) {
-    auto path = std::filesystem::current_path().append(filename);
-    std::ifstream file = std::ifstream(path);
+std::string Library::readFile(const std::filesystem::path& filename) {
+    //auto path = std::filesystem::current_path().append(filename);
+    std::ifstream file = std::ifstream(filename);
     return std::string(
         std::istreambuf_iterator<char>(file),
         std::istreambuf_iterator<char>()
@@ -55,8 +56,8 @@ ResultList<T> Library::searchVector(
 
     std::vector<T*> results;
     for(auto& item: vec) {
-        for(const auto& [field, value] : c9::zip(fields, values)) {
-            if(!item.matches(field, value)) {
+        for (int i = 0; i < fields.size();i++) {
+            if (!item.matches(fields[i], values[i])) {
                 goto end;
             }
         }

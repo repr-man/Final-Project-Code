@@ -18,7 +18,9 @@ class Library {
     std::vector<Librarian> librarians{};
 
     /// Reads the entire contents of a file into a buffer.
-    static std::string readFile(const std::string& filename);
+    //static std::string readFile(const std::string& filename);
+
+    std::string readFile(const std::filesystem::path& filename);
 
     /// Creates a view of `std::string_view`s that are split by a delimiter.
     static auto splitBy(const std::string_view text, const char delimiter);
