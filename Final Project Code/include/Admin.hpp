@@ -56,7 +56,7 @@ public:
             case 3: {
                 cout << "Borrowing books...\n";
                 Borrowing b;
-                b.borrowBook(term);
+                b.borrowBook(lib, term);
                 break;
             }// end of case 4
             
@@ -65,8 +65,7 @@ public:
                 cout << "1. User\n";
                 cout << "2. Inventory\n";
                 cout << "3. Exit\n";
-                cout << "Enter your choice: " << endl;
-                choice = term.promptForInput<int>();
+                choice = term.promptForInput<int>("Enter your choice");
                     
                 SearchFunction s;
                 switch (choice) {
@@ -96,7 +95,7 @@ public:
             case 6:
                 cout << "Returning books...\n";
                 Return r;
-                r.ReturnBook(term);
+                r.ReturnBook(lib, term);
                 break;
             case 7:
                 cout << "Logging out...\n";

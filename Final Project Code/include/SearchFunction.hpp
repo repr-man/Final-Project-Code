@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 
+#include "inventoryitem.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
 #include "user.hpp"
 #include "util.hpp"
+#include "validators.hpp"
 
 using namespace std;
 
@@ -25,20 +27,16 @@ public:
                 "Email",
                 "Institution ID"
             });
-            auto rawCategories = term.promptForInput<string>(
+            auto rawCategories = term.promptForInput<
+                vector<int>,
+                validateNumRange<1, 8>
+            >(
                 "Enter space-separated list of search categories"
             );
-            auto catStream = stringstream(rawCategories);
             vector<User::FieldTag> categories;
-            int category;
-            while (true) {
-                using enum User::FieldTag;
-                if (!(catStream >> category)) {
-                    if (catStream.eof()) { break; }
-                    term.printError("Invalid non-integer category. Please try again.");
-                    goto retry;
-                }
+            for (auto& category : rawCategories) {
                 switch (category) {
+                    using enum User::FieldTag;
                     case 1:
                         categories.push_back(ID);
                         break;
@@ -75,43 +73,39 @@ public:
 
             vector<string> queries;
             for (auto& category : categories) {
-                using enum User::FieldTag;
+                std::string res;
                 switch (category) {
+                    using enum User::FieldTag;
                     case ID:
-                        cout << "\nEnter User ID:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string, validateLibraryID>("Enter User ID");
                         break;
                     case First:
-                        cout << "\nEnter First Name:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string>("Enter First Name");
                         break;
                     case Last:
-                        cout << "\nEnter Last Name:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string>("Enter Last Name");
                         break;
                     case Role:
-                        cout << "\nEnter Role:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string, validateRole>("Enter Role");
                         break;
                     case Address:
-                        cout << "\nEnter Address:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string>("Enter Address");
                         break;
                     case Phone:
-                        cout << "\nEnter Phone Number:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string, validatePhone>("Enter Phone Number");
                         break;
                     case Email:
-                        cout << "\nEnter Email:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string, validateEmail>("Enter Email");
                         break;
                     case InstitutionID:
-                        cout << "\nEnter Institution ID:\n";
-                        queries.push_back(term.promptForInput<string>());
+                        res = term.promptForInput<string, validateInstitutionID>(
+                            "Enter Institution ID"
+                        );
                         break;
                     default:
                         UNREACHABLE;
                 }
+                queries.push_back(std::move(res));
             }
 
             return lib.search(categories, std::move(queries));
@@ -119,82 +113,47 @@ public:
     }
 
     auto searchInventory(Library& lib, Terminal& term) {
-    retry: {
-            term.printOptions("--- Search for Inventory ---", {
-                "Type",
-                "Name",
-                "Author",
-                "Publisher",
-                "Borrower ID"
-            });
-            auto rawCategories = term.promptForInput<string>(
+        term.printOptions("--- Search for Inventory ---", {
+            "Type",
+            "Name",
+            "Author",
+            "Publisher",
+            "Borrower ID"
+        });
+        auto categories = term.promptForInput<
+            std::vector<InventoryItem::FieldTag>,
+            validateNumRange<1, 5>
+            >(
                 "Enter space-separated list of search categories"
             );
-            auto catStream = stringstream(rawCategories);
-            vector<InventoryItem::FieldTag> categories;
-            int category;
-            while (true) {
-                using enum InventoryItem::FieldTag;
-                if (!(catStream >> category)) {
-                    if (catStream.eof()) { break; }
-                    term.printError("Invalid non-integer category. Please try again.");
-                    goto retry;
-                }
-                switch (category) {
-                    case 1:
-                        categories.push_back(Type);
-                        break;
-                    case 2:
-                        categories.push_back(Name);
-                        break;
-                    case 3:
-                        categories.push_back(Author);
-                        break;
-                    case 4:
-                        categories.push_back(Publisher);
-                        break;
-                    case 5:
-                        categories.push_back(BorrowerID);
-                        break;
-                    default:
-                        term.printError(
-                            "Invalid search category '"s
-                            + to_string(category)
-                            + "'. Please try again."
-                        );
-                        goto retry;
-                }
-            }
 
-            vector<string> queries;
-            for (auto& category : categories) {
+        vector<string> queries;
+        for (auto& category : categories) {
+            std::string res;
+            switch (category) {
                 using enum InventoryItem::FieldTag;
-                switch (category) {
-                    case Type:
-                        cout << "\nEnter Type:\n";
-                        queries.push_back(term.promptForInput<string>());
-                        break;
-                    case Name:
-                        cout << "\nEnter Name:\n";
-                        queries.push_back(term.promptForInput<string>());
-                        break;
-                    case Author:
-                        cout << "\nEnter Author:\n";
-                        queries.push_back(term.promptForInput<string>());
-                        break;
-                    case Publisher:
-                        cout << "\nEnter Publisher:\n";
-                        queries.push_back(term.promptForInput<string>());
-                        break;
-                    case BorrowerID:
-                        cout << "\nEnter Borrower ID:\n";
-                        queries.push_back(term.promptForInput<string>());
-                        break;
-                    default:
-                        UNREACHABLE;
-                }
+                case Type:
+                    res = term.promptForInput<string>("Enter Type");
+                    break;
+                case Name:
+                    res = term.promptForInput<string>("Enter Name");
+                    break;
+                case Author:
+                    res = term.promptForInput<string>("Enter Author");
+                    break;
+                case Publisher:
+                    res = term.promptForInput<string>("Enter Publisher");
+                    break;
+                case BorrowerID:
+                    res = term.promptForInput<string, validateLibraryID>(
+                        "Enter Borrower ID"
+                    );
+                    break;
+                default:
+                    UNREACHABLE;
             }
-            return lib.search(categories, std::move(queries));
+            queries.push_back(std::move(res));
         }
+        return lib.search(categories, std::move(queries));
     }
 };

@@ -7,7 +7,7 @@ void Terminal::printOptions(
     std::cout << '\n' << prompt << '\n';
     int i = 1;
     for(auto option : options) {
-        std::cout << "    " << i << ". " << option << '\n';
+        std::cout << i << ". " << option << '\n';
         ++i;
     }
     std::cout << std::endl;
@@ -48,3 +48,11 @@ void Terminal::trimAndRecolor(std::string& str, int width) const {
         str.append(reset);
     }
 }
+
+//template std::vector<int> Terminal::promptForInput<std::vector<int>, validateNumRange<1, 8>>() const;
+//template std::string Terminal::promptForInput<std::string, validateIdentity>() const;
+//template std::string Terminal::promptForInput<std::string, validateLibraryID>() const;
+//template std::string Terminal::promptForInput<std::string, validateRole>() const;
+//template std::string Terminal::promptForInput<std::string, validateInstitutionID>() const;
+//template std::string Terminal::promptForInput<std::string, validatePhone>() const;
+//template std::string Terminal::promptForInput<std::string, validateEmail>() const;

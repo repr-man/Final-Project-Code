@@ -1,11 +1,64 @@
-#include "email.hpp"
-#include "terminal.hpp"
-
+#include "validators.hpp"
+#include <cctype>
 #include <ranges>
 #include <string>
-#include <string_view>
 
-int Email::eatIPv4Segment(std::string_view str) {
+const std::string validateIdentity(std::string_view str) {
+    return "";
+}
+
+const std::string validateLibraryID(std::string_view str) {
+    if (str.size() < 10) {
+        return "Library ID must be at least 10 digits.";
+    } else if (str.size() > 10) {
+        return "Library ID must be at most 10 digits.";
+    }
+    for (auto c : str) {
+        if (!std::isdigit(c)) {
+            return "Library ID must be 10 numbers (0-9).";
+        }
+    }
+    return "";
+}
+
+const std::string validateRole(std::string_view role) {
+    if (role != "student" && role != "faculty" && role != "staff") {
+        return "Role must be one of: 'student', 'faculty', 'staff'.";
+    }
+    return "";
+}
+
+const std::string validateInstitutionID(std::string_view str) {
+    for (auto c : str) {
+        if (!std::isdigit(c)) {
+            return "Institution ID must be a number.";
+        }
+    }
+    return "";
+}
+
+const std::string validatePhone(std::string value) {
+    if (
+        value.size() != 12
+        || !std::isdigit(value[0])
+        || !std::isdigit(value[1])
+        || !std::isdigit(value[2])
+        ||  value[3] != '-'
+        || !std::isdigit(value[4])
+        || !std::isdigit(value[5])
+        || !std::isdigit(value[6])
+        ||  value[7] != '-'
+        || !std::isdigit(value[8])
+        || !std::isdigit(value[9])
+        || !std::isdigit(value[10])
+        || !std::isdigit(value[11])
+    ) {
+        return "Phone number does not have the format '###-###-####'.";
+    }
+    return "";
+}
+
+constexpr int eatIPv4Segment(std::string_view str) {
     for (int i = 0; i < 3; ++i) {
         if (str[i] == '.') {
             return i;
@@ -16,10 +69,10 @@ int Email::eatIPv4Segment(std::string_view str) {
     return 3;
 }
 
-Email::Email(std::string&& e) : email(e) {
-    auto em = std::string_view(email);
+const std::string validateEmail(std::string_view e) {
+    auto em = e;
     if (em.size() == 0) {
-        throw Terminal::InvalidInput("Email must not be empty.");
+        return "Email must not be empty.";
     }
 
     auto sectionPos = 0;
@@ -29,7 +82,7 @@ Email::Email(std::string&& e) : email(e) {
     if (em[sectionPos] == '(') {
         auto pos = em.find(')');
         if (pos == std::string_view::npos) {
-            throw Terminal::InvalidInput("Email comment must be enclosed in parentheses.");
+            return "Email comment must be enclosed in parentheses.";
         }
         hasComment = true;
         sectionPos = pos + 1;
@@ -41,9 +94,9 @@ Email::Email(std::string&& e) : email(e) {
         auto pos = em.find('"', 1);
         do {
             if (pos == std::string_view::npos) {
-                throw Terminal::InvalidInput("Email local-part must be enclosed in quotes.");
+                return "Email local-part must be enclosed in quotes.";
             } else if (pos == 1) {
-                throw Terminal::InvalidInput("Email local-part must not be empty.");
+                return "Email local-part must not be empty.";
             } else if (em[pos - 1] == '\\') {
                 // Count the number of backslashes preceding the quote.
                 auto count = 1;
@@ -61,10 +114,11 @@ Email::Email(std::string&& e) : email(e) {
         sectionPos = pos + 1;
     } else {
         if (em[sectionPos] == '.') {
-            throw Terminal::InvalidInput("Email local-part must not start with a period.");
+            return "Email local-part must not start with a period.";
         }
         bool sawPeriod = false;
-        for (int i = sectionPos; i < em.size(); ++i) {
+        bool done = false;
+        for (int i = sectionPos; i < em.size() && !done; ++i) {
             switch (em[i]) {
                 case '!':
                 case '#':
@@ -104,61 +158,57 @@ Email::Email(std::string&& e) : email(e) {
                 case '(':
                 case '@':
                     if (sawPeriod) {
-                        throw Terminal::InvalidInput(
-                            "Email local-part may not end with a period."
-                        );
+                        return "Email local-part may not end with a period.";
                     }
                     sectionPos = i;
-                    goto doneLocalPart;
+                    done = true;
+                    break;
                 case '.':
                     if (sawPeriod) {
-                        throw Terminal::InvalidInput(
-                            "Email local-part may not contain multiple consecutive periods."
-                        );
+                        return "Email local-part may not contain multiple consecutive periods.";
                     }
                     sawPeriod = true;
                     break;
                 case '\0':
-                    throw Terminal::InvalidInput("Email local-part must contain '@domain'.");
+                    return "Email local-part must contain '@domain'.";
                 default:
                     if ((em[i] >= 'a' && em[i] <= 'z') || (em[i] >= 'A' && em[i] <= 'Z')) {
                         sawPeriod = false;
                         break;
                     }
-                    throw Terminal::InvalidInput("Invalid character in email local-part.");
+                    return "Invalid character in email local-part.";
             }
         }
     }
-    doneLocalPart:
     if (sectionPos - localPartStart > 64) {
-        throw Terminal::InvalidInput("Email local-part must be at most 64 characters long.");
+        return "Email local-part must be at most 64 characters long.";
     }
 
     // Comment
     if (em[sectionPos] == '(') {
         if (hasComment) {
-            throw Terminal::InvalidInput("Email may not have multiple comments.");
+            return "Email may not have multiple comments.";
         } 
 
         auto pos = em.find(')', sectionPos);
         if (pos == std::string_view::npos) {
-            throw Terminal::InvalidInput("Email comment must be enclosed in parentheses.");
+            return "Email comment must be enclosed in parentheses.";
         }
         sectionPos = pos + 1;
     }
 
     // Domain
     if (em[sectionPos] != '@') {
-        throw Terminal::InvalidInput("Email must contain '@domain'.");
+        return "Email must contain '@domain'.";
     }
     ++sectionPos;
 
     if (em[sectionPos] == '\0') {
-        throw Terminal::InvalidInput("Email must contain a domain.");
+        return "Email must contain a domain.";
     }
 
     if (em.substr(sectionPos).starts_with("[IPV6")) {
-        throw Terminal::InvalidInput("IPv6 addresses not yet supported.");
+        return "IPv6 addresses not yet supported.";
     } else if (em[sectionPos] == '[') {
         // IPv4 address
         ++sectionPos;
@@ -166,43 +216,39 @@ Email::Email(std::string&& e) : email(e) {
         while (segments < 4) {
             int delta = eatIPv4Segment(em.substr(sectionPos));
             if (delta < 1) {
-                throw Terminal::InvalidInput("Invalid IPv4 in email address.");
+                return "Invalid IPv4 in email address.";
             }
             sectionPos += delta;
             ++segments;
         }
         if (em[sectionPos] != ']') {
-            throw Terminal::InvalidInput("Missing closing bracket in IPv4 in email address.");
+            return "Missing closing bracket in IPv4 in email address.";
         }
         ++sectionPos;
         if (sectionPos != em.size()) {
-            throw Terminal::InvalidInput(
-                "Extra characters after closing bracket in IPv4 in email address."
-            );
+            return "Extra characters after closing bracket in IPv4 in email address.";
         }
     } else {
         // LDH
         auto domain = em.substr(sectionPos);
         if (domain.size() > 253) {
-            throw Terminal::InvalidInput("Email domain must be at most 253 characters long.");
+            return "Email domain must be at most 253 characters long.";
         }
 
         try {
             auto tmp = std::stoi(std::string(domain));
-            throw Terminal::InvalidInput("Email domain must not be a number.");
+            return "Email domain must not be a number.";
         } catch (...) {}
 
         for (auto label : domain | std::views::split('.')) {
             if (label.size() > 63) {
-                throw Terminal::InvalidInput("Email label must be at most 63 characters long.");
+                return "Email label must be at most 63 characters long.";
             }
             if (label.size() == 0) {
-                throw Terminal::InvalidInput("Email label must not be empty.");
+                return "Email label must not be empty.";
             }
             if (label[0] == '-' || label[label.size() - 1] == '-') {
-                throw Terminal::InvalidInput(
-                    "Email label must not start or end with a hyphen."
-                );
+                return "Email label must not start or end with a hyphen.";
             }
             for (auto c : label) {
                 switch (c) {
@@ -226,13 +272,10 @@ Email::Email(std::string&& e) : email(e) {
                         if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                             break; 
                         }
-                        throw Terminal::InvalidInput("Invalid character in email label.");
+                        return "Invalid character in email label.";
                 }
             }
         }
     }
-}
-
-Email::operator std::string() {
-    return email;
+    return "";
 }

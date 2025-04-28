@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <filesystem>
+#include <ranges>
 #include <string_view>
 #include <vector>
 #include "inventoryitem.hpp"
@@ -79,6 +80,9 @@ public:
     const std::vector<InventoryItem>& getInventory() const;
     void removeInventory(size_t index);
 
+
+    void addHistory(long userID, std::string&& name);
+    
     //user management 
     void addUser(User&& user);
     void removeUser(size_t index);
@@ -86,6 +90,7 @@ public:
     void updateUser(size_t index,  std::string& firstName, std::string& lastName,
          std::string& address, std::string& phone,  std::string& email);
     const std::vector<User>& getUsers() const;
+
 
 
     /// Writes the entire contents of a buffer to a file.

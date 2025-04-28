@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <iomanip>
 #include <ios>
@@ -16,11 +18,10 @@
 #include <utility>
 #include <vector>
 
-#include "email.hpp"
 #include "main.hpp"
-#include "phone.hpp"
 #include "printable.hpp"
 #include "resultlist.hpp"
+#include "validators.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -108,15 +109,6 @@ class Terminal {
     /// Implements the fade effect on overly large cell content.
     void trimAndRecolor(std::string& str, int width) const;
 
-    class InvalidInput {
-        std::string_view msg;
-    public:
-        InvalidInput(std::string_view msg) : msg(msg) {}
-    };
-
-    friend Email::Email(std::string&&);
-    friend Phone::Phone(std::string&&);
-
 public:
     Terminal() {
         #ifdef _WIN32
@@ -157,40 +149,88 @@ public:
     /// ```
     /// It will automatically loop until the user enters a valid value of the
     /// appropriate type.
-    template <typename T>
+    template <typename T, auto validator = validateIdentity>
+    requires (std::integral<T> || std::is_same_v<T, std::string>)
     T promptForInput() const {
         T input;
-
         while(true) {
-            //std::cout << promptArrow;
             std::string buf;
             std::cin >> std::ws;
             std::getline(std::cin, buf);
-            auto str = std::stringstream(buf);
+
+            auto errMsg = validator(buf);
+            if(errMsg.size() > 0) {
+                printError(errMsg);
+                std::cout << "Please try again: ";
+                continue;
+            }
+
+            auto strStream = std::stringstream(buf);
             if constexpr (std::is_same_v<T, std::string>) {
+                // Don't split on whitespace.
                 input = std::string(buf);
             } else {
-                str >> input;
+                strStream >> input;
             }
 
             if(std::cin.eof()) {
                 std::cout << std::endl;
                 Main::safeExit();
-            } else if(std::cin.fail() || str.fail()) {
-                std::cout << "Invalid input.  Please try again." << std::endl;
-                str.clear();
-                str.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            } else if(std::cin.fail() || strStream.fail()) {
+                printError("Invalid input.");
+                std::cout << "Please try again: ";
+                strStream.clear();
+                strStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             } else
-                return input;
+            return input;
+        }
+    }
+
+    template <std::ranges::random_access_range V, auto validator = validateIdentity>
+    requires (std::is_same_v<V, std::vector<typename V::value_type>>)
+    std::vector<typename V::value_type>
+    promptForInput() const {
+        V input;
+    retry: while(true) {
+            input.clear();
+            std::string buf;
+            std::cin >> std::ws;
+            std::getline(std::cin, buf);
+            auto strStream = std::stringstream(buf);
+            std::string item;
+            while (strStream >> item) {
+                auto errMsg = validator(item);
+                if(errMsg.size() > 0) {
+                    printError(errMsg);
+                    std::cout << "Please try again: ";
+                    goto retry;
+                }
+
+                auto dataStream = std::stringstream(item);
+                typename V::value_type data;
+                dataStream >> data;
+                if(std::cin.eof()) {
+                    std::cout << std::endl;
+                    Main::safeExit();
+                } else if(std::cin.fail() || dataStream.fail()) {
+                    printError("Invalid input.");
+                    std::cout << "Please try again: ";
+                    dataStream.clear();
+                    dataStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                } else {
+                    input.push_back(data);
+                }
+            }
+            return input;
         }
     }
 
     /// Same as `promptForInput` but prints a prompt text first.  Helps maintain
     /// stylistic consistency throughout the application.
-    template <typename T>
+    template <typename T, auto validator = validateIdentity>
     T promptForInput(std::string_view prompt) const {
         std::cout << prompt << ": ";
-        return promptForInput<T>();
+        return promptForInput<T, validator>();
     }
 
     void printOptions(
@@ -241,9 +281,10 @@ public:
                 }
             }
 
-            if(adjustedWidth > terminalWidth) {
-                std::cout << "Your terminal window is too small to display the table." << std::endl;
-                exit(-1);
+            if(adjustedWidth > terminalWidth + 1) {
+                std::cout << adjustedWidth << ' ' << terminalWidth << std::endl;
+                printError("Your terminal window is too small to display the table.");
+                //return;
             }
         }
 

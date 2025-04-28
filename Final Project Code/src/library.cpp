@@ -171,6 +171,18 @@ void Library::removeInventory(size_t index) {
     else {
         std::cerr << "Invalid inventory index.\n";
     }
+
+void Library::addHistory(long userID, std::string&& name) {
+    auto newItem = HistoryItem(userID, std::move(name));
+    history.push_back(newItem);
+    flushVector<HistoryItem>();
+}
+
+template <typename T> requires LibraryStorageType<T>
+void Library::remove(T* item) {
+    auto vec = (std::vector<T>*)(this) + T::Offset;
+    int idx = item - &*vec->cbegin();
+    vec->erase(vec->begin() + idx);
 }
 
 // user managment

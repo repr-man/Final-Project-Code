@@ -33,6 +33,8 @@ public:
     static constexpr auto Publisher = FieldTag::Publisher;
     static constexpr auto BorrowerID = FieldTag::BorrowerID;
 
+    friend std::istream& operator>>(std::istream& is, InventoryItem::FieldTag& item);
+
 	InventoryItem(
         std::string&& type,
         std::string&& name,
