@@ -27,14 +27,13 @@ public:
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
-            cout << "1. Register New User\n";
-            cout << "2. Edit Inventory\n";
-            cout << "3. Edit User Information\n";
-            cout << "4. Borrow Book\n";
-            cout << "5. Search Function\n";
-            cout << "6. Active Users\n";
-            cout << "7. Return Book\n";
-            cout << "8. Logout\n";
+            cout << "1. Edit Inventory\n";
+            cout << "2. User Managment\n";
+            cout << "3. Borrow Book\n";
+            cout << "4. Search Function\n";
+            cout << "5. Active Users\n";
+            cout << "6. Return Book\n";
+            cout << "7. Logout\n";
             cout << "Enter your choice: ";
             if (!(cin >> choice)) {
                 cin.clear(); // Clear error state
@@ -46,26 +45,22 @@ public:
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear newline after valid input
 
             switch (choice) {
-            case 1: 
-                cout << "Registering new user...";
-                registerNewUser();
-                break;
-            case 2:
+            case 1:
                 cout << "Editing Inventory...\n";
                 editInventory(lib, term);
                 break;
-            case 3:
-                cout << "Editing User Information...\n";
-                // Add function call here
+            case 2:
+                cout << "User Management...\n";
+                editUserInfo(lib, term);
                 break;
-            case 4: {
+            case 3: {
                 cout << "Borrowing books...\n";
                 Borrowing b;
                 b.borrowBook(term);
                 break;
             }// end of case 4
             
-            case 5: // this sends them to the SearchFunction Class
+            case 4: // this sends them to the SearchFunction Class
                 cout << "\n--- Search Menu ---\n";
                 cout << "1. User\n";
                 cout << "2. Inventory\n";
@@ -94,16 +89,16 @@ public:
                 }
                 break;
 
-            case 6:
+            case 5:
                 cout << "Viewing all registered users...\n";
                 // add function call here
                 break;
-            case 7:
+            case 6:
                 cout << "Returning books...\n";
                 Return r;
                 r.ReturnBook(term);
                 break;
-            case 8:
+            case 7:
                 cout << "Logging out...\n";
                 return;
             default:
@@ -126,20 +121,132 @@ private:
         return userCount + 1;
     }
 
-    void registerNewUser() {
+    /*void registerNewUser() {
         int nextID = generateNextLibraryID();  
         RegisterUser newUser;
         newUser.promptUserData(nextID); 
         newUser.printSummary();
         newUser.saveToFile();
+    }*/
+
+    void editUserInfo(Library& lib, Terminal& term) {
+        int choice;
+        cout << "\n--- User Management Menu ---\n";
+        cout << "1. Register New User\n";
+        cout << "2. Update User Information\n";
+        cout << "3. Delete User\n";
+        cout << "4. Back to Admin Menu\n";
+        cout << "Enter your choice: ";
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a number.\n";
+            return;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear buffer
+
+        switch (choice) {
+        case 1: { // Register New User
+            int nextID = generateNextLibraryID();
+            RegisterUser newUser;
+            newUser.promptUserData(nextID);
+            newUser.printSummary();
+            newUser.saveToFile();
+            cout << "New user registered successfully!\n";
+            break;
+        }
+        case 2:{ // Update User
+            const auto& users = lib.getUsers();
+            if (users.empty()) {
+                cout << "No users to update.\n";
+                break;
+            }
+
+            cout << "\n--- Registered Users ---\n";
+            for (size_t i = 0; i < users.size(); ++i) {
+                cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
+            }
+
+            int userIndex;
+            cout << "Enter the number of the user to update (0 to cancel): ";
+            while (!(cin >> userIndex) || userIndex < 0 || userIndex > static_cast<int>(users.size())) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid choice. Enter a valid user number: ";
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (userIndex == 0) {
+                cout << "Update cancelled.\n";
+                break;
+            }
+
+            string newFirstName, newLastName, newAddress, newPhone, newEmail;
+
+            cout << "Enter new first name: ";
+            getline(cin, newFirstName);
+            cout << "Enter new last name: ";
+            getline(cin, newLastName);
+            cout << "Enter new address: ";
+            getline(cin, newAddress);
+            cout << "Enter new phone number: ";
+            getline(cin, newPhone);
+            cout << "Enter new email: ";
+            getline(cin, newEmail);
+
+            lib.updateUser(userIndex - 1, newFirstName, newLastName, newAddress, newPhone, newEmail);
+            cout << "User information updated successfully.\n";
+            break;
+        }
+
+        case 3: { // Delete User
+            const auto& users = lib.getUsers();
+            if (users.empty()) {
+                cout << "No users to delete.\n";
+                break;
+            }
+
+            cout << "\n--- Registered Users ---\n";
+            for (size_t i = 0; i < users.size(); ++i) {
+                cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
+            }
+
+            int delUserIndex;
+            cout << "Enter the number of the user to delete (0 to cancel): ";
+            while (!(cin >> delUserIndex) || delUserIndex < 0 || delUserIndex > static_cast<int>(users.size())) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid choice. Enter a valid user number: ";
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (delUserIndex == 0) {
+                cout << "Delete cancelled.\n";
+                break;
+            }
+
+            lib.removeUser(delUserIndex - 1);
+            cout << "User deleted successfully.\n";
+            break;
+        }
+
+        case 4:
+            cout << "Returning to Admin Menu...\n";
+            break;
+        default:
+            cout << "Invalid choice.\n";
+        }
     }
+
 
     void editInventory(Library& lib, Terminal& term) {
         int choice;
         cout << "\n--- Inventory Menu ---\n";
         cout << "1. Add New Item\n";
         cout << "2. Delete Item\n";
-        cout << "3. Back to Admin Menu\n";
+        cout << "3. Edit Item\n";
+        cout << "4. Back to Admin Menu\n";
         cout << "Enter your choice: ";
         cin >> choice;
         cin.ignore(); // Clear newline from input buffer
@@ -194,7 +301,10 @@ private:
             cout << "Item deleted successfully.\n";
             break;
         }
-        case 3:
+        case 3://edit item
+
+            break;
+        case 4:
             cout << "Returning to Admin Menu...\n";
             break;
         default:
