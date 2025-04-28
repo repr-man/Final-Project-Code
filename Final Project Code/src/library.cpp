@@ -1,6 +1,9 @@
 #include "library.hpp"
-#include "zip_view.hpp"
+#include <algorithm>
 #include <fstream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 using namespace std;
 
@@ -16,12 +19,20 @@ std::string Library::readFile(const std::string& filename) {
 
 // Creates a view of `std::string_view`s that are split by a delimiter.
 auto Library::splitBy(const std::string_view text, const char delimiter) {
-    return std::views::split(text, delimiter)
-    | std::views::transform([](auto&& it){
-        auto [start, end] = it;
-        return std::string_view(start, end);
-    })
-    | std::views::filter([](auto&& it){ return !it.empty(); });
+    std::vector<std::string_view> res;
+    int pos = 0;
+    auto end = text.find(delimiter, pos);
+    while (pos < text.size() && end != std::string_view::npos) {
+        if (end - pos > 0) {
+            res.push_back(text.substr(pos, end - pos));
+        }
+        pos = end + 1;
+        end = text.find(delimiter, pos);
+    }
+    if (text.substr(pos).size() > 0) {
+        res.push_back(text.substr(pos));
+    }
+    return res;
 }
 
 template <typename T> requires LibraryStorageType<T>
@@ -57,55 +68,51 @@ ResultList<T> Library::searchVector(
 }
 
 Library::Library() {
-    auto bookFileText = readFile("Final Project Code/data/book.txt");
-    for(auto line : splitBy(bookFileText, '\n')) {
+    auto bookFileText = readFile(InventoryItem::SaveFileLocation);
+    for(auto& line : splitBy(bookFileText, '\n')) {
         auto segments = splitBy(line, ';');
-        auto it = segments.begin();
         inventory.push_back(InventoryItem(
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::stoi(std::string(*it++))
+            std::string(segments[0]),
+            std::string(segments[1]),
+            std::string(segments[2]),
+            std::string(segments[3]),
+            std::stoi(std::string(segments[4]))
         ));
     }
 
-    auto usersFileText = readFile("Final Project Code/data/users.txt");
-    for(auto line : splitBy(usersFileText, '\n')) {
+    auto usersFileText = readFile(User::SaveFileLocation);
+    for(auto& line : splitBy(usersFileText, '\n')) {
         auto segments = splitBy(line, ';');
-        auto it = segments.begin();
         users.push_back(User(
-            std::stol(std::string(*it++)),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++),
-            std::stol(std::string(*it++)),
-            std::stoi(std::string(*it++))
+            std::stoll(std::string(segments[0])),
+            std::string(segments[1]),
+            std::string(segments[2]),
+            std::string(segments[3]),
+            std::string(segments[4]),
+            std::string(segments[5]),
+            std::string(segments[6]),
+            std::string(segments[7]),
+            std::stoll(std::string(segments[8])),
+            std::stoi(std::string(segments[9]))
         ));
     }
 
-    auto historyFileText = readFile("Final Project Code/data/history.txt");
-    for(auto line : splitBy(historyFileText, '\n')) {
+    auto historyFileText = readFile(HistoryItem::SaveFileLocation);
+    for(auto& line : splitBy(historyFileText, '\n')) {
         auto segments = splitBy(line, ';');
-        auto it = segments.begin();
         history.push_back(HistoryItem(
-            std::stol(std::string(*it++)),
-            std::string(*it++)
+            std::stoll(std::string(segments[0])),
+            std::string(segments[1])
         ));
     }
 
-    auto librariansFileText = readFile("Final Project Code/data/librarians.txt");
-    for(auto line : splitBy(librariansFileText, '\n')) {
+    auto librariansFileText = readFile(Librarian::SaveFileLocation);
+    for(auto& line : splitBy(librariansFileText, '\n')) {
         auto segments = splitBy(line, ';');
-        auto it = segments.begin();
         librarians.push_back(Librarian(
-            std::string(*it++),
-            std::string(*it++),
-            std::string(*it++)
+            std::string(segments[0]),
+            std::string(segments[1]),
+            std::string(segments[2])
         ));
     }
 }

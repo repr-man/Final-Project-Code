@@ -13,7 +13,9 @@ public:
 
     static constexpr int Offset = 1;
     inline static const auto SaveFileLocation
-        = std::filesystem::path(Printable<10>::SaveFileLocation) / "users.txt";
+        = std::filesystem::current_path().filename() == "Final-Project-Code"
+        ? std::filesystem::current_path() / "Final Project Code" / "data" / "users.txt"
+        : std::filesystem::current_path() / "data" / "users.txt";
 
     enum class FieldTag {
         ID,
