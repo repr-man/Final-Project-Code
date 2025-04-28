@@ -1,4 +1,5 @@
 #pragma once
+#include "library.hpp"
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -72,24 +73,7 @@ public:
         cout << "School ID: " << schoolID << "\n";
     }
 
-    void saveToFile(const string& filename) const {
-        ofstream outFile(filename, ios::app); // append mode
-        if (!outFile) {
-            cerr << "Error: Could not open " << filename << " for writing.\n";
-            return;
-        }
-
-        outFile << setw(10) << setfill('0') << libraryID << ";"
-            << userType << ";"
-            << firstName << ";"
-            << lastName << ";"
-            << address << ";"
-            << phone << ";"
-            << email << ";"
-            << password << ";"
-            << schoolID << ";"
-            << booksborrowed << std::endl;
-
-        outFile.close();
+    void saveToFile(Library& lib) {
+        lib.addUser(libraryID, std::move(userType), std::move(firstName), std::move(lastName), std::move(address), std::move(phone), std::move(email), std::move(password), std::move(schoolID));
     }
 }; // end of class RegisterUser

@@ -36,9 +36,6 @@ class Library {
         std::vector<T>& vec
     );
 
-    template<typename T>requires LibraryStorageType<T>
-    void remove(T* item);
-
 public:
 	Library();
 
@@ -87,9 +84,9 @@ public:
 
 
     void addHistory(long userID, std::string&& name);
+
     
     //user management 
-    void addUser(User&& user);
     void removeUser(size_t index);
     void saveUsers();
     void updateUser(size_t index,  std::string& firstName, std::string& lastName,
@@ -97,6 +94,21 @@ public:
     const std::vector<User>& getUsers() const;
 
 
+
+    void addUser(
+        long userID,
+        std::string&& role,
+        std::string&& first,
+        std::string&& last,
+        std::string&& address,
+        std::string&& phone,
+        std::string&& email,
+        std::string&& password,
+        std::string&& institutionId
+    );
+
+    template <typename T> requires LibraryStorageType<T>
+    void remove(T* item);
 
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
