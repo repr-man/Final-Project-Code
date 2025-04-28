@@ -1,5 +1,6 @@
 #include "user.hpp"
 #include "util.hpp"
+#include <string>
 
 User::User(
     long id,
@@ -27,7 +28,7 @@ User::User(
 bool User::matches(User::FieldTag field, const std::string& value) const noexcept {
     switch (field) {
         case ID:
-            return id == stol(value);
+            return id == std::stoll(value);
         case Role:
             return role == value;
         case First:
@@ -43,9 +44,9 @@ bool User::matches(User::FieldTag field, const std::string& value) const noexcep
         case Password:
             return password == value;
         case InstitutionID:
-            return institutionId == stol(value);
+            return institutionId == std::stoll(value);
         case NumCheckedOut:
-            return numCheckedOut == stoi(value);
+            return numCheckedOut == std::stoi(value);
     }
     UNREACHABLE;
 }

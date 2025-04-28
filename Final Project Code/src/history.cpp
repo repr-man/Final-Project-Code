@@ -1,4 +1,5 @@
 #include "history.hpp"
+#include <string>
 
 HistoryItem::HistoryItem(long userID, std::string&& name)
 : userID(userID),
@@ -8,7 +9,7 @@ HistoryItem::HistoryItem(long userID, std::string&& name)
 bool HistoryItem::matches(HistoryItem::FieldTag field, const std::string& value) const {
     switch (field) {
         case UserID:
-            return userID == stol(value);
+            return userID == std::stoll(value);
         case Name:
             return name == value;
     }
