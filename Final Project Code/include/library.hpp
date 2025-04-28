@@ -11,6 +11,8 @@
 #include "librarystoragetype.hpp"
 #include "resultlist.hpp"
 #include "user.hpp"
+#include <iostream>
+#include <ostream>
 
 class Library {
     std::vector<InventoryItem> inventory{};
@@ -33,6 +35,9 @@ class Library {
         std::vector<std::string>& values,
         std::vector<T>& vec
     );
+
+    template<typename T>requires LibraryStorageType<T>
+    void remove(T* item);
 
 public:
 	Library();

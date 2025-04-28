@@ -151,7 +151,7 @@ private:
             RegisterUser newUser;
             newUser.promptUserData(nextID);
             newUser.printSummary();
-            newUser.saveToFile();
+            newUser.saveToFile("data/users.txt");
             cout << "New user registered successfully!\n";
             break;
         }

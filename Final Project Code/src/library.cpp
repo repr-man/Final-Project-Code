@@ -171,6 +171,7 @@ void Library::removeInventory(size_t index) {
     else {
         std::cerr << "Invalid inventory index.\n";
     }
+}
 
 void Library::addHistory(long userID, std::string&& name) {
     auto newItem = HistoryItem(userID, std::move(name));

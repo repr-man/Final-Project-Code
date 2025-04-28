@@ -14,7 +14,7 @@ public:
     string firstName, lastName, address, phone, email, password, userType;
     string schoolID;
     int libraryID;
-    bool isActive = true;
+    int booksborrowed = -1;
 
     RegisterUser() {}
 
@@ -88,7 +88,7 @@ public:
             << email << ";"
             << password << ";"
             << schoolID << ";"
-            << isActive << std::endl;
+            << booksborrowed << std::endl;
 
         outFile.close();
     }
