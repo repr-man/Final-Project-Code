@@ -1,6 +1,13 @@
 #include "user.hpp"
 #include "util.hpp"
 
+std::istream& operator>>(std::istream& is, User::FieldTag& item) {
+    int val;
+    is >> val;
+    item = static_cast<User::FieldTag>(val);
+    return is;
+}
+
 User::User(
     long id,
     std::string&& role,

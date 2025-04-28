@@ -2,6 +2,13 @@
 
 using namespace std;
 
+std::istream& operator>>(std::istream& is, InventoryItem::FieldTag& item) {
+    int val;
+    is >> val;
+    item = static_cast<InventoryItem::FieldTag>(val);
+    return is;
+}
+
 InventoryItem::InventoryItem(
     std::string&& type,
     std::string&& name,

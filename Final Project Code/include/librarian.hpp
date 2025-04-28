@@ -25,6 +25,8 @@ public:
     static constexpr auto Last = FieldTag::Last;
     static constexpr auto Password = FieldTag::Password;
 
+    friend std::istream& operator>>(std::istream& is, Librarian::FieldTag& item);
+
     Librarian(
         std::string&& first,
         std::string&& last,

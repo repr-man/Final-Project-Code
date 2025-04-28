@@ -1,5 +1,12 @@
 #include "librarian.hpp"
 
+std::istream& operator>>(std::istream& is, Librarian::FieldTag& item) {
+    int val;
+    is >> val;
+    item = static_cast<Librarian::FieldTag>(val);
+    return is;
+}
+
 Librarian::Librarian(
     std::string&& first,
     std::string&& last,
