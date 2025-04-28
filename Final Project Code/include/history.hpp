@@ -24,6 +24,8 @@ public:
     static constexpr auto UserID = FieldTag::UserID;
     static constexpr auto Name = FieldTag::Name;
 
+    friend std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item);
+
     HistoryItem(long userID, std::string&& name);
 
     bool matches(FieldTag field, const std::string& value) const;

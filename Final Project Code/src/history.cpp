@@ -1,6 +1,13 @@
 #include "history.hpp"
 #include <string>
 
+std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item) {
+    int val;
+    is >> val;
+    item = static_cast<HistoryItem::FieldTag>(val);
+    return is;
+}
+
 HistoryItem::HistoryItem(long userID, std::string&& name)
 : userID(userID),
   name(name)

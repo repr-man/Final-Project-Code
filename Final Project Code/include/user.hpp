@@ -41,6 +41,8 @@ public:
     static constexpr auto InstitutionID = FieldTag::InstitutionID;
     static constexpr auto NumCheckedOut = FieldTag::NumCheckedOut;
 
+    friend std::istream& operator>>(std::istream& is, User::FieldTag& item);
+
     User(
         long id,
         std::string&& role,
