@@ -87,6 +87,7 @@ public:
 
 
     void addHistory(long userID, std::string&& name);
+<<<<<<< Updated upstream
     
     //user management 
     void addUser(User&& user);
@@ -97,6 +98,23 @@ public:
     const std::vector<User>& getUsers() const;
 
 
+=======
+
+    void addUser(
+        long userID,
+        std::string&& role,
+        std::string&& first,
+        std::string&& last,
+        std::string&& address,
+        std::string&& phone,
+        std::string&& email,
+        std::string&& password,
+        std::string&& institutionId
+    );
+
+    template <typename T> requires LibraryStorageType<T>
+    void remove(T* item);
+>>>>>>> Stashed changes
 
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>

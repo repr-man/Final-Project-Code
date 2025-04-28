@@ -179,6 +179,34 @@ void Library::addHistory(long userID, std::string&& name) {
     flushVector<HistoryItem>();
 }
 
+void Library::addUser(
+    long userID,
+    std::string&& role,
+    std::string&& first,
+    std::string&& last,
+    std::string&& address,
+    std::string&& phone,
+    std::string&& email,
+    std::string&& password,
+    std::string&& institutionId
+) {
+    auto newItem = User(
+        userID,
+        std::move(role),
+        std::move(first),
+        std::move(last),
+        std::move(address),
+        std::move(phone),
+        std::move(email),
+        std::move(password),
+        std::move(std::stoll(institutionId)),
+        0
+    );
+    users.push_back(newItem);
+    flushVector<User>();
+}
+
+
 template <typename T> requires LibraryStorageType<T>
 void Library::remove(T* item) {
     auto vec = (std::vector<T>*)(this) + T::Offset;
