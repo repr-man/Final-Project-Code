@@ -5,6 +5,7 @@
 #include "library.hpp"
 #include "terminal.hpp"
 #include "user.hpp"
+#include "validators.hpp"
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -26,7 +27,9 @@ public:
 
         while (true) {
             cout << "\n--- User Login ---\n";
-            inputID = to_string(term.promptForInput<long>("Enter your Library ID (10 digits)"));
+            inputID = to_string(term.promptForInput<long, validateLibraryID>(
+                "Enter your Library ID (10 digits)"
+            ));
             inputPassword = term.promptForInput<string>("Enter your password");
             auto res = lib.search({User::ID, User::Password}, {inputID, inputPassword});
             if (res.size() == 0) {
@@ -71,7 +74,7 @@ public:
             cout << "2. Search Function\n";
             cout << "3. Print User Summary\n";
             cout << "4. Logout\n";
-            int choice = term.promptForInput<int>("Enter your choice");
+            int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
             switch (choice) {
             case 1:
@@ -82,7 +85,6 @@ public:
                 );
                 break;
             case 2: {
-                cout << "Search function not yet implemented.\n";
                 const auto res = SearchFunction().searchInventory(lib, term);
                 if (res.size() == 0) {
                     cout << "No results found.\n";

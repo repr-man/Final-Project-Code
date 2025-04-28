@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "inventoryitem.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
 #include "user.hpp"
@@ -32,15 +33,7 @@ public:
             >(
                 "Enter space-separated list of search categories"
             );
-            //auto catStream = stringstream(rawCategories);
             vector<User::FieldTag> categories;
-            //int category;
-            //while (true) {
-            //    if (!(catStream >> category)) {
-            //        if (catStream.eof()) { break; }
-            //        term.printError("Invalid non-integer category. Please try again.");
-            //        goto retry;
-            //    }
             for (auto& category : rawCategories) {
                 switch (category) {
                     using enum User::FieldTag;
@@ -120,81 +113,47 @@ public:
     }
 
     auto searchInventory(Library& lib, Terminal& term) {
-    retry: {
-            term.printOptions("--- Search for Inventory ---", {
-                "Type",
-                "Name",
-                "Author",
-                "Publisher",
-                "Borrower ID"
-            });
-            auto rawCategories = term.promptForInput<string>(
+        term.printOptions("--- Search for Inventory ---", {
+            "Type",
+            "Name",
+            "Author",
+            "Publisher",
+            "Borrower ID"
+        });
+        auto categories = term.promptForInput<
+            std::vector<InventoryItem::FieldTag>,
+            validateNumRange<1, 5>
+            >(
                 "Enter space-separated list of search categories"
             );
-            auto catStream = stringstream(rawCategories);
-            vector<InventoryItem::FieldTag> categories;
-            int category;
-            while (true) {
-                if (!(catStream >> category)) {
-                    if (catStream.eof()) { break; }
-                    term.printError("Invalid non-integer category. Please try again.");
-                    goto retry;
-                }
-                switch (category) {
-                    using enum InventoryItem::FieldTag;
-                    case 1:
-                        categories.push_back(Type);
-                        break;
-                    case 2:
-                        categories.push_back(Name);
-                        break;
-                    case 3:
-                        categories.push_back(Author);
-                        break;
-                    case 4:
-                        categories.push_back(Publisher);
-                        break;
-                    case 5:
-                        categories.push_back(BorrowerID);
-                        break;
-                    default:
-                        term.printError(
-                            "Invalid search category '"s
-                            + to_string(category)
-                            + "'. Please try again."
-                        );
-                        goto retry;
-                }
-            }
 
-            vector<string> queries;
-            for (auto& category : categories) {
-                std::string res;
-                switch (category) {
-                    using enum InventoryItem::FieldTag;
-                    case Type:
-                        res = term.promptForInput<string>("Enter Type");
-                        break;
-                    case Name:
-                        res = term.promptForInput<string>("Enter Name");
-                        break;
-                    case Author:
-                        res = term.promptForInput<string>("Enter Author");
-                        break;
-                    case Publisher:
-                        res = term.promptForInput<string>("Enter Publisher");
-                        break;
-                    case BorrowerID:
-                        res = term.promptForInput<string, validateLibraryID>(
-                            "Enter Borrower ID"
-                        );
-                        break;
-                    default:
-                        UNREACHABLE;
-                }
-                queries.push_back(std::move(res));
+        vector<string> queries;
+        for (auto& category : categories) {
+            std::string res;
+            switch (category) {
+                using enum InventoryItem::FieldTag;
+                case Type:
+                    res = term.promptForInput<string>("Enter Type");
+                    break;
+                case Name:
+                    res = term.promptForInput<string>("Enter Name");
+                    break;
+                case Author:
+                    res = term.promptForInput<string>("Enter Author");
+                    break;
+                case Publisher:
+                    res = term.promptForInput<string>("Enter Publisher");
+                    break;
+                case BorrowerID:
+                    res = term.promptForInput<string, validateLibraryID>(
+                        "Enter Borrower ID"
+                    );
+                    break;
+                default:
+                    UNREACHABLE;
             }
-            return lib.search(categories, std::move(queries));
+            queries.push_back(std::move(res));
         }
+        return lib.search(categories, std::move(queries));
     }
 };
