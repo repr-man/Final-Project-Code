@@ -83,6 +83,8 @@ public:
     // to add an inventory item
     void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
+    void addHistory(long userID, std::string&& name);
+    
     /// Writes the entire contents of a buffer to a file.
     template <typename T> requires LibraryStorageType<T>
     void flushVector();

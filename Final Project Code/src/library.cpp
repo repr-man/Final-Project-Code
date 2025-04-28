@@ -154,6 +154,12 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
     flushVector<InventoryItem>();
 }
 
+void Library::addHistory(long userID, std::string&& name) {
+    auto newItem = HistoryItem(userID, std::move(name));
+    history.push_back(newItem);
+    flushVector<HistoryItem>();
+}
+
 template <typename T> requires LibraryStorageType<T>
 void Library::remove(T* item) {
     auto vec = (std::vector<T>*)(this) + T::Offset;
