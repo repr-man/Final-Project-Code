@@ -1,12 +1,8 @@
 #pragma once
 
 #include <cstdio>
-#include <filesystem>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <iomanip>
 #include <vector>
 
 #include "terminal.hpp"
@@ -17,142 +13,40 @@ using namespace std;
 /* When a user returns a book subtract one to the borrowedbooks count */
 class Return {
 public:
-    void ReturnBook(Terminal& term) {
-        string username, bookTitle;
-        cout << "Enter User Name (First and Last): ";
-        username = term.promptForInput<string>();
-
-        ifstream userFile("data/users.txt");
-        if (!userFile) {
-            cout << "Could not open users.txt\n";
+    void ReturnBook(Library& lib, Terminal& term) {
+        string firstName = term.promptForInput<string>("Enter First Name");
+        string lastName = term.promptForInput<string>("Enter Last Name");
+        auto user = lib.search({User::First, User::Last}, {firstName, lastName});
+        if (user.size() == 0) {
+            term.printError("User not found in system.");
             return;
         }
 
-        vector<string> userLines;
-        bool userFound = false;
-        string userID;
-        int userIndex = -1;
-        int booksBorrowed = 0;
+        cout << "\nUser Found:\n";
+        cout << "ID: " << user[0].id << "\n";
+        cout << "Name: " << user[0].first << " " << user[0].last << "\n";
+        cout << "Email: " << user[0].email << "\n";
+        cout << "Phone: " << user[0].phone << "\n";
+        cout << "User Type: " << user[0].role << "\n";
 
-        string userLine;
-        while (getline(userFile, userLine)) {
-            userLines.push_back(userLine);
-            stringstream ss(userLine);
-            string id, userType, firstName, lastName, address, phone, email, password, schoolID, borrowedCount;
-
-            getline(ss, id, ';');
-            getline(ss, userType, ';');
-            getline(ss, firstName, ';');
-            getline(ss, lastName, ';');
-            getline(ss, address, ';');
-            getline(ss, phone, ';');
-            getline(ss, email, ';');
-            getline(ss, password, ';');
-            getline(ss, schoolID, ';');
-            getline(ss, borrowedCount, ';');
-
-            string fullName = firstName + " " + lastName;
-            if (fullName == username) {
-                userFound = true;
-                userID = id;
-                userIndex = userLines.size() - 1;
-                booksBorrowed = stoi(borrowedCount);
-                cout << "\nUser Found:\n";
-                cout << "ID: " << id << "\n";
-                cout << "Name: " << firstName << " " << lastName << "\n";
-                cout << "Email: " << email << "\n";
-                cout << "Phone: " << phone << "\n";
-                cout << "User Type: " << userType << "\n";
-                break;
-            }
-        }
-        userFile.close();
-
-        if (!userFound) {
-            cout << "User not found in system.\n";
+        string bookTitle = term.promptForInput<string>("Enter the title of the book to return");
+        auto book = lib.search({InventoryItem::Name}, {bookTitle});
+        if (book.size() == 0) {
+            term.printError("Book not found or not borrowed by this user.");
             return;
         }
 
-        cout << "Enter the title of the book to return: ";
-        bookTitle = term.promptForInput<string>();
-
-        ifstream booksFile("data/book.txt");
-        if (!booksFile) {
-            cout << "Could not open book.txt\n";
+        if (book[0].borrowerID == -1) {
+            term.printError("Book is not currently borrowed.");
+            return;
+        } else if (book[0].borrowerID != user[0].id) {
+            term.printError("This book was borrowed by a different user.");
             return;
         }
 
-        vector<string> bookLines;
-        string bookLine;
-        bool returned = false;
+        book[0].borrowerID = -1;
+        user[0].numCheckedOut -= 1;
 
-        while (getline(booksFile, bookLine)) {
-            stringstream ss(bookLine);
-            string type, title, author, publisher, borrowedBy;
-
-            getline(ss, type, ';');
-            getline(ss, title, ';');
-            getline(ss, author, ';');
-            getline(ss, publisher, ';');
-            getline(ss, borrowedBy);
-
-            if (title == bookTitle) {
-                if (borrowedBy == "-1") {
-                    cout << "Book is not currently borrowed.\n";
-                }
-                else if (borrowedBy != userID) {
-                    cout << "This book was borrowed by a different user.\n";
-                }
-                else {
-                    // Mark the book as returned
-                    bookLine = type + ";" + title + ";" + author + ";" + publisher + ";-1";
-                    returned = true;
-                }
-            }
-
-            bookLines.push_back(bookLine);
-        }
-        booksFile.close();
-
-        if (!returned) {
-            cout << "Book not found or not borrowed by this user.\n";
-            return;
-        }
-
-        // Rewrite book file
-        ofstream outFile("data/book.txt");
-        for (const string& line : bookLines) {
-            outFile << line << "\n";
-        }
-        outFile.close();
-
-        // Subtract one from booksBorrowed and update users file
-        if (userIndex != -1 && booksBorrowed > 0) {
-            stringstream ss(userLines[userIndex]);
-            string id, userType, firstName, lastName, address, phone, email, password, schoolID, borrowedCount;
-            getline(ss, id, ';');
-            getline(ss, userType, ';');
-            getline(ss, firstName, ';');
-            getline(ss, lastName, ';');
-            getline(ss, address, ';');
-            getline(ss, phone, ';');
-            getline(ss, email, ';');
-            getline(ss, password, ';');
-            getline(ss, schoolID, ';');
-            getline(ss, borrowedCount, ';');
-
-            booksBorrowed -= 1;
-
-            userLines[userIndex] = id + ";" + userType + ";" + firstName + ";" + lastName + ";" + address + ";" +
-                phone + ";" + email + ";" + password + ";" + schoolID + ";" + to_string(booksBorrowed);
-        }
-
-        ofstream outUsers("data/users.txt");
-        for (const string& updatedUser : userLines) {
-            outUsers << updatedUser << "\n";
-        }
-        outUsers.close();
-
-        cout << "Book successfully returned. Updated borrowed book count: " << booksBorrowed << "\n";
+        cout << "Book successfully returned. Updated borrowed book count: " << user[0].numCheckedOut << "\n";
     }
 };
