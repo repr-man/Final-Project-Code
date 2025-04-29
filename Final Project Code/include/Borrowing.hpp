@@ -48,6 +48,6 @@ public:
         item[0].borrowerID = user[0].id;
         lib.addHistory(user[0].id, std::move(bookTitle));
 
-        cout << "Book successfully borrowed by User " << user[0].id << ". Total books borrowed: " << user[0].numCheckedOut << "\n";
+        cout << "Book successfully borrowed by User " << user[0].first << " " << user[0].last << ". Total books borrowed: " << user[0].numCheckedOut << "\n";
     }
 }; // end of class Borrowing
