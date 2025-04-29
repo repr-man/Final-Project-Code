@@ -46,6 +46,21 @@ void Library::flushVector() {
     file.close();
 }
 
+// tried creating this to fix the abort issue (made it only for addUser)
+template <typename T>
+void Library::flushSingleVector(std::vector<T>& vec, std::filesystem::path(saveFileLocation)) {
+    std::ofstream file(saveFileLocation);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << saveFileLocation << "\n";
+        return;
+    }
+
+    for (const auto& item : vec) {
+        file << item.serialize() << '\n';
+
+    }
+}
+
 template <typename T> requires LibraryStorageType<T>
 ResultList<T> Library::searchVector(
     std::vector<typename T::FieldTag>& fields,
@@ -199,11 +214,11 @@ void Library::addUser(
         std::move(phone),
         std::move(email),
         std::move(password),
-        std::move(std::stoll(institutionId)),
+        std::stoll(institutionId),
         0
     );
     users.push_back(newItem);
-    flushVector<User>();
+    flushSingleVector(users, User::SaveFileLocation); // tried creating this 
 }
 
 

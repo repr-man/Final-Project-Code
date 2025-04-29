@@ -15,7 +15,7 @@ public:
     string firstName, lastName, address, phone, email, password, userType;
     string schoolID;
     int libraryID;
-    int booksborrowed = -1;
+    int booksborrowed = 0;
 
     RegisterUser() {}
 
