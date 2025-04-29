@@ -26,7 +26,7 @@ void Main::main() try {
             case 1: {// register new users
                 int nextID = RegisterUser::generateNextLibraryID(); 
                 RegisterUser newUser;
-                newUser.promptUserData(nextID);
+                newUser.promptUserData(term, nextID);
                 newUser.saveToFile(lib);
                 newUser.printSummary();
                 break;

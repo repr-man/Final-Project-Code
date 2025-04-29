@@ -120,10 +120,10 @@ private:
         return userCount + 1;
     }
 
-    void registerNewUser(Library& lib) {
+    void registerNewUser(Library& lib, Terminal& term) {
         int nextID = generateNextLibraryID();  
         RegisterUser newUser;
-        newUser.promptUserData(nextID); 
+        newUser.promptUserData(term, nextID); 
         newUser.printSummary();
         newUser.saveToFile(lib);
     }
@@ -149,7 +149,7 @@ private:
         case 1: { // Register New User
             int nextID = generateNextLibraryID();
             RegisterUser newUser;
-            newUser.promptUserData(nextID);
+            newUser.promptUserData(term, nextID);
             newUser.printSummary();
             newUser.saveToFile(lib);
             cout << "New user registered successfully!\n";
