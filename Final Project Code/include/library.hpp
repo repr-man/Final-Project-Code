@@ -68,7 +68,8 @@ public:
 
     /// Returns a list of all the inventory items in the library.
     ResultList<InventoryItem> allInventory() {
-        auto vec = std::vector<InventoryItem*>(inventory.size());
+        auto vec = std::vector<InventoryItem*>();
+        vec.reserve(inventory.size());
         for(int i = 0; i < inventory.size(); ++i) {
             vec.push_back(&inventory[i]);
         }
