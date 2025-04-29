@@ -114,10 +114,6 @@ public:
     template <typename T> requires LibraryStorageType<T>
     void flushVector();
 
-    //made this for addUser (didn't work the program still aborts)
-    template<typename T>
-    void flushSingleVector(std::vector<T>& vec, std::filesystem::path(saveFileLocation));
-
     /// Writes all the contents to disk.
     void flush();
 }; 
