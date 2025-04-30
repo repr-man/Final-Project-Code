@@ -255,6 +255,27 @@ const std::vector<User>& Library::getUsers() const {
     return users;
 }
 
+// edit inventory
+void Library::updateInventory(int index, std::string&& type, std::string&& name, std::string&& author, std::string&& publisher) {
+    if (index < 0 || index >= static_cast<int>(inventory.size())) {
+        std::cerr << "Error: Invalid inventory index.\n";
+        return;
+    }
+
+    // Preserve the current borrower ID
+    int currentBorrowerID = Library::inventory[index].getBorrowerID();
+
+    // Replace the existing item with a new one
+    inventory[index] = InventoryItem(
+        std::move(type),
+        std::move(name),
+        std::move(author),
+        std::move(publisher),
+        currentBorrowerID
+    );
+}
+
+
 
 
 Library::~Library() { 

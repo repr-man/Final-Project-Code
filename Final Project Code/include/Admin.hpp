@@ -27,7 +27,7 @@ public:
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
-            cout << "1. Edit Inventory\n";
+            cout << "1. Inventory Managment\n";
             cout << "2. User Managment\n";
             cout << "3. Borrow Book\n";
             cout << "4. Search Function\n";
@@ -46,7 +46,7 @@ public:
 
             switch (choice) {
             case 1:
-                cout << "Editing Inventory...\n";
+                cout << "Inventory Management...\n";
                 editInventory(lib, term);
                 break;
             case 2:
@@ -300,9 +300,50 @@ private:
             cout << "Item deleted successfully.\n";
             break;
         }
-        case 3://edit item
+        case 3: {
+            // Edit Item
+            const auto& items = lib.getInventory();
 
+            if (items.empty()) {
+                cout << "No items in inventory to edit.\n";
+                break;
+            }
+
+            cout << "\n--- Current Inventory ---\n";
+            for (size_t i = 0; i < items.size(); ++i) {
+                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n";
+            }
+
+            int editIndex;
+            cout << "Enter the number of the item to edit (0 to cancel): ";
+            while (!(cin >> editIndex) || editIndex < 0 || editIndex > static_cast<int>(items.size())) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid choice. Enter a valid item number: ";
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (editIndex == 0) {
+                cout << "Edit cancelled.\n";
+                break;
+            }
+
+            // Prompt for new values
+            string newType, newName, newAuthor, newPublisher;
+            cout << "Enter new type: ";
+            getline(cin, newType);
+            cout << "Enter new name/title: ";
+            getline(cin, newName);
+            cout << "Enter new author: ";
+            getline(cin, newAuthor);
+            cout << "Enter new publisher: ";
+            getline(cin, newPublisher);
+
+            // Apply updates
+            lib.updateInventory(editIndex - 1, std::move(newType), std::move(newName), std::move(newAuthor), std::move(newPublisher));
+            cout << "Item updated successfully.\n";
             break;
+        }
         case 4:
             cout << "Returning to Admin Menu...\n";
             break;
