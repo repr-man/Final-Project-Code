@@ -158,6 +158,10 @@ public:
             std::cin >> std::ws;
             std::getline(std::cin, buf);
 
+            if(std::cin.eof()) {
+                Main::safeExit();
+            }
+
             auto errMsg = validator(buf);
             if(errMsg.size() > 0) {
                 printError(errMsg);
@@ -196,6 +200,11 @@ public:
             std::string buf;
             std::cin >> std::ws;
             std::getline(std::cin, buf);
+
+            if(std::cin.eof()) {
+                Main::safeExit();
+            }
+
             auto strStream = std::stringstream(buf);
             std::string item;
             while (strStream >> item) {

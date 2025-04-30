@@ -200,7 +200,7 @@ void Library::addUser(
         std::move(phone),
         std::move(email),
         std::move(password),
-        std::stoll(std::move(institutionId)),
+        std::move(std::stoll(institutionId)),
         0
     );
     users.push_back(newItem);

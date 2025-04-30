@@ -1,5 +1,7 @@
 #pragma once
 #include "library.hpp"
+#include "terminal.hpp"
+#include "validators.hpp"
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -33,33 +35,22 @@ public:
         return userCount + 1;
     }
 
-    void promptUserData(int nextID) { 
+    void promptUserData(Terminal& term, int nextID) { 
         libraryID = nextID;
 
         cout << "\n--- Registering ---\n";
-        cout << "Enter User Type (e.g. student, faculty): ";
-        std::getline(cin >> std::ws, userType);
-
-        cout << "Enter First Name: ";
-        std::getline(cin, firstName);
-
-        cout << "Enter Last Name: ";
-        std::getline(cin, lastName);
-
-        cout << "Enter Address: ";
-        std::getline(cin, address);
-
-        cout << "Enter Phone Number: ";
-        std::getline(cin, phone);
-
-        cout << "Enter Email: ";
-        std::getline(cin, email);
-
-        cout << "Enter Password: ";
-        std::getline(cin, password);
-
-        cout << "Enter School ID (e.g. campus ID): ";
-        std::getline(cin, schoolID);
+        userType = term.promptForInput<string, validateRole>(
+            "Enter User Type (e.g. student, faculty)"
+        );
+        firstName = term.promptForInput<string>("Enter First Name");
+        lastName = term.promptForInput<string>("Enter Last Name");
+        address = term.promptForInput<string>("Enter Address");
+        phone = term.promptForInput<string, validatePhone>("Enter Phone Number");
+        email = term.promptForInput<string, validateEmail>("Enter Email");
+        password = term.promptForInput<string>("Enter Password");
+        schoolID = to_string(term.promptForInput<long, validateInstitutionID>(
+            "Enter School ID (e.g. campus ID)"
+        ));
     }
 
     void printSummary() const {

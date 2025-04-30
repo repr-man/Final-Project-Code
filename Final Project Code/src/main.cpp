@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 #include "main.hpp"
 #include "terminal.hpp"
 #include "RegisterUser.hpp"
@@ -10,6 +11,7 @@
 using namespace std;
 
 void Main::safeExit() {
+    std::cout << std::endl;
     throw SafeExit();
 }
 
@@ -20,13 +22,13 @@ void Main::main() try {
     while (true) {
         cout << "\nLibrary Management System\n";
         cout << "1. Register New User\n2. Admin Login\n3. User Login\n4. Exit\n";
-        choice = term.promptForInput<int>("Enter your choice");
+        choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
         switch (choice) {
             case 1: {// register new users
                 int nextID = RegisterUser::generateNextLibraryID(); 
                 RegisterUser newUser;
-                newUser.promptUserData(nextID);
+                newUser.promptUserData(term, nextID);
                 newUser.saveToFile(lib);
                 newUser.printSummary();
                 break;

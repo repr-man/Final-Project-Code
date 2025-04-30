@@ -32,7 +32,7 @@ public:
         string bookTitle = term.promptForInput<string>("Enter the title of the book to return");
         auto book = lib.search({InventoryItem::Name}, {bookTitle});
         if (book.size() == 0) {
-            term.printError("Book not found or not borrowed by this user.");
+            term.printError("Book not found.");
             return;
         }
 
