@@ -219,6 +219,11 @@ void Library::remove(T* item) {
     vec->erase(vec->begin() + idx);
 }
 
+template void Library::remove<InventoryItem>(InventoryItem* item);
+template void Library::remove<User>(User* item);
+template void Library::remove<HistoryItem>(HistoryItem* item);
+template void Library::remove<Librarian>(Librarian* item);
+
 Library::~Library() { 
     flush();
 }
