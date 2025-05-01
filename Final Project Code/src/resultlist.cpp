@@ -34,6 +34,7 @@ template <typename T> requires LibraryStorageType<T>
 void ResultList<T>::remove(int index) {
     assert(index >= 0 && index < items.size());
 
+    lib.remove(items[index]);
     items.erase(items.begin() + index);
     modified = true;
 }

@@ -41,7 +41,7 @@ public:
 
     void printSummary() const {
         cout << "\nUser Registered Successfully:\n";
-        cout << "ID: " << setw(10) << setfill('0') << libraryID << "\n";
+        cout << "ID: " << setw(10) << setfill('0') << libraryID << setfill(' ') << "\n";
         cout << "Name: " << firstName << " " << lastName << "\n";
         cout << "Address: " << address << "\n";
         cout << "Phone: " << phone << "\n";

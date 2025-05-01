@@ -8,6 +8,7 @@
 #include "Return.hpp"
 #include "SearchFunction.hpp"
 #include "library.hpp"
+#include "resultlist.hpp"
 #include "terminal.hpp"
 #include "util.hpp"
 #include "validators.hpp"
@@ -68,6 +69,7 @@ public:
                     case 1: {
                         auto res = s.searchUser(lib, term);
                         term.printTable(res, "ID", "Role", "First Name", "Last Name", "Address", "Phone Number", "Email", "Password", "Institution ID", "# Items Borrowed");
+                        editUserInfoAfterSearch(res);
                         break;
                     }
                     case 2: {
@@ -150,19 +152,7 @@ private:
                 );
             }
 
-            string newFirstName = term.promptForInput<string>("Enter new first name");
-            string newLastName = term.promptForInput<string>("Enter new last name");
-            string newAddress = term.promptForInput<string>("Enter new address");
-            string newPhone = term.promptForInput<string, validatePhone>("Enter new phone number");
-            string newEmail = term.promptForInput<string, validateEmail>("Enter new email");
-
-            users[userIndex - 1].first = std::move(newFirstName);
-            users[userIndex - 1].last = std::move(newLastName);
-            users[userIndex - 1].address = std::move(newAddress);
-            users[userIndex - 1].phone = std::move(newPhone);
-            users[userIndex - 1].email = std::move(newEmail);
-
-            cout << "User information updated successfully.\n";
+            updateUserInfo(users[userIndex - 1]);
             break;
         }
 
@@ -301,6 +291,87 @@ private:
         default:
             UNREACHABLE;
         }
+    }
+
+    void editUserInfoAfterSearch(ResultList<User>& res) {
+        cout << "\n--- User Management Menu ---\n";
+        cout << "1. Update User Information\n";
+        cout << "2. Delete User\n";
+        cout << "3. Back to Admin Menu\n";
+        int choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
+
+        int userIndex = term.promptForInput<int>(
+            "Enter the number of the user to update (0 to cancel)"
+        );
+        while (true) {
+            if (userIndex == 0) {
+                return;
+                cout << "Operation cancelled.\n";
+            } else if (userIndex > 0 && userIndex <= res.size()) {
+                break;
+            }
+            userIndex = term.promptForInput<int>(
+                "Invalid choice. Enter a valid user number"
+            );
+        }
+
+        switch (choice) {
+        case 1:
+            updateUserInfo(res[userIndex - 1]);
+            break;
+        case 2:
+            res.remove(userIndex - 1);
+            cout << "User deleted successfully.\n";
+            break;
+        case 3:
+            cout << "Returning to Admin Menu...\n";
+            break;
+        default:
+            UNREACHABLE;
+        }
+    }
+
+    void updateUserInfo(User& user) {
+        term.printOptions("--- Select Fields to Update ---", {
+            "First Name",
+            "Last Name",
+            "Address",
+            "Phone Number",
+            "Email"
+        });
+        auto fields = term.promptForInput<
+            vector<User::FieldTag>,
+            validateNumRange<1, 5>
+        >(
+            "Enter space-separated list of fields to update"
+        );
+
+        for (auto& field : fields) {
+            switch (field) {
+                using enum User::FieldTag;
+                case First:
+                    user.first = term.promptForInput<string>("Enter new first name");
+                    break;
+                case Last:
+                    user.last = term.promptForInput<string>("Enter new last name");
+                    break;
+                case Address:
+                    user.address = term.promptForInput<string>("Enter new address");
+                    break;
+                case Phone:
+                    user.phone = term.promptForInput<string, validatePhone>(
+                        "Enter new phone number"
+                    );
+                    break;
+                case Email:
+                    user.email = term.promptForInput<string, validateEmail>("Enter new email");
+                    break;
+                default:
+                    UNREACHABLE;
+            }
+        }
+
+        cout << "User information updated successfully.\n";
     }
 
 
