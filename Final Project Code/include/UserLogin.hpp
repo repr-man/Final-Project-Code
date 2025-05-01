@@ -72,9 +72,10 @@ public:
         while (true) {
             cout << "\n--- User Menu ---\n";
             cout << "1. View Available Books\n";
-            cout << "2. Search Function\n";
-            cout << "3. Print User Summary\n";
-            cout << "4. Logout\n";
+            cout << "2. View Borrowed Books\n";
+            cout << "3. Search Function\n";
+            cout << "4. Print User Summary\n";
+            cout << "5. Logout\n";
             int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
             switch (choice) {
@@ -85,7 +86,10 @@ public:
                     "Type", "Name", "Author", "Publisher", "Borrower ID"
                 );
                 break;
-            case 2: {
+            case 2: // view borrowed books
+
+                break;
+            case 3: {
                 const auto res = SearchFunction().searchInventory(lib, term);
                 if (res.size() == 0) {
                     cout << "No results found.\n";
@@ -94,10 +98,10 @@ public:
                 term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
                 break;
             }
-            case 3:
+            case 4:
                 printUserSummary();
                 break;
-            case 4:
+            case 5:
                 cout << "Logging out...\n";
                 return;
             default:

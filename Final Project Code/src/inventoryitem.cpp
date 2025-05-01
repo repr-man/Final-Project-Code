@@ -1,4 +1,6 @@
 #include "inventoryitem.hpp"
+#include "util.hpp"
+
 
 using namespace std;
 
