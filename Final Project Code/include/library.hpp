@@ -67,22 +67,13 @@ public:
 
 
     /// Returns a list of all the inventory items in the library.
-    ResultList<InventoryItem> allInventory() {
-        auto vec = std::vector<InventoryItem*>();
-        vec.reserve(inventory.size());
-        for(int i = 0; i < inventory.size(); ++i) {
-            vec.push_back(&inventory[i]);
-        }
-        return ResultList<InventoryItem>(*this, std::move(vec));
-    }
+    ResultList<InventoryItem> allInventory();
+
+    /// Returns a list of all the users in the library.
+    ResultList<User> allUsers();
 
     // to add an inventory item
     void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
-
-    // to delete an inventory item
-    const std::vector<InventoryItem>& getInventory() const;
-    void removeInventory(size_t index);
-
 
     void addHistory(long userID, std::string&& name);
 

@@ -72,8 +72,8 @@ void Main::main() try {
                 if (authenticated) {
                     cout << "Admin login successful.\n";
                     string fullName = inputFirst + " " + inputLast;
-                    Admin admin(fullName, inputPass);
-                    admin.showMenu(lib, term);
+                    Admin admin(lib, term, fullName, inputPass);
+                    admin.showMenu();
                 }
                 else {
                     cout << "Invalid admin credentials.\n";

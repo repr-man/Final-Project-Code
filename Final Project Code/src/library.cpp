@@ -153,6 +153,24 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
+ResultList<InventoryItem> Library::allInventory() {
+    auto vec = std::vector<InventoryItem*>();
+    vec.reserve(inventory.size());
+    for(int i = 0; i < inventory.size(); ++i) {
+        vec.push_back(&inventory[i]);
+    }
+    return ResultList<InventoryItem>(*this, std::move(vec));
+}
+
+ResultList<User> Library::allUsers() {
+    auto vec = std::vector<User*>();
+    vec.reserve(users.size());
+    for(int i = 0; i < users.size(); ++i) {
+        vec.push_back(&users[i]);
+    }
+    return ResultList<User>(*this, std::move(vec));
+}
+
 // to add inventory
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
