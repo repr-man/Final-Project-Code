@@ -1,4 +1,5 @@
 #include "history.hpp"
+#include "util.hpp"
 #include <string>
 
 std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item) {

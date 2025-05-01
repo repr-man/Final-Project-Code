@@ -1,4 +1,6 @@
 #include "librarian.hpp"
+#include "util.hpp"
+
 
 std::istream& operator>>(std::istream& is, Librarian::FieldTag& item) {
     int val;
