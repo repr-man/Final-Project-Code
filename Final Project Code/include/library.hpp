@@ -108,9 +108,6 @@ public:
         std::string&& institutionId
     );
 
-    // edit inventory
-    void updateInventory(int index, std::string&& type, std::string&& name, std::string&& author, std::string&& publisher);
-
     template <typename T> requires LibraryStorageType<T>
     void remove(T* item);
 

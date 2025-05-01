@@ -160,20 +160,6 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
 
 }
 
-// the following two loops are for deleting inventory
-const std::vector<InventoryItem>& Library::getInventory() const {
-    return inventory;
-}
-
-void Library::removeInventory(size_t index) {
-    if (index < inventory.size()) {
-        inventory.erase(inventory.begin() + index);
-    }
-    else {
-        std::cerr << "Invalid inventory index.\n";
-    }
-}
-
 void Library::addHistory(long userID, std::string&& name) {
     auto newItem = HistoryItem(userID, std::move(name));
     history.push_back(newItem);
@@ -254,29 +240,6 @@ void Library::updateUser(size_t index, std::string& firstName, std::string& last
 const std::vector<User>& Library::getUsers() const {
     return users;
 }
-
-// edit inventory
-void Library::updateInventory(int index, std::string&& type, std::string&& name, std::string&& author, std::string&& publisher) {
-    if (index < 0 || index >= static_cast<int>(inventory.size())) {
-        std::cerr << "Error: Invalid inventory index.\n";
-        return;
-    }
-
-    // Preserve the current borrower ID
-    int currentBorrowerID = Library::inventory[index].getBorrowerID();
-
-    // Replace the existing item with a new one
-    inventory[index] = InventoryItem(
-        std::move(type),
-        std::move(name),
-        std::move(author),
-        std::move(publisher),
-        currentBorrowerID
-    );
-}
-
-
-
 
 Library::~Library() { 
     flush();

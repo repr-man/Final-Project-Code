@@ -240,29 +240,20 @@ private:
 
 
     void editInventory(Library& lib, Terminal& term) {
-        int choice;
         cout << "\n--- Inventory Menu ---\n";
         cout << "1. Add New Item\n";
         cout << "2. Delete Item\n";
         cout << "3. Edit Item\n";
         cout << "4. Back to Admin Menu\n";
         cout << "Enter your choice: ";
-        cin >> choice;
-        cin.ignore(); // Clear newline from input buffer
+        int choice = term.promptForInput<int>("Enter your choice");
 
         switch (choice) {
         case 1: {
-            string type, name, author, publisher;
-
-            cout << "Enter type: ";
-            getline(cin, type);
-            cout << "Enter name/title: ";
-            getline(cin, name);
-            cout << "Enter author: ";
-            getline(cin, author);
-            cout << "Enter publisher: ";
-            getline(cin, publisher);
-
+            string type = term.promptForInput<string>("Enter type");
+            string name = term.promptForInput<string>("Enter name/title");
+            string author = term.promptForInput<string>("Enter author");
+            string publisher = term.promptForInput<string>("Enter publisher");
             string borrowed = "-1"; 
 
             lib.addInventory(std::move(type), std::move(name), std::move(author), std::move(publisher), std::move(borrowed));
@@ -270,77 +261,70 @@ private:
             break;
         }
         case 2: {
-            const auto& items = lib.getInventory();
+            auto items = lib.allInventory();
 
-            if (items.empty()) {
+            if (items.size() == 0) {
                 cout << "No items in inventory to delete.\n";
                 break;
             }
 
             cout << "\n--- Current Inventory ---\n";
             for (size_t i = 0; i < items.size(); ++i) {
-                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n"; // You can customize this
+                cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int delIndex;
-            cout << "Enter the number of the item to delete (0 to cancel): ";
-            while (!(cin >> delIndex) || delIndex < 0 || delIndex > static_cast<int>(items.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid item number: ";
-            }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+            int delIndex = term.promptForInput<int>(
+                "Enter the number of the item to delete (0 to cancel)"
+            );
             if (delIndex == 0) {
                 cout << "Delete cancelled.\n";
                 break;
             }
 
-            lib.removeInventory(delIndex - 1);
+            items.remove(delIndex - 1);
             cout << "Item deleted successfully.\n";
             break;
         }
         case 3: {
             // Edit Item
-            const auto& items = lib.getInventory();
+            auto items = lib.allInventory();
 
-            if (items.empty()) {
+            if (items.size() == 0) {
                 cout << "No items in inventory to edit.\n";
                 break;
             }
 
             cout << "\n--- Current Inventory ---\n";
             for (size_t i = 0; i < items.size(); ++i) {
-                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n";
+                cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int editIndex;
-            cout << "Enter the number of the item to edit (0 to cancel): ";
-            while (!(cin >> editIndex) || editIndex < 0 || editIndex > static_cast<int>(items.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid item number: ";
-            }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-            if (editIndex == 0) {
-                cout << "Edit cancelled.\n";
-                break;
+            int editIndex = term.promptForInput<int>(
+                "Enter the number of the item to edit (0 to cancel)"
+            );
+            while (true) {
+                if (editIndex == 0) {
+                    cout << "Edit cancelled.\n";
+                    return;
+                } else if (editIndex > 0 && editIndex <= items.size()) {
+                    break;
+                }
+                editIndex = term.promptForInput<int>(
+                    "Invalid choice. Enter a valid item number"
+                );
             }
 
             // Prompt for new values
-            string newType, newName, newAuthor, newPublisher;
-            cout << "Enter new type: ";
-            getline(cin, newType);
-            cout << "Enter new name/title: ";
-            getline(cin, newName);
-            cout << "Enter new author: ";
-            getline(cin, newAuthor);
-            cout << "Enter new publisher: ";
-            getline(cin, newPublisher);
+            string newType = term.promptForInput<string>("Enter new type");
+            string newName = term.promptForInput<string>("Enter new name/title");
+            string newAuthor = term.promptForInput<string>("Enter new author");
+            string newPublisher = term.promptForInput<string>("Enter new publisher");
 
             // Apply updates
-            lib.updateInventory(editIndex - 1, std::move(newType), std::move(newName), std::move(newAuthor), std::move(newPublisher));
+            items[editIndex - 1].type = std::move(newType);
+            items[editIndex - 1].name = std::move(newName);
+            items[editIndex - 1].author = std::move(newAuthor);
+            items[editIndex - 1].publisher = std::move(newPublisher);
             cout << "Item updated successfully.\n";
             break;
         }

@@ -30,6 +30,14 @@ int ResultList<T>::size() const {
     return items.size();
 }
 
+template <typename T> requires LibraryStorageType<T>
+void ResultList<T>::remove(int index) {
+    assert(index >= 0 && index < items.size());
+
+    items.erase(items.begin() + index);
+    modified = true;
+}
+
 template class ResultList<InventoryItem>;
 template class ResultList<User>;
 template class ResultList<Librarian>;
