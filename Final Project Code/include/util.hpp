@@ -14,5 +14,11 @@
 }
 
 inline int generateNextLibraryID(Library& lib) {
-    return lib.allUsers().size() + 1;
+    int nextID = -1;
+    for (int i = 0; i < lib.allUsers().size(); ++i) {
+        if (lib.allUsers()[i].id > nextID) {
+            nextID = lib.allUsers()[i].id;
+        }
+    }
+    return nextID + 1;
 }
