@@ -55,8 +55,3 @@ std::array<std::string, 5> InventoryItem::providePrintableData() const {
         std::to_string(borrowerID)
     };
 }
-
-// for the edit inventory item
-int InventoryItem::getBorrowerID() const {
-    return borrowerID;
-}

@@ -9,7 +9,6 @@ class InventoryItem : public Printable<5> {
 public:
     std::string type, name, author, publisher;
     int borrowerID;
-    int getBorrowerID() const;
     
     static constexpr int Offset = 0;
     inline static const auto SaveFileLocation
