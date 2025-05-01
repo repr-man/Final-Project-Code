@@ -78,6 +78,8 @@ public:
                     case 3:
                         cout << "Returning to Admin Menu...\n";
                         return;
+                    default:
+                        UNREACHABLE;
                 }
                 break;
 
@@ -93,6 +95,8 @@ public:
             case 7:
                 cout << "Logging out...\n";
                 return;
+            default:
+                UNREACHABLE;
             }
         }
     }
@@ -197,6 +201,8 @@ private:
         case 4:
             cout << "Returning to Admin Menu...\n";
             break;
+        default:
+            UNREACHABLE;
         }
     }
 
@@ -292,6 +298,8 @@ private:
         case 4:
             cout << "Returning to Admin Menu...\n";
             break;
+        default:
+            UNREACHABLE;
         }
     }
 

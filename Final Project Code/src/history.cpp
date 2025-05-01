@@ -20,6 +20,7 @@ bool HistoryItem::matches(HistoryItem::FieldTag field, const std::string& value)
         case Name:
             return name == value;
     }
+    UNREACHABLE;
 }
 
 std::string HistoryItem::serialize() const {
