@@ -153,25 +153,29 @@ ResultList<Librarian> Library::search(
     return searchVector(fields, values, librarians);
 }
 
+ResultList<InventoryItem> Library::allInventory() {
+    auto vec = std::vector<InventoryItem*>();
+    vec.reserve(inventory.size());
+    for(int i = 0; i < inventory.size(); ++i) {
+        vec.push_back(&inventory[i]);
+    }
+    return ResultList<InventoryItem>(*this, std::move(vec));
+}
+
+ResultList<User> Library::allUsers() {
+    auto vec = std::vector<User*>();
+    vec.reserve(users.size());
+    for(int i = 0; i < users.size(); ++i) {
+        vec.push_back(&users[i]);
+    }
+    return ResultList<User>(*this, std::move(vec));
+}
+
 // to add inventory
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
 
-}
-
-// the following two loops are for deleting inventory
-const std::vector<InventoryItem>& Library::getInventory() const {
-    return inventory;
-}
-
-void Library::removeInventory(size_t index) {
-    if (index < inventory.size()) {
-        inventory.erase(inventory.begin() + index);
-    }
-    else {
-        std::cerr << "Invalid inventory index.\n";
-    }
 }
 
 void Library::addHistory(long userID, std::string&& name) {
@@ -214,69 +218,6 @@ void Library::remove(T* item) {
     int idx = item - &*vec->cbegin();
     vec->erase(vec->begin() + idx);
 }
-
-void Library::removeUser(size_t index) {
-    if (index < users.size()) {
-        users.erase(users.begin() + index);
-    }
-    else {
-        std::cerr << "Invalid user index.\n";
-    }
-}
-
-void Library::saveUsers() {
-    std::ofstream outFile(User::SaveFileLocation);
-    if (!outFile) {
-        std::cerr << "Failed to open users file for saving.\n";
-        return;
-    }
-
-    for (const auto& user : Library::users) {
-        outFile << user.serialize() << '\n';
-    }
-}
-
-void Library::updateUser(size_t index, std::string& firstName, std::string& lastName, std::string& address, std::string& phone, std::string& email)
-{
-    if (index < users.size()) {
-        users[index].first = firstName;
-        users[index].last = lastName;
-        users[index].address = address;
-        users[index].phone = phone;
-        users[index].email = email;
-        saveUsers();
-    }
-    else {
-        std::cerr << "Invalid user index.\n";
-    }
-}
-
-const std::vector<User>& Library::getUsers() const {
-    return users;
-}
-
-// edit inventory
-void Library::updateInventory(int index, std::string&& type, std::string&& name, std::string&& author, std::string&& publisher) {
-    if (index < 0 || index >= static_cast<int>(inventory.size())) {
-        std::cerr << "Error: Invalid inventory index.\n";
-        return;
-    }
-
-    // Preserve the current borrower ID
-    int currentBorrowerID = Library::inventory[index].getBorrowerID();
-
-    // Replace the existing item with a new one
-    inventory[index] = InventoryItem(
-        std::move(type),
-        std::move(name),
-        std::move(author),
-        std::move(publisher),
-        currentBorrowerID
-    );
-}
-
-
-
 
 Library::~Library() { 
     flush();

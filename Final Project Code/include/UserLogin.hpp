@@ -5,6 +5,7 @@
 #include "library.hpp"
 #include "terminal.hpp"
 #include "user.hpp"
+#include "util.hpp"
 #include "validators.hpp"
 #include <cstdio>
 #include <iostream>
@@ -100,7 +101,7 @@ public:
                 cout << "Logging out...\n";
                 return;
             default:
-                cout << "Invalid choice. Try again.\n";
+                UNREACHABLE;
             }
         }
     }

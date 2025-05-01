@@ -25,6 +25,7 @@ bool Librarian::matches(Librarian::FieldTag field, const std::string& value) con
         case Password:
             return password == value;
     }
+    UNREACHABLE;
 }
 
 std::string Librarian::serialize() const {

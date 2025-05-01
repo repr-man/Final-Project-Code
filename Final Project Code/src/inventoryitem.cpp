@@ -35,6 +35,7 @@ bool InventoryItem::matches(InventoryItem::FieldTag field, const std::string& va
         case BorrowerID:
             return borrowerID == stoi(value);
     }
+    UNREACHABLE;
 }
 
 std::string InventoryItem::serialize() const {
@@ -53,9 +54,4 @@ std::array<std::string, 5> InventoryItem::providePrintableData() const {
         publisher,
         std::to_string(borrowerID)
     };
-}
-
-// for the edit inventory item
-int InventoryItem::getBorrowerID() const {
-    return borrowerID;
 }

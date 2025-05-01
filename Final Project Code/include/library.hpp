@@ -67,34 +67,17 @@ public:
 
 
     /// Returns a list of all the inventory items in the library.
-    ResultList<InventoryItem> allInventory() {
-        auto vec = std::vector<InventoryItem*>();
-        vec.reserve(inventory.size());
-        for(int i = 0; i < inventory.size(); ++i) {
-            vec.push_back(&inventory[i]);
-        }
-        return ResultList<InventoryItem>(*this, std::move(vec));
-    }
+    ResultList<InventoryItem> allInventory();
+
+    /// Returns a list of all the users in the library.
+    ResultList<User> allUsers();
 
     // to add an inventory item
-    void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
-
-    // to delete an inventory item
-    const std::vector<InventoryItem>& getInventory() const;
-    void removeInventory(size_t index);
-
+    void addInventory(
+        std::string&& type,
+        std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
     void addHistory(long userID, std::string&& name);
-
-    
-    //user management 
-    void removeUser(size_t index);
-    void saveUsers();
-    void updateUser(size_t index,  std::string& firstName, std::string& lastName,
-         std::string& address, std::string& phone,  std::string& email);
-    const std::vector<User>& getUsers() const;
-
-
 
     void addUser(
         long userID,
@@ -107,9 +90,6 @@ public:
         std::string&& password,
         std::string&& institutionId
     );
-
-    // edit inventory
-    void updateInventory(int index, std::string&& type, std::string&& name, std::string&& author, std::string&& publisher);
 
     template <typename T> requires LibraryStorageType<T>
     void remove(T* item);

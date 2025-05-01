@@ -21,20 +21,6 @@ public:
 
     RegisterUser() {}
 
-    static int generateNextLibraryID() {
-        ifstream inFile("data/users.txt");
-        string line;
-        int userCount = 0;
-
-        while (getline(inFile, line)) {
-            if (!line.empty()) {
-                userCount++;
-            }
-        }
-
-        return userCount + 1;
-    }
-
     void promptUserData(Terminal& term, int nextID) { 
         libraryID = nextID;
 

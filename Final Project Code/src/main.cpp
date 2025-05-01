@@ -2,6 +2,7 @@
 #include <iostream>
 #include "main.hpp"
 #include "terminal.hpp"
+#include "util.hpp"
 #include "RegisterUser.hpp"
 #include "SearchFunction.hpp"
 #include "Borrowing.hpp"
@@ -26,7 +27,7 @@ void Main::main() try {
 
         switch (choice) {
             case 1: {// register new users
-                int nextID = RegisterUser::generateNextLibraryID(); 
+                int nextID = generateNextLibraryID(lib); 
                 RegisterUser newUser;
                 newUser.promptUserData(term, nextID);
                 newUser.saveToFile(lib);
@@ -36,47 +37,22 @@ void Main::main() try {
 
             case 2:  {  // Admin login (librarian) 
                 cout << "\n--- Admin Login ---\n";
-                string inputFirst, inputLast, inputPass;
-                cout << "Enter admin first name: ";
-                getline(cin >> ws, inputFirst);
+                string inputFirst = term.promptForInput<string>("Enter admin first name");
+                string inputLast = term.promptForInput<string>("Enter admin last name");
+                string inputPass = term.promptForInput<string>("Enter admin password");
+                auto res = lib.search(
+                    {User::First, User::Last, User::Password},
+                    {inputFirst, inputLast, inputPass}
+                );
 
-                cout << "Enter admin last name: ";
-                getline(cin >> ws, inputLast);
-
-                cout << "Enter admin password: ";
-                getline(cin >> ws, inputPass);
-
-                ifstream adminFile(Librarian::SaveFileLocation);
-                if (!adminFile) {
-                    cerr << "Failed to open librarian file. Check the path.\n";
-                    break;
-                }
-
-                string line;
-                bool authenticated = false;
-
-                while (getline(adminFile, line)) {
-                    stringstream ss(line);
-                    string first, last, storedPass;
-
-                    getline(ss, first, ';');
-                    getline(ss, last, ';');
-                    getline(ss, storedPass);
-
-                    if (inputFirst == first && inputLast == last && inputPass == storedPass) {
-                        authenticated = true;
-                        break;
-                    }
-                }
-
-                if (authenticated) {
+                if (res.size() > 0) {
                     cout << "Admin login successful.\n";
                     string fullName = inputFirst + " " + inputLast;
-                    Admin admin(fullName, inputPass);
-                    admin.showMenu(lib, term);
+                    Admin admin(lib, term, fullName, inputPass);
+                    admin.showMenu();
                 }
                 else {
-                    cout << "Invalid admin credentials.\n";
+                    term.printError("Invalid admin credentials.");
                 }
 
                 break;
@@ -90,8 +66,6 @@ void Main::main() try {
             case 4: //Exit Program
                 cout << "Exiting system.\n";
                 Main::safeExit();
-            default:
-                cout << "Invalid choice. Try again.\n";
         }
     }
 } catch (const Main::SafeExit&) {}

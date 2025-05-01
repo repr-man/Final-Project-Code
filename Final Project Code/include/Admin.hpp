@@ -9,21 +9,25 @@
 #include "SearchFunction.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
+#include "util.hpp"
+#include "validators.hpp"
 
 
 using namespace std;
 
 class Admin {
 private:
+    Library& lib;
+    Terminal& term;
     string username, password;
 public:
-    Admin(string user, string pass) : username(user), password(pass) {}
+    Admin(Library& lib, Terminal& term, string user, string pass) : lib(lib), term(term), username(user), password(pass) {}
 
     bool login(string inputUser, string inputPass) {
         return (inputUser == username && inputPass == password);
     }
 
-    void showMenu(Library& lib, Terminal& term) {
+    void showMenu() {
         int choice;
         while (true) {
             cout << "\n--- Admin Menu ---\n";
@@ -34,24 +38,16 @@ public:
             cout << "5. Active Users\n";
             cout << "6. Return Book\n";
             cout << "7. Logout\n";
-            cout << "Enter your choice: ";
-            if (!(cin >> choice)) {
-                cin.clear(); // Clear error state
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Flush buffer
-                cout << "Invalid input. Please enter a number.\n";
-                continue; // Prompt again
-            }
-
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear newline after valid input
+            choice = term.promptForInput<int, validateNumRange<1, 7>>("Enter your choice");
 
             switch (choice) {
             case 1:
                 cout << "Inventory Management...\n";
-                editInventory(lib, term);
+                editInventory();
                 break;
             case 2:
                 cout << "User Management...\n";
-                editUserInfo(lib, term);
+                editUserInfo();
                 break;
             case 3: {
                 cout << "Borrowing books...\n";
@@ -65,7 +61,7 @@ public:
                 cout << "1. User\n";
                 cout << "2. Inventory\n";
                 cout << "3. Exit\n";
-                choice = term.promptForInput<int>("Enter your choice");
+                choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
                     
                 SearchFunction s;
                 switch (choice) {
@@ -80,11 +76,10 @@ public:
                         break;
                     }
                     case 3:
-                        cout << "Exiting system.\n";
+                        cout << "Returning to Admin Menu...\n";
                         return;
                     default:
-                        cout << "Invalid choice. Try again.\n";
-                        throw string("Error: Invalid choice.");
+                        UNREACHABLE;
                 }
                 break;
 
@@ -101,63 +96,36 @@ public:
                 cout << "Logging out...\n";
                 return;
             default:
-                cout << "Invalid choice. Try again.\n";
+                UNREACHABLE;
             }
         }
     }
 private: 
-    int generateNextLibraryID() {
-        ifstream inFile("data/users.txt");
-        string line;
-        int userCount = 0;
-
-        while (getline(inFile, line)) {
-            if (!line.empty()) {
-                userCount++;
-            }
-        }
-
-        return userCount + 1;
-    }
-
-    void registerNewUser(Library& lib, Terminal& term) {
-        int nextID = generateNextLibraryID();  
+    void registerNewUser() {
+        int nextID = generateNextLibraryID(lib);  
         RegisterUser newUser;
         newUser.promptUserData(term, nextID); 
         newUser.printSummary();
         newUser.saveToFile(lib);
     }
 
-    void editUserInfo(Library& lib, Terminal& term) {
-        int choice;
+    void editUserInfo() {
         cout << "\n--- User Management Menu ---\n";
         cout << "1. Register New User\n";
         cout << "2. Update User Information\n";
         cout << "3. Delete User\n";
         cout << "4. Back to Admin Menu\n";
-        cout << "Enter your choice: ";
-
-        if (!(cin >> choice)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid input. Please enter a number.\n";
-            return;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear buffer
+        int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
         switch (choice) {
         case 1: { // Register New User
-            int nextID = generateNextLibraryID();
-            RegisterUser newUser;
-            newUser.promptUserData(term, nextID);
-            newUser.printSummary();
-            newUser.saveToFile(lib);
+            registerNewUser();
             cout << "New user registered successfully!\n";
             break;
         }
         case 2:{ // Update User
-            const auto& users = lib.getUsers();
-            if (users.empty()) {
+            auto users = lib.allUsers();
+            if (users.size() == 0) {
                 cout << "No users to update.\n";
                 break;
             }
@@ -167,41 +135,40 @@ private:
                 cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
             }
 
-            int userIndex;
-            cout << "Enter the number of the user to update (0 to cancel): ";
-            while (!(cin >> userIndex) || userIndex < 0 || userIndex > static_cast<int>(users.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid user number: ";
+            int userIndex = term.promptForInput<int>(
+                "Enter the number of the user to update (0 to cancel)"
+            );
+            while (true) {
+                if (userIndex == 0) {
+                    cout << "Update cancelled.\n";
+                    return;
+                } else if (userIndex > 0 && userIndex <= users.size()) {
+                    break;
+                }
+                userIndex = term.promptForInput<int>(
+                    "Invalid choice. Enter a valid user number"
+                );
             }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-            if (userIndex == 0) {
-                cout << "Update cancelled.\n";
-                break;
-            }
+            string newFirstName = term.promptForInput<string>("Enter new first name");
+            string newLastName = term.promptForInput<string>("Enter new last name");
+            string newAddress = term.promptForInput<string>("Enter new address");
+            string newPhone = term.promptForInput<string, validatePhone>("Enter new phone number");
+            string newEmail = term.promptForInput<string, validateEmail>("Enter new email");
 
-            string newFirstName, newLastName, newAddress, newPhone, newEmail;
+            users[userIndex - 1].first = std::move(newFirstName);
+            users[userIndex - 1].last = std::move(newLastName);
+            users[userIndex - 1].address = std::move(newAddress);
+            users[userIndex - 1].phone = std::move(newPhone);
+            users[userIndex - 1].email = std::move(newEmail);
 
-            cout << "Enter new first name: ";
-            getline(cin, newFirstName);
-            cout << "Enter new last name: ";
-            getline(cin, newLastName);
-            cout << "Enter new address: ";
-            getline(cin, newAddress);
-            cout << "Enter new phone number: ";
-            getline(cin, newPhone);
-            cout << "Enter new email: ";
-            getline(cin, newEmail);
-
-            lib.updateUser(userIndex - 1, newFirstName, newLastName, newAddress, newPhone, newEmail);
             cout << "User information updated successfully.\n";
             break;
         }
 
         case 3: { // Delete User
-            const auto& users = lib.getUsers();
-            if (users.empty()) {
+            auto users = lib.allUsers();
+            if (users.size() == 0) {
                 cout << "No users to delete.\n";
                 break;
             }
@@ -211,21 +178,22 @@ private:
                 cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
             }
 
-            int delUserIndex;
-            cout << "Enter the number of the user to delete (0 to cancel): ";
-            while (!(cin >> delUserIndex) || delUserIndex < 0 || delUserIndex > static_cast<int>(users.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid user number: ";
+            int delUserIndex = term.promptForInput<int>(
+                "Enter the number of the user to delete (0 to cancel)"
+            );
+            while (true) {
+                if (delUserIndex == 0) {
+                    cout << "Delete cancelled.\n";
+                    return;
+                } else if (delUserIndex > 0 && delUserIndex <= users.size()) {
+                    break;
+                }
+                delUserIndex = term.promptForInput<int>(
+                    "Invalid choice. Enter a valid user number"
+                );
             }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-            if (delUserIndex == 0) {
-                cout << "Delete cancelled.\n";
-                break;
-            }
-
-            lib.removeUser(delUserIndex - 1);
+            users.remove(delUserIndex - 1);
             cout << "User deleted successfully.\n";
             break;
         }
@@ -234,35 +202,25 @@ private:
             cout << "Returning to Admin Menu...\n";
             break;
         default:
-            cout << "Invalid choice.\n";
+            UNREACHABLE;
         }
     }
 
 
-    void editInventory(Library& lib, Terminal& term) {
-        int choice;
+    void editInventory() {
         cout << "\n--- Inventory Menu ---\n";
         cout << "1. Add New Item\n";
         cout << "2. Delete Item\n";
         cout << "3. Edit Item\n";
         cout << "4. Back to Admin Menu\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cin.ignore(); // Clear newline from input buffer
+        int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
         switch (choice) {
         case 1: {
-            string type, name, author, publisher;
-
-            cout << "Enter type: ";
-            getline(cin, type);
-            cout << "Enter name/title: ";
-            getline(cin, name);
-            cout << "Enter author: ";
-            getline(cin, author);
-            cout << "Enter publisher: ";
-            getline(cin, publisher);
-
+            string type = term.promptForInput<string>("Enter type");
+            string name = term.promptForInput<string>("Enter name/title");
+            string author = term.promptForInput<string>("Enter author");
+            string publisher = term.promptForInput<string>("Enter publisher");
             string borrowed = "-1"; 
 
             lib.addInventory(std::move(type), std::move(name), std::move(author), std::move(publisher), std::move(borrowed));
@@ -270,77 +228,70 @@ private:
             break;
         }
         case 2: {
-            const auto& items = lib.getInventory();
+            auto items = lib.allInventory();
 
-            if (items.empty()) {
+            if (items.size() == 0) {
                 cout << "No items in inventory to delete.\n";
                 break;
             }
 
             cout << "\n--- Current Inventory ---\n";
             for (size_t i = 0; i < items.size(); ++i) {
-                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n"; // You can customize this
+                cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int delIndex;
-            cout << "Enter the number of the item to delete (0 to cancel): ";
-            while (!(cin >> delIndex) || delIndex < 0 || delIndex > static_cast<int>(items.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid item number: ";
-            }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+            int delIndex = term.promptForInput<int>(
+                "Enter the number of the item to delete (0 to cancel)"
+            );
             if (delIndex == 0) {
                 cout << "Delete cancelled.\n";
                 break;
             }
 
-            lib.removeInventory(delIndex - 1);
+            items.remove(delIndex - 1);
             cout << "Item deleted successfully.\n";
             break;
         }
         case 3: {
             // Edit Item
-            const auto& items = lib.getInventory();
+            auto items = lib.allInventory();
 
-            if (items.empty()) {
+            if (items.size() == 0) {
                 cout << "No items in inventory to edit.\n";
                 break;
             }
 
             cout << "\n--- Current Inventory ---\n";
             for (size_t i = 0; i < items.size(); ++i) {
-                cout << i + 1 << ". " << items[i].getName() << " by " << items[i].getAuthor() << "\n";
+                cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int editIndex;
-            cout << "Enter the number of the item to edit (0 to cancel): ";
-            while (!(cin >> editIndex) || editIndex < 0 || editIndex > static_cast<int>(items.size())) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Enter a valid item number: ";
-            }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-            if (editIndex == 0) {
-                cout << "Edit cancelled.\n";
-                break;
+            int editIndex = term.promptForInput<int>(
+                "Enter the number of the item to edit (0 to cancel)"
+            );
+            while (true) {
+                if (editIndex == 0) {
+                    cout << "Edit cancelled.\n";
+                    return;
+                } else if (editIndex > 0 && editIndex <= items.size()) {
+                    break;
+                }
+                editIndex = term.promptForInput<int>(
+                    "Invalid choice. Enter a valid item number"
+                );
             }
 
             // Prompt for new values
-            string newType, newName, newAuthor, newPublisher;
-            cout << "Enter new type: ";
-            getline(cin, newType);
-            cout << "Enter new name/title: ";
-            getline(cin, newName);
-            cout << "Enter new author: ";
-            getline(cin, newAuthor);
-            cout << "Enter new publisher: ";
-            getline(cin, newPublisher);
+            string newType = term.promptForInput<string>("Enter new type");
+            string newName = term.promptForInput<string>("Enter new name/title");
+            string newAuthor = term.promptForInput<string>("Enter new author");
+            string newPublisher = term.promptForInput<string>("Enter new publisher");
 
             // Apply updates
-            lib.updateInventory(editIndex - 1, std::move(newType), std::move(newName), std::move(newAuthor), std::move(newPublisher));
+            items[editIndex - 1].type = std::move(newType);
+            items[editIndex - 1].name = std::move(newName);
+            items[editIndex - 1].author = std::move(newAuthor);
+            items[editIndex - 1].publisher = std::move(newPublisher);
             cout << "Item updated successfully.\n";
             break;
         }
@@ -348,7 +299,7 @@ private:
             cout << "Returning to Admin Menu...\n";
             break;
         default:
-            cout << "Invalid choice.\n";
+            UNREACHABLE;
         }
     }
 

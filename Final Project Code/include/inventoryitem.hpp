@@ -9,14 +9,7 @@ class InventoryItem : public Printable<5> {
 public:
     std::string type, name, author, publisher;
     int borrowerID;
-    int getBorrowerID() const;
     
-    // I added this for the deleting inventory items section
-    std::string getName() const { return name; }
-    std::string getAuthor() const { return author; }
-    
-   
-
     static constexpr int Offset = 0;
     inline static const auto SaveFileLocation
         = std::filesystem::current_path().filename() == "Final-Project-Code"
