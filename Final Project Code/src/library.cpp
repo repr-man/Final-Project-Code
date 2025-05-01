@@ -219,46 +219,6 @@ void Library::remove(T* item) {
     vec->erase(vec->begin() + idx);
 }
 
-void Library::removeUser(size_t index) {
-    if (index < users.size()) {
-        users.erase(users.begin() + index);
-    }
-    else {
-        std::cerr << "Invalid user index.\n";
-    }
-}
-
-void Library::saveUsers() {
-    std::ofstream outFile(User::SaveFileLocation);
-    if (!outFile) {
-        std::cerr << "Failed to open users file for saving.\n";
-        return;
-    }
-
-    for (const auto& user : Library::users) {
-        outFile << user.serialize() << '\n';
-    }
-}
-
-void Library::updateUser(size_t index, std::string& firstName, std::string& lastName, std::string& address, std::string& phone, std::string& email)
-{
-    if (index < users.size()) {
-        users[index].first = firstName;
-        users[index].last = lastName;
-        users[index].address = address;
-        users[index].phone = phone;
-        users[index].email = email;
-        saveUsers();
-    }
-    else {
-        std::cerr << "Invalid user index.\n";
-    }
-}
-
-const std::vector<User>& Library::getUsers() const {
-    return users;
-}
-
 Library::~Library() { 
     flush();
 }

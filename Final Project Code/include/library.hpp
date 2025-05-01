@@ -73,19 +73,11 @@ public:
     ResultList<User> allUsers();
 
     // to add an inventory item
-    void addInventory(std::string&& type, std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
+    void addInventory(
+        std::string&& type,
+        std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
     void addHistory(long userID, std::string&& name);
-
-    
-    //user management 
-    void removeUser(size_t index);
-    void saveUsers();
-    void updateUser(size_t index,  std::string& firstName, std::string& lastName,
-         std::string& address, std::string& phone,  std::string& email);
-    const std::vector<User>& getUsers() const;
-
-
 
     void addUser(
         long userID,
