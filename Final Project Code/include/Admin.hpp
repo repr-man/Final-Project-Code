@@ -9,6 +9,7 @@
 #include "SearchFunction.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
+#include "util.hpp"
 #include "validators.hpp"
 
 
@@ -96,12 +97,8 @@ public:
         }
     }
 private: 
-    int generateNextLibraryID() {
-        return lib.allUsers().size() + 1;
-    }
-
     void registerNewUser() {
-        int nextID = generateNextLibraryID();  
+        int nextID = generateNextLibraryID(lib);  
         RegisterUser newUser;
         newUser.promptUserData(term, nextID); 
         newUser.printSummary();
@@ -118,11 +115,7 @@ private:
 
         switch (choice) {
         case 1: { // Register New User
-            int nextID = generateNextLibraryID();
-            RegisterUser newUser;
-            newUser.promptUserData(term, nextID);
-            newUser.printSummary();
-            newUser.saveToFile(lib);
+            registerNewUser();
             cout << "New user registered successfully!\n";
             break;
         }

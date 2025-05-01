@@ -2,6 +2,7 @@
 #include <iostream>
 #include "main.hpp"
 #include "terminal.hpp"
+#include "util.hpp"
 #include "RegisterUser.hpp"
 #include "SearchFunction.hpp"
 #include "Borrowing.hpp"
@@ -26,7 +27,7 @@ void Main::main() try {
 
         switch (choice) {
             case 1: {// register new users
-                int nextID = RegisterUser::generateNextLibraryID(); 
+                int nextID = generateNextLibraryID(lib); 
                 RegisterUser newUser;
                 newUser.promptUserData(term, nextID);
                 newUser.saveToFile(lib);
