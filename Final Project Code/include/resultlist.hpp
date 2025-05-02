@@ -7,7 +7,7 @@
 
 class Library;
 
-template <typename T> requires LibraryStorageType<T>
+template <typename T> requires IsLibraryStorageType<T>
 class ResultList {
     std::vector<T*> items;
     Library& lib;

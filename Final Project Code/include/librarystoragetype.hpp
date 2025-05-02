@@ -10,7 +10,7 @@
 #include "history.hpp"
 
 template <typename T>
-concept LibraryStorageType = (
+concept IsLibraryStorageType = (
     std::is_same_v<T, User> ||
     std::is_same_v<T, InventoryItem> ||
     std::is_same_v<T, Librarian> ||
