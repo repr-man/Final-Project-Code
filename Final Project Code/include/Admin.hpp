@@ -87,7 +87,7 @@ public:
 
             case 5:
                 cout << "Viewing all registered users...\n";
-                // add function call here
+                showAllUsers();
                 break;
             case 6:
                 cout << "Returning books...\n";
@@ -372,6 +372,44 @@ private:
         }
 
         cout << "User information updated successfully.\n";
+    }
+
+    void showAllUsers() {
+        std::ifstream file("data/users.txt");
+        if (!file.is_open()) {
+            std::cout << "Error: Could not open users.txt\n";
+            return;
+        }
+
+        std::cout << "\n--- Registered Users ---\n";
+        std::cout << std::left
+            << std::setw(15) << "ID"
+            << std::setw(20) << "First Name"
+            << std::setw(25) << "Last Name" << "\n";
+        std::cout << std::string(60, '-') << "\n";
+
+        std::string line;
+        while (std::getline(file, line)) {
+            std::stringstream ss(line);
+            std::string token;
+
+            std::string id, role, first, last;
+
+            // Parse using ';' as delimiter
+            std::getline(ss, id, ';');      // 0 - ID
+            std::getline(ss, role, ';');    // 1 - Role
+            std::getline(ss, first, ';');   // 2 - First Name
+            std::getline(ss, last, ';');    // 3 - Last Name
+
+            if (!id.empty() && !first.empty() && !last.empty()) {
+                std::cout << std::left
+                    << std::setw(15) << id
+                    << std::setw(20) << first
+                    << std::setw(25) << last << "\n";
+            }
+        }
+
+        file.close();
     }
 
 
