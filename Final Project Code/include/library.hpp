@@ -22,6 +22,10 @@ class Library {
 
     /// Reads the entire contents of a file into a buffer.
     //static std::string readFile(const std::string& filename);
+    //
+
+    template <typename T> requires LibraryStorageType<T>
+    std::vector<T>* computeVectorFromOffset();
 
     std::string readFile(const std::filesystem::path& filename);
 

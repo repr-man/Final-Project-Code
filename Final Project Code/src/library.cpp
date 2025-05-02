@@ -8,6 +8,11 @@
 
 using namespace std;
 
+template <typename T> requires LibraryStorageType<T>
+std::vector<T>* Library::computeVectorFromOffset() {
+    return (std::vector<T>*)(this) + T::Offset;
+}
+
 /// Reads the entire contents of a file into a buffer.
 std::string Library::readFile(const std::filesystem::path& filename) {
     //auto path = std::filesystem::current_path().append(filename);
@@ -214,7 +219,7 @@ void Library::addUser(
 
 template <typename T> requires LibraryStorageType<T>
 void Library::remove(T* item) {
-    auto vec = (std::vector<T>*)(this) + T::Offset;
+    auto vec = computeVectorFromOffset<T>();
     int idx = item - &*vec->cbegin();
     vec->erase(vec->begin() + idx);
 }
