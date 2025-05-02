@@ -75,6 +75,7 @@ public:
                     case 2: {
                         auto res = s.searchInventory(lib, term);
                         term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
+                        editInventoryAfterSearch(res);
                         break;
                     }
                     case 3:
@@ -196,6 +197,43 @@ private:
         }
     }
 
+    void editInventoryAfterSearch(ResultList<InventoryItem>& res) {
+        cout << "\n--- Inventory Menu ---\n";
+        cout << "1. Delete Item\n";
+        cout << "2. Edit Item\n";
+        cout << "3. Back to Admin Menu\n";
+        int choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
+
+        int itemIndex = term.promptForInput<int>(
+            "Enter the number of the item to update (0 to cancel)"
+        );
+        while (true) {
+            if (itemIndex == 0) {
+                return;
+                cout << "Operation cancelled.\n";
+            } else if (itemIndex > 0 && itemIndex <= res.size()) {
+                break;
+            }
+            itemIndex = term.promptForInput<int>(
+                "Invalid choice. Enter a valid item number"
+            );
+        }
+
+        switch (choice) {
+        case 1:
+            res.remove(itemIndex - 1);
+            cout << "Item deleted successfully.\n";
+            break;
+        case 2:
+            updateInventoryItem(res[itemIndex - 1]);
+            break;
+        case 3:
+            cout << "Returning to Admin Menu...\n";
+            break;
+        default:
+            UNREACHABLE;
+        }
+    }
 
     void editInventory() {
         cout << "\n--- Inventory Menu ---\n";
@@ -271,18 +309,7 @@ private:
                 );
             }
 
-            // Prompt for new values
-            string newType = term.promptForInput<string>("Enter new type");
-            string newName = term.promptForInput<string>("Enter new name/title");
-            string newAuthor = term.promptForInput<string>("Enter new author");
-            string newPublisher = term.promptForInput<string>("Enter new publisher");
-
-            // Apply updates
-            items[editIndex - 1].type = std::move(newType);
-            items[editIndex - 1].name = std::move(newName);
-            items[editIndex - 1].author = std::move(newAuthor);
-            items[editIndex - 1].publisher = std::move(newPublisher);
-            cout << "Item updated successfully.\n";
+            updateInventoryItem(items[editIndex - 1]);
             break;
         }
         case 4:
@@ -412,5 +439,40 @@ private:
         file.close();
     }
 
+    void updateInventoryItem(InventoryItem& item) {
+        term.printOptions("--- Select Fields to Update ---", {
+            "Type",
+            "Name",
+            "Author",
+            "Publisher"
+        });
+        auto fields = term.promptForInput<
+            vector<InventoryItem::FieldTag>,
+            validateNumRange<1, 4>
+        >(
+            "Enter space-separated list of fields to update"
+        );
 
-}; // end of admin class
+        for (auto& field : fields) {
+            switch (field) {
+                using enum InventoryItem::FieldTag;
+                case Type:
+                    item.type = term.promptForInput<string>("Enter new type");
+                    break;
+                case Name:
+                    item.name = term.promptForInput<string>("Enter new name/title");
+                    break;
+                case Author:
+                    item.author = term.promptForInput<string>("Enter new author");
+                    break;
+                case Publisher:
+                    item.publisher = term.promptForInput<string>("Enter new publisher");
+                    break;
+                default:
+                    UNREACHABLE;
+            }
+        }
+
+        cout << "Item updated successfully.\n";
+    }
+};
