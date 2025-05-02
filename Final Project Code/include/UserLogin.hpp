@@ -7,9 +7,12 @@
 #include "user.hpp"
 #include "util.hpp"
 #include "validators.hpp"
+#include "history.hpp"
+
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 
 using namespace std;
@@ -87,9 +90,65 @@ public:
                     "Type", "Name", "Author", "Publisher", "Borrower ID"
                 );
                 break;
-            case 2: 
-                cout << "You are in case 2." << endl; 
+
+            case 2:
+            {
+                cout << "\n--- Currently Borrowed Books ---\n";
+                ifstream bookFile("data/book.txt");
+                if (!bookFile) {
+                    cerr << "Error:ERROR Could not open book.txt\n";
+                    break;
+                }
+
+                string line, lastLine;
+                vector<string> borrowedBooks;
+                while (getline(bookFile, line)) {
+                    if (line.empty()) continue;
+                    lastLine = line;
+                    size_t pos = lastLine.rfind(';');
+                    if (pos != string::npos) {
+                        string borrower = lastLine.substr(pos + 1);
+                        if (borrower == userID) {
+                            borrowedBooks.push_back(lastLine.substr(0, pos));  // everything before last ;
+                        }
+                    }
+                }
+                bookFile.close();
+
+                if (borrowedBooks.empty()) {
+                    cout << "No books currently borrowed.\n";
+                }
+                else {
+                    for (const string& book : borrowedBooks) {
+                        cout << book << "\n";
+                    }
+                }
+
+                cout << "\n--- Borrowing History ---\n";
+                ifstream historyFile("data/history.txt");
+                if (!historyFile) {
+                    cerr << "Error: Could not open history.txt\n";
+                    break;
+                }
+
+                bool foundHistory = false;
+                while (getline(historyFile, line)) {
+                    if (line.empty()) continue;
+                    size_t sep = line.find(';');
+                    if (sep != string::npos && line.substr(0, sep) == userID) {
+                        cout << line.substr(sep + 1) << "\n";
+                        foundHistory = true;
+                    }
+                }
+                historyFile.close();
+
+                if (!foundHistory) {
+                    cout << "No borrowing history found.\n";
+                }
+
                 break;
+            }
+
             
             case 3: {
                 const auto res = SearchFunction().searchInventory(lib, term);
