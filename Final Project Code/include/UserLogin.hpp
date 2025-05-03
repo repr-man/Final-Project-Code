@@ -12,7 +12,6 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
-#include <algorithm>
 
 
 using namespace std;
@@ -27,21 +26,21 @@ public:
     UserLogin(Library& lib, Terminal& term, string id, string pass) : lib(lib), term(term), userID(id), password(pass) {}
 
     static void attemptLogin(Library& lib, Terminal& term) {
-        string inputID, inputPassword;
+    string inputID, inputPassword;
 
-        while (true) {
-            cout << "\n--- User Login ---\n";
-            inputID = to_string(term.promptForInput<long, validateLibraryID>(
-                "Enter your Library ID (10 digits)"
-            ));
-            inputPassword = term.promptForInput<string>("Enter your password");
-            auto res = lib.search({User::ID, User::Password}, {inputID, inputPassword});
-            if (res.size() == 0) {
-                cout << "Invalid Library ID or password.\n";
-                continue;
-            }
-            break;
+    while (true) {
+        cout << "\n--- User Login ---\n";
+        inputID = to_string(term.promptForInput<long, validateLibraryID>(
+            "Enter your Library ID (10 digits)"
+        ));
+        inputPassword = term.promptForInput<string>("Enter your password");
+        auto res = lib.search({User::ID, User::Password}, {inputID, inputPassword});
+        if (res.size() == 0) {
+            cout << "Invalid Library ID or password.\n";
+            continue;
         }
+        break;
+    }
 
         UserLogin u(lib, term, inputID, inputPassword);
         cout << "User login successful.\n";
@@ -68,13 +67,13 @@ public:
         const auto books = lib.search({InventoryItem::BorrowerID}, {userID});
         if (books.size() != 0) {
             using enum InventoryItem::FieldTag;
-            term.printTable(books, Type, Name, Author, Publisher, BorrowerID);
+            term.printTable(books, Type, Name, Author, Publisher);
         }
     }
 
     void showMenu() {
         while (true) {
-            
+
             cout << "\n--- User Menu ---\n";
             cout << "1. View Available Books\n";
             cout << "2. View Borrowed Books\n";
@@ -84,92 +83,57 @@ public:
             int choice = term.promptForInput<int, validateNumRange<1, 5>> ("Enter your choice");
 
             switch (choice) {
-            case 1: {
-                using enum InventoryItem::FieldTag;
-                cout << "Displaying available books...\n";
-                term.printTable(
-                    lib.allInventory(),
-                    Type, Name, Author, Publisher
-                );
-                break;
-            }
-            case 2:
-            {
-                cout << "\n--- Currently Borrowed Books ---\n";
-                ifstream bookFile("data/book.txt");
-                if (!bookFile) {
-                    cerr << "Error:ERROR Could not open book.txt\n";
+                case 1: {
+                    using enum InventoryItem::FieldTag;
+                    cout << "Displaying available books...\n";
+                    term.printTable(
+                        lib.allInventory(),
+                        Type, Name, Author, Publisher
+                    );
+                    break;
+                }
+                case 2: {
+                    using enum InventoryItem::FieldTag;
+
+                    cout << "\n--- Currently Borrowed Books ---\n";
+                    auto borrowed = lib.search({InventoryItem::BorrowerID}, {userID});
+                    if (borrowed.size() == 0) {
+                        cout << "No books currently borrowed.\n";
+                    } else {
+                        term.printTable(borrowed, Type, Name, Author, Publisher);
+                    }
+
+                    cout << "\n--- Borrowing History ---\n";
+                    auto history = lib.search({HistoryItem::UserID}, {userID});
+                    auto inventory = lib.allInventory();
+                    if (history.size() == 0 || inventory.size() == 0) {
+                        cout << "No borrowing history found.\n";
+                    } else {
+                        const auto res = inventory.join(Name, history, HistoryItem::Name);
+                        term.printTable(res, Type, Name, Author, Publisher);
+                    }
                     break;
                 }
 
-                string line, lastLine;
-                vector<string> borrowedBooks;
-                while (getline(bookFile, line)) {
-                    if (line.empty()) continue;
-                    lastLine = line;
-                    size_t pos = lastLine.rfind(';');
-                    if (pos != string::npos) {
-                        string borrower = lastLine.substr(pos + 1);
-                        if (borrower == userID) {
-                            borrowedBooks.push_back(lastLine.substr(0, pos));  // everything before last ;
-                        }
-                    }
-                }
-                bookFile.close();
 
-                if (borrowedBooks.empty()) {
-                    cout << "No books currently borrowed.\n";
-                }
-                else {
-                    for (const string& book : borrowedBooks) {
-                        cout << book << "\n";
+                case 3: {
+                    using enum InventoryItem::FieldTag;
+                    const auto res = SearchFunction().searchInventory(lib, term);
+                    if (res.size() == 0) {
+                        cout << "No results found.\n";
+                        break;
                     }
-                }
-
-                cout << "\n--- Borrowing History ---\n";
-                ifstream historyFile("data/history.txt");
-                if (!historyFile) {
-                    cerr << "Error: Could not open history.txt\n";
+                    term.printTable(res, Type, Name, Author, Publisher);
                     break;
                 }
-
-                bool foundHistory = false;
-                while (getline(historyFile, line)) {
-                    if (line.empty()) continue;
-                    size_t sep = line.find(';');
-                    if (sep != string::npos && line.substr(0, sep) == userID) {
-                        cout << line.substr(sep + 1) << "\n";
-                        foundHistory = true;
-                    }
-                }
-                historyFile.close();
-
-                if (!foundHistory) {
-                    cout << "No borrowing history found.\n";
-                }
-
-                break;
-            }
-
-            
-            case 3: {
-                using enum InventoryItem::FieldTag;
-                const auto res = SearchFunction().searchInventory(lib, term);
-                if (res.size() == 0) {
-                    cout << "No results found.\n";
+                case 4:
+                    printUserSummary();
                     break;
-                }
-                term.printTable(res, Type, Name, Author, Publisher, BorrowerID);
-                break;
-            }
-            case 4:
-                printUserSummary();
-                break;
-            case 5:
-                cout << "Logging out...\n";
-                Main::safeExit();  // throws SafeExit to break outer loop
-            default:
-                UNREACHABLE;
+                case 5:
+                    cout << "Logging out...\n";
+                    return;
+                default:
+                    UNREACHABLE;
             }
         }
     }
