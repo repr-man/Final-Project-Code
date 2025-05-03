@@ -42,3 +42,4 @@ void ResultList<T>::remove(int index) {
 template class ResultList<InventoryItem>;
 template class ResultList<User>;
 template class ResultList<Librarian>;
+template class ResultList<HistoryItem>;

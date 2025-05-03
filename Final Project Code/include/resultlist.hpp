@@ -40,5 +40,20 @@ public:
 
     void remove(int index);
 
+    template <typename U> requires IsLibraryStorageType<U>
+    const ResultList<T> join(T::FieldTag field, const ResultList<U>& other, U::FieldTag otherField) const {
+        ResultList<T> res(lib);
+        for(auto otherItem : other.items) {
+            for(auto item : items) {
+                if(item->matches(field, otherItem->get(otherField))) {
+                    res.items.push_back(item);
+                }
+            }
+        }
+        return res;
+    }
+
+    template <typename U> requires IsLibraryStorageType<U>
+    friend class ResultList;
     friend class Library;
 };
