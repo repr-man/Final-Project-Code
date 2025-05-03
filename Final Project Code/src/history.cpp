@@ -48,3 +48,13 @@ std::string HistoryItem::serialize() const {
 Row HistoryItem::provideRow() const {
     return Row(std::vector{std::to_string(userID), name});
 }
+
+std::string HistoryItem::get(HistoryItem::FieldTag field) const {
+    switch (field) {
+        case UserID:
+            return std::to_string(userID);
+        case Name:
+            return name;
+    }
+    UNREACHABLE;
+}

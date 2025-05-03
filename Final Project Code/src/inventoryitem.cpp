@@ -80,3 +80,19 @@ Row InventoryItem::provideRow() const {
         std::to_string(borrowerID)
     });
 }
+
+std::string InventoryItem::get(InventoryItem::FieldTag field) const {
+    switch (field) {
+        case Type:
+            return type;
+        case Name:
+            return name;
+        case Author:
+            return author;
+        case Publisher:
+            return publisher;
+        case BorrowerID:
+            return std::to_string(borrowerID);
+    }
+    UNREACHABLE;
+}

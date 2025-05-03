@@ -47,5 +47,7 @@ public:
     
     Row provideRow() const override;
     
+    std::string get(FieldTag field) const;
+    
     friend class Library;
 };

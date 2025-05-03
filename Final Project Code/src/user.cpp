@@ -118,3 +118,29 @@ Row User::provideRow() const {
         std::to_string(numCheckedOut)
     });
 }
+
+std::string User::get(User::FieldTag field) const {
+    switch (field) {
+        case ID:
+            return std::to_string(id);
+        case Role:
+            return role;
+        case First:
+            return first;
+        case Last:
+            return last;
+        case Address:
+            return address;
+        case Phone:
+            return phone;
+        case Email:
+            return email;
+        case Password:
+            return password;
+        case InstitutionID:
+            return std::to_string(institutionId);
+        case NumCheckedOut:
+            return std::to_string(numCheckedOut);
+    }
+    UNREACHABLE;
+}

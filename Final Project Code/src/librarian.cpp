@@ -57,3 +57,15 @@ std::string Librarian::serialize() const {
 Row Librarian::provideRow() const {
     return Row(std::vector{first, last, password});
 }
+
+std::string Librarian::get(Librarian::FieldTag field) const {
+    switch (field) {
+        case First:
+            return first;
+        case Last:
+            return last;
+        case Password:
+            return password;
+    }
+    UNREACHABLE;
+}
