@@ -1,11 +1,10 @@
 #pragma once
 
-#include <array>
 #include <string>
 #include <filesystem>
-#include "printable.hpp"
+#include "librarystoragetype.hpp"
 
-class HistoryItem : public Printable<2> {
+class HistoryItem : public LibraryStorageType {
 public:
     long userID;
     std::string name;
@@ -24,6 +23,8 @@ public:
     static constexpr auto UserID = FieldTag::UserID;
     static constexpr auto Name = FieldTag::Name;
 
+    static std::string to_string(const HistoryItem::FieldTag& item);
+    friend std::ostream& operator<<(std::ostream& os, const HistoryItem::FieldTag& item);
     friend std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item);
 
     HistoryItem(long userID, std::string&& name);
@@ -32,7 +33,7 @@ public:
 
     std::string serialize() const;
 
-    std::array<std::string, 2> providePrintableData() const override;
+    Row provideRow() const override;
 
     friend class Library;
 };

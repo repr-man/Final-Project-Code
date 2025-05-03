@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <string>
 
-#include "printable.hpp"
+#include "librarystoragetype.hpp"
 
-class Librarian : public Printable<3> {
+class Librarian : public LibraryStorageType {
 public:
     std::string first, last, password;
 
@@ -25,6 +25,8 @@ public:
     static constexpr auto Last = FieldTag::Last;
     static constexpr auto Password = FieldTag::Password;
 
+    static std::string to_string(const Librarian::FieldTag& item);
+    friend std::ostream& operator<<(std::ostream& os, const Librarian::FieldTag& item);
     friend std::istream& operator>>(std::istream& is, Librarian::FieldTag& item);
 
     Librarian(
@@ -37,7 +39,7 @@ public:
 
     std::string serialize() const;
 
-    std::array<std::string, 3> providePrintableData() const override;
+    Row provideRow() const override;
     
     friend class Library;
 };

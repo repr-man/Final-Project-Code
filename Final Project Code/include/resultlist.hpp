@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "librarystoragetype.hpp"
-#include "printable.hpp"
 
 class Library;
 

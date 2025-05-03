@@ -67,14 +67,16 @@ public:
                 SearchFunction s;
                 switch (choice) {
                     case 1: {
+                        using enum User::FieldTag;
                         auto res = s.searchUser(lib, term);
-                        term.printTable(res, "ID", "Role", "First Name", "Last Name", "Address", "Phone Number", "Email", "Password", "Institution ID", "# Items Borrowed");
+                        term.printTable(res, ID, Role, First, Last);
                         editUserInfoAfterSearch(res);
                         break;
                     }
                     case 2: {
+                        using enum InventoryItem::FieldTag;
                         auto res = s.searchInventory(lib, term);
-                        term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
+                        term.printTable(res, Type, Name, Author, Publisher, BorrowerID);
                         editInventoryAfterSearch(res);
                         break;
                     }

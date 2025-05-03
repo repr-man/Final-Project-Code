@@ -67,7 +67,8 @@ public:
 
         const auto books = lib.search({InventoryItem::BorrowerID}, {userID});
         if (books.size() != 0) {
-            term.printTable(books, "Type", "Name", "Author", "Publisher", "Borrower ID");
+            using enum InventoryItem::FieldTag;
+            term.printTable(books, Type, Name, Author, Publisher, BorrowerID);
         }
     }
 
@@ -83,14 +84,15 @@ public:
             int choice = term.promptForInput<int, validateNumRange<1, 5>> ("Enter your choice");
 
             switch (choice) {
-            case 1:
+            case 1: {
+                using enum InventoryItem::FieldTag;
                 cout << "Displaying available books...\n";
                 term.printTable(
                     lib.allInventory(),
-                    "Type", "Name", "Author", "Publisher", "Borrower ID"
+                    Type, Name, Author, Publisher
                 );
                 break;
-
+            }
             case 2:
             {
                 cout << "\n--- Currently Borrowed Books ---\n";
@@ -151,12 +153,13 @@ public:
 
             
             case 3: {
+                using enum InventoryItem::FieldTag;
                 const auto res = SearchFunction().searchInventory(lib, term);
                 if (res.size() == 0) {
                     cout << "No results found.\n";
                     break;
                 }
-                term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
+                term.printTable(res, Type, Name, Author, Publisher, BorrowerID);
                 break;
             }
             case 4:

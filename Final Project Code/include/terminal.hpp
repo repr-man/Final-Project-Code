@@ -3,26 +3,29 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
-#include <functional>
 #include <initializer_list>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <istream>
 #include <limits>
+#include <numeric>
 #include <ostream>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 #include <iomanip>
 
+#include "librarystoragetype.hpp"
 #include "main.hpp"
-#include "printable.hpp"
 #include "resultlist.hpp"
 #include "validators.hpp"
+#include "zip_view.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -34,12 +37,9 @@ constexpr bool isWindows = true;
 constexpr bool isWindows = false;
 #endif
 
-template <typename S>
-concept IsString = std::is_convertible_v<S, std::string>;
-
 /// Encapsulates IO-related components of the program.
 class Terminal {
-    constexpr static auto minTableCellWidth = 5;
+    constexpr static auto minTableCellWidth = 5lu;
     
     int terminalWidth = 0;
 
@@ -64,23 +64,26 @@ class Terminal {
     constexpr static std::string_view colorError = "\x1b[0;31m";
     #endif
 
+    static std::vector<int> columnWidths;
+
     /// Draws a border row of a table.
     template <int N>
     void drawTableRow(
         const std::string_view fillChar,
         const std::string_view startChar,
         const std::string_view middleChar,
-        const std::string_view endChar,
-        const std::array<int, N>& widths
+        const std::string_view endChar
     ) const {
+        using namespace std::views;
+
         std::cout << startChar;
-        for(int i = 0; i < widths.size() - 1; ++i) {
-            for(int j = 0; j < widths[i]; ++j) {
+        for(auto width : columnWidths | take(columnWidths.size() - 1)) {
+            for(auto _ : iota(0, width)) {
                 std::cout << fillChar;
             }
             std::cout << middleChar;
         }
-        for(int j = 0; j < widths.back(); ++j) {
+        for(auto _ : iota(0, columnWidths.back())) {
             std::cout << fillChar;
         }
         std::cout << endChar << std::endl;
@@ -92,17 +95,24 @@ class Terminal {
         const std::string_view startChar,
         const std::string_view middleChar,
         const std::string_view endChar,
-        const std::array<int, N>& widths,
-        const std::array<std::string, N>& items,
+        const std::string indexColContent,
+        const std::vector<std::string>& items,
         std::ios_base &(alignment)(std::ios_base&) = std::right
     ) const {
+        using namespace std::views;
+
         auto oldAlignment = std::cout.flags();
-        std::cout << alignment << startChar;
-        for(int i = 0; i < widths.size() - 1; ++i) {
-            std::cout << std::setw(widths[i]) << items[i];
+        std::cout << startChar;
+        std::cout << std::setw(columnWidths[0]) << indexColContent;
+        std::cout << middleChar << alignment;
+        for(auto [width, item] : c9::zip(columnWidths | drop(1)
+                                                       | take(items.size() - 1),
+                                          items)
+        ) {
+            std::cout << std::setw(width) << item;
             std::cout << middleChar;
         }
-        std::cout << std::setw(widths.back()) << items.back();
+        std::cout << std::setw(columnWidths.back()) << items.back();
         std::cout << endChar << std::endl;
         std::cout.flags(oldAlignment);
     }
@@ -253,40 +263,58 @@ public:
     /// Prints a formatted table of strings.
     ///
     /// Note: We will probably remove this function once we fully flesh out
-    /// how we want to model our data and provide it via the `Printable`
+    /// how we want to model our data and provide it via the `LibraryStorageType`
     /// interface.
-    template <IsString... ColumnNames>
+    template <IsLibraryStorageType T, typename... ColumnNames>
+    requires (std::same_as<ColumnNames, typename T::FieldTag> && ...)
     void printTable(
-        std::vector<std::array<std::string, sizeof...(ColumnNames)>>&& rows,
+        std::vector<Row>&& rows,
         ColumnNames... columnNames
     ) const {
+        using namespace std::views;
+
+        // Collect the tags and their associated names.
         constexpr int N = sizeof...(ColumnNames);
-        std::array<std::string, N> colNames{columnNames...};
-        auto fullWidth = N + 1;
+        columnWidths.resize(N + 1);
+        auto colTags = std::array{columnNames...};
+        auto colNames = std::vector<std::string>{};
+        colNames.resize(colTags.size());
+        for(auto [tag, name] : c9::zip(colTags, colNames)) {
+            name = T::to_string(tag);
+        }
+
+        // Start off with each column's width being the width of the column name.
+        auto indexColumnWidth = std::to_string(rows.size()).size();
+        auto fullWidth = N + 1 + indexColumnWidth;
+        columnWidths.resize(N + 1);
+        columnWidths[0] = indexColumnWidth;
+        for(auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
+            width = name.size();
+        }
 
         // Calculate the preferred width of each column.
-        auto columnWidths = std::array<int, N>();
-        for(int i = 0; i < N; ++i) {
-            auto width = colNames[i].size();
-            for(auto& row : rows) {
-                width = std::max(width, row[i].size());
+        for(auto& row : rows) {
+            auto rowItems = row.get<T>(columnNames...);
+            for(auto [width, item] : c9::zip(columnWidths | drop(1), rowItems)) {
+                width = std::max((unsigned long) width, item.size());
             }
-            columnWidths[i] = width;
-            fullWidth += width;
         }
+        fullWidth += std::accumulate(columnWidths.begin(), columnWidths.end(), 0);
 
         if(fullWidth > terminalWidth) {
             // We need to shrink the width of some columns proportionally.
-            auto adjustedWidth = N + 1;
-            for(int i = 0; i < columnWidths.size(); ++i) {
-                columnWidths[i] = std::max(minTableCellWidth, columnWidths[i] * terminalWidth / fullWidth);
-                adjustedWidth += columnWidths[i];
-                if(colNames[i].size() > columnWidths[i]) {
-                    trimAndRecolor(colNames[i], columnWidths[i]);
+            auto adjustedWidth = N + 1 + indexColumnWidth;
+            for(auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
+                width = std::max(minTableCellWidth, width * terminalWidth / fullWidth);
+                adjustedWidth += width;
+                if(name.size() > width) {
+                    trimAndRecolor(name, width);
                 }
-                for(auto& row : rows) {
-                    if(row[i].size() > columnWidths[i]) {
-                        trimAndRecolor(row[i], columnWidths[i]);
+            }
+            for(auto& row : rows) {
+                for(const auto& [width, col] : c9::zip(columnWidths, row.get<T>(columnNames...))) {
+                    if(col.size() > width) {
+                        trimAndRecolor(col, width);
                     }
                 }
             }
@@ -300,91 +328,49 @@ public:
 
         // Draw the table.
         if constexpr(isWindows) {
-            drawTableRow<N>("-", "+", "+", "+", columnWidths);
-            drawTableRow<N>("|", "|", "|", columnWidths, colNames, std::internal);
-            drawTableRow<N>("-", "+", "+", "+", columnWidths);
+            drawTableRow<N>("-", "+", "+", "+");
+            drawTableRow<N>("|", "|", "|", "#", colNames, std::internal);
+            drawTableRow<N>("-", "+", "+", "+");
             for(int i = 0; i < rows.size() - 1; ++i) {
-                drawTableRow<N>("|", "|", "|", columnWidths, rows[i]);
-                drawTableRow<N>("-", "+", "+", "+", columnWidths);
+                drawTableRow<N>("|", "|", "|", std::to_string(i + 1), rows[i].get<T>(columnNames...));
+                drawTableRow<N>("-", "+", "+", "+");
             }
-            drawTableRow<N>("|", "|", "|", columnWidths, rows.back());
-            drawTableRow<N>("-", "+", "+", "+", columnWidths);
+            drawTableRow<N>("|", "|", "|", std::to_string(rows.size()),
+                            rows.back().get<T>(columnNames...));
+            drawTableRow<N>("-", "+", "+", "+");
         } else {
-            drawTableRow<N>("━", "┏", "┳", "┓", columnWidths);
-            drawTableRow<N>("┃", "┃", "┃", columnWidths, colNames, std::internal);
-            drawTableRow<N>("━", "┞", "╇", "┩", columnWidths);
+            drawTableRow<N>("━", "┏", "┳", "┓");
+            drawTableRow<N>("┃", "┃", "┃", "#", colNames, std::internal);
+            drawTableRow<N>("━", "┡", "╇", "┩");
             for(int i = 0; i < rows.size() - 1; ++i) {
-                drawTableRow<N>("│", "│", "│", columnWidths, rows[i]);
-                drawTableRow<N>("─", "├", "┼", "┤", columnWidths);
+                drawTableRow<N>("│", "│", "│", std::to_string(i + 1), rows[i].get<T>(columnNames...));
+                drawTableRow<N>("─", "├", "┼", "┤");
             }
-            drawTableRow<N>("│", "│", "│", columnWidths, rows.back());
-            drawTableRow<N>("─", "└", "┴", "┘", columnWidths);
+            drawTableRow<N>("│", "│", "│", std::to_string(rows.size()),
+                            rows.back().get<T>(columnNames...));
+            drawTableRow<N>("─", "└", "┴", "┘");
         }
     }
 
 
-
-    /// Prints a table of objects that implement the `Printable` interface.
-    template <typename T, IsString... ColumnNames>
-    requires std::is_base_of_v<Printable<sizeof...(ColumnNames)>, T>
-    void printTable(
-        std::vector<T>&& rows,
-        ColumnNames... columnNames
-    ) const {
-        if(rows.size() == 0) {
-            std::cout << "No results found.\n" << std::endl;
-            return;
-        }
-
-        constexpr int N = sizeof...(ColumnNames);
-        auto tmp = std::vector<std::array<std::string, N>>();
-        tmp.reserve(rows.size());
-        for(auto& row : rows) {
-            tmp.push_back(row.providePrintableData());
-        }
-        printTable(
-            std::move(tmp),
-            columnNames...
-        );
-    }
 
     /// Prints a table of objects that implement the `Printable` interface from a `ResultList`.
-    template <typename T, IsString... ColumnNames>
-    requires std::is_base_of_v<Printable<sizeof...(ColumnNames)>, T>
+    template <IsLibraryStorageType T, typename... ColumnNames>
+    requires (std::same_as<ColumnNames, typename T::FieldTag> && ...)
     void printTable(
-        const ResultList<T>& rows,
+        const ResultList<T>& results,
         ColumnNames... columnNames
     ) const {
-        if(rows.size() == 0) {
+        if(results.size() == 0) {
             std::cout << "No results found.\n" << std::endl;
             return;
         }
 
-        constexpr int N = sizeof...(ColumnNames);
-        auto tmp = std::vector<std::array<std::string, N>>();
-        tmp.reserve(rows.size());
-        for(int i = 0; i < rows.size(); ++i) {
-            tmp.push_back(rows[i].providePrintableData());
+        auto tmp = std::vector<Row>();
+        tmp.reserve(results.size());
+        for(int i = 0; i < results.size(); ++i) {
+            tmp.push_back(results[i].provideRow());
         }
-        printTable(
-            std::move(tmp),
-            columnNames...
-        );
-    }
-
-    /// Prints a table of objects that implement the `Printable` interface.
-    /// Takes an initializer list.  Mostly for testing.
-    template <typename T, IsString... ColumnNames>
-    requires std::is_base_of_v<Printable<sizeof...(ColumnNames)>, T>
-    void printTable(
-        std::initializer_list<T>&& rows,
-        ColumnNames... columnNames
-    ) const {
-        if(rows.size() == 0) {
-            std::cout << "No results found.\n" << std::endl;
-            return;
-        }
-
-        printTable(std::vector<T>(rows), columnNames...);
+        printTable<T>(std::move(tmp), columnNames...);
     }
 };

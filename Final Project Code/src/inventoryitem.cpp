@@ -71,12 +71,12 @@ std::string InventoryItem::serialize() const {
     std::to_string(borrowerID);
 }
 
-std::array<std::string, 5> InventoryItem::providePrintableData() const {
-    return {
+Row InventoryItem::provideRow() const {
+    return Row(std::vector{
         type,
         name,
         author,
         publisher,
         std::to_string(borrowerID)
-    };
+    });
 }

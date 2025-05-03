@@ -1,5 +1,7 @@
 #include "terminal.hpp"
 
+std::vector<int> Terminal::columnWidths{};
+
 void Terminal::printOptions(
     std::string_view prompt,
     std::initializer_list<std::string_view> options

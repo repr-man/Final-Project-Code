@@ -54,10 +54,6 @@ std::string Librarian::serialize() const {
     password;
 }
 
-std::array<std::string, 3> Librarian::providePrintableData() const {
-    return {
-        first,
-        last,
-        password
-    };
+Row Librarian::provideRow() const {
+    return Row(std::vector{first, last, password});
 }

@@ -45,9 +45,6 @@ std::string HistoryItem::serialize() const {
     return std::to_string(userID) + ';' + name;
 }
 
-std::array<std::string, 2> HistoryItem::providePrintableData() const {
-    return {
-        std::to_string(userID),
-        name
-    };
+Row HistoryItem::provideRow() const {
+    return Row(std::vector{std::to_string(userID), name});
 }

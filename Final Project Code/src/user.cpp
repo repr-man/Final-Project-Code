@@ -104,8 +104,8 @@ std::string User::serialize() const {
     std::to_string(numCheckedOut);
 }
 
-std::array<std::string, 10> User::providePrintableData() const {
-    return {
+Row User::provideRow() const {
+    return Row(std::vector{
         std::to_string(id),
         role,
         first,
@@ -116,5 +116,5 @@ std::array<std::string, 10> User::providePrintableData() const {
         password,
         std::to_string(institutionId),
         std::to_string(numCheckedOut)
-    };
+    });
 }
