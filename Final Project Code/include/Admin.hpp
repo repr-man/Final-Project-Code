@@ -362,15 +362,18 @@ private:
 
     void updateUserInfo(User& user) {
         term.printOptions("--- Select Fields to Update ---", {
+            "ID",
+            "Role",
             "First Name",
             "Last Name",
             "Address",
             "Phone Number",
-            "Email"
+            "Email",
+            "Institution ID"
         });
         auto fields = term.promptForInput<
             vector<User::FieldTag>,
-            validateNumRange<1, 5>
+            validateNumRange<1, 8>
         >(
             "Enter space-separated list of fields to update"
         );
@@ -378,6 +381,12 @@ private:
         for (auto& field : fields) {
             switch (field) {
                 using enum User::FieldTag;
+                case ID:
+                    user.id = term.promptForInput<long, validateLibraryID>("Enter new Library ID");
+                    break;
+                case Role:
+                    user.role = term.promptForInput<string, validateRole>("Enter new role");
+                    break;
                 case First:
                     user.first = term.promptForInput<string>("Enter new first name");
                     break;
@@ -394,6 +403,9 @@ private:
                     break;
                 case Email:
                     user.email = term.promptForInput<string, validateEmail>("Enter new email");
+                    break;
+                case InstitutionID:
+                    user.institutionId = term.promptForInput<long>("Enter new institution ID");
                     break;
                 default:
                     UNREACHABLE;
