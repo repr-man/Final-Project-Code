@@ -1,13 +1,36 @@
 #include "inventoryitem.hpp"
 #include "util.hpp"
+#include <vector>
 
 
 using namespace std;
 
+std::string InventoryItem::to_string(const InventoryItem::FieldTag& item) {
+    switch (item) {
+        case InventoryItem::Type:
+            return "Type";
+        case InventoryItem::Name:
+            return "Name";
+        case InventoryItem::Author:
+            return "Author";
+        case InventoryItem::Publisher:
+            return "Publisher";
+        case InventoryItem::BorrowerID:
+            return "Borrower ID";
+        default:
+            UNREACHABLE;
+    }
+}
+
+ostream& operator<<(ostream& os, const InventoryItem::FieldTag& item) {
+    os << InventoryItem::to_string(item);
+    return os;
+}
+
 std::istream& operator>>(std::istream& is, InventoryItem::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<InventoryItem::FieldTag>(val);
+    item = static_cast<InventoryItem::FieldTag>(val - 1);
     return is;
 }
 

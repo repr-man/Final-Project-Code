@@ -1,11 +1,28 @@
 #include "history.hpp"
 #include "util.hpp"
 #include <string>
+#include <vector>
+
+std::string HistoryItem::to_string(const HistoryItem::FieldTag& item) {
+    switch (item) {
+        case HistoryItem::UserID:
+            return "User ID";
+        case HistoryItem::Name:
+            return "Name";
+        default:
+            UNREACHABLE;
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const HistoryItem::FieldTag& item) {
+    os << HistoryItem::to_string(item);
+    return os;
+}
 
 std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<HistoryItem::FieldTag>(val);
+    item = static_cast<HistoryItem::FieldTag>(val - 1);
     return is;
 }
 

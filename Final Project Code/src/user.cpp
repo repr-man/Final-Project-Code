@@ -1,11 +1,44 @@
 #include "user.hpp"
 #include "util.hpp"
 #include <string>
+#include <vector>
+
+std::string User::to_string(const User::FieldTag& item) {
+    switch (item) {
+        case User::ID:
+            return "ID";
+        case User::Role:
+            return "Role";
+        case User::First:
+            return "First Name";
+        case User::Last:
+            return "Last Name";
+        case User::Address:
+            return "Address";
+        case User::Phone:
+            return "Phone";
+        case User::Email:
+            return "Email";
+        case User::Password:
+            return "Password";
+        case User::InstitutionID:
+            return "Institution ID";
+        case User::NumCheckedOut:
+            return "# of Books Checked Out";
+        default:
+            UNREACHABLE;
+    }
+}
+
+std::ostream& operator<<(ostream& os, const User::FieldTag& item) {
+    os << User::to_string(item);
+    return os;
+}
 
 std::istream& operator>>(std::istream& is, User::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<User::FieldTag>(val);
+    item = static_cast<User::FieldTag>(val - 1);
     return is;
 }
 

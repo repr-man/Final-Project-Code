@@ -1,11 +1,29 @@
 #include "librarian.hpp"
 #include "util.hpp"
+#include <vector>
 
+std::string Librarian::to_string(const Librarian::FieldTag& item) {
+    switch (item) {
+        case Librarian::First:
+            return "First Name";
+        case Librarian::Last:
+            return "Last Name";
+        case Librarian::Password:
+            return "Password";
+        default:
+            UNREACHABLE;
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const Librarian::FieldTag& item) {
+    os << Librarian::to_string(item);
+    return os;
+}
 
 std::istream& operator>>(std::istream& is, Librarian::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<Librarian::FieldTag>(val);
+    item = static_cast<Librarian::FieldTag>(val - 1);
     return is;
 }
 
