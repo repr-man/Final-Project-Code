@@ -16,10 +16,14 @@ class ResultList {
     
 public:
     ResultList(Library& lib) : lib(lib) {}
-    ResultList(ResultList& lib) = delete;
-    ResultList(const ResultList& other) = delete;
 
+    ResultList(ResultList& other) = delete;
+    ResultList(const ResultList& other) = delete;
     ResultList& operator=(const ResultList& other) = delete;
+
+    ResultList(ResultList&& other) : items(std::move(other.items)), lib(other.lib), modified(other.modified) {
+        other.modified = false;
+    }
     ResultList& operator=(ResultList&& other) {
         items = std::move(other.items);
         modified = other.modified;
