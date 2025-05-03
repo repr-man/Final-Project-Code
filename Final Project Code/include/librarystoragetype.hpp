@@ -26,6 +26,9 @@ concept IsLibraryStorageType =
         typename T::FieldTag;
         { T::Offset } -> std::convertible_to<int>;
         { T::SaveFileLocation } -> std::same_as<const std::filesystem::path&>;
+        requires requires (typename T::FieldTag tag) {
+            { t.get(tag) } -> std::convertible_to<std::string>;
+        };
     };
 
 
