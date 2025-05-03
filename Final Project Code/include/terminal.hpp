@@ -320,9 +320,8 @@ public:
             }
 
             if(adjustedWidth > terminalWidth + 1) {
-                std::cout << adjustedWidth << ' ' << terminalWidth << std::endl;
                 printError("Your terminal window is too small to display the table.");
-                //return;
+                return;
             }
         }
 
