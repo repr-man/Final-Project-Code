@@ -200,37 +200,81 @@ private:
         }
     }
 
-    void editInventoryAfterSearch(ResultList<InventoryItem>& res) {
+    void manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
         cout << "\n--- Inventory Menu ---\n";
-        cout << "1. Delete Item\n";
-        cout << "2. Edit Item\n";
-        cout << "3. Back to Admin Menu\n";
-        int choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
-
-        int itemIndex = term.promptForInput<int>(
-            "Enter the number of the item to update (0 to cancel)"
-        );
-        while (true) {
-            if (itemIndex == 0) {
-                return;
-                cout << "Operation cancelled.\n";
-            } else if (itemIndex > 0 && itemIndex <= res.size()) {
-                break;
-            }
-            itemIndex = term.promptForInput<int>(
-                "Invalid choice. Enter a valid item number"
-            );
-        }
+        cout << "1. Borrow Items\n";
+        cout << "2. Delete Items\n";
+        cout << "3. Edit Items\n";
+        cout << "4. Back to Admin Menu\n";
+        int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
 
         switch (choice) {
         case 1:
-            res.remove(itemIndex - 1);
-            cout << "Item deleted successfully.\n";
+            Borrowing b;
+            b.borrowItems(lib, term, *this, res);
             break;
-        case 2:
-            updateInventoryItem(res[itemIndex - 1]);
+        case 2: {
+            auto selection = term.promptForInput<vector<int>>(
+                "Enter the #s of the items to select (0 to cancel)"
+            );
+            while (true) {
+                if (std::any_of(selection.begin(), selection.end(), [](int i) {
+                    return i == 0; })
+                ) {
+                    cout << "Operation cancelled.\n";
+                    return;
+                } else if (auto pos = std::find_if(selection.begin(), selection.end(),
+                    [&](int i) {
+                        return i < 0 || i > res.size();
+                    }
+                ); pos == selection.end()) {
+                    term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
+                                    "`. Number must be in range [0, " + to_string(res.size()) +
+                                    "]");
+                    selection = term.promptForInput<vector<int>>("Try again");
+                } else {
+                    break;
+                }
+            }
+
+            for (auto i : selection) {
+                res.remove(i - 1);
+            }
+            cout << "Items deleted successfully.\n";
             break;
-        case 3:
+        }
+        case 3: {
+            auto selection = term.promptForInput<vector<int>>(
+                "Enter the #s of the items to select (0 to cancel)"
+            );
+            while (true) {
+                if (std::any_of(selection.begin(), selection.end(), [](int i) {
+                    return i == 0; })
+                ) {
+                    cout << "Operation cancelled.\n";
+                    return;
+                } else if (auto pos = std::find_if(selection.begin(), selection.end(),
+                    [&](int i) {
+                        return i < 0 || i > res.size();
+                    }
+                ); pos == selection.end()) {
+                    term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
+                                    "`. Number must be in range [0, " + to_string(res.size()) +
+                                    "]");
+                    selection = term.promptForInput<vector<int>>("Try again");
+                } else {
+                    break;
+                }
+            }
+
+            for (auto i : selection) {
+                cout << "\n=== Item " << i << " ===";
+                updateInventoryItem(res[i - 1]);
+            }
+            cout << "Items updated successfully.\n";
+            break;
+        }
+        case 4:
             cout << "Returning to Admin Menu...\n";
             break;
         default:
