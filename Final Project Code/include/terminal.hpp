@@ -258,7 +258,7 @@ public:
         std::initializer_list<std::string_view> options
     ) const;
 
-    void printError(std::string_view message) const;
+    void printError(std::string message) const;
 
     /// Prints a formatted table of strings.
     ///

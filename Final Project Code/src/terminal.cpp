@@ -15,7 +15,7 @@ void Terminal::printOptions(
     std::cout << std::endl;
 }
 
-void Terminal::printError(std::string_view message) const {
+void Terminal::printError(std::string message) const {
     if constexpr(isWindows) {
         std::cout << "### ERROR ###\n" << message << '\n';
     } else {
