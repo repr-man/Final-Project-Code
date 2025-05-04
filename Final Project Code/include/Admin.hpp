@@ -68,15 +68,17 @@ public:
                     case 1: {
                         using enum User::FieldTag;
                         auto res = s.searchUser(lib, term);
-                        term.printTable(res, ID, Role, First, Last);
-                        editUserInfoAfterSearch(res);
+                        if (!res) break;
+                        term.printTable(*res, ID, Role, First, Last);
+                        editUserInfoAfterSearch(*res);
                         break;
                     }
                     case 2: {
                         using enum InventoryItem::FieldTag;
                         auto res = s.searchInventory(lib, term);
-                        term.printTable(res, Type, Name, Author, Publisher, BorrowerID);
-                        editInventoryAfterSearch(res);
+                        if (!res) break;
+                        term.printTable(*res, Type, Name, Author, Publisher, BorrowerID);
+                        manageInventoryAfterSearch(*res);
                         break;
                     }
                     case 3:

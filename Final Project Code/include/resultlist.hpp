@@ -32,7 +32,7 @@ public:
     }
     
     ~ResultList();
-    
+
     T& operator[](int index);
     const T& operator[](int index) const;
 
