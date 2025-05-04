@@ -1,7 +1,9 @@
 #pragma once
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <ranges>
 #include <string>
 #include "Borrowing.hpp"
 #include "RegisterUser.hpp"
@@ -17,16 +19,12 @@
 
 using namespace std;
 
-class Admin {
-private:
-    Library& lib;
-    Terminal& term;
-    string username, password;
+class Admin : public UserHolder {
 public:
-    Admin(Library& lib, Terminal& term, string user, string pass) : lib(lib), term(term), username(user), password(pass) {}
+    Admin(Library& lib, Terminal& term, User& user, string username, string pass) : UserHolder(lib, term, user, username, pass) {}
 
     bool login(string inputUser, string inputPass) {
-        return (inputUser == username && inputPass == password);
+        return (inputUser == userID && inputPass == password);
     }
 
     void showMenu() {
