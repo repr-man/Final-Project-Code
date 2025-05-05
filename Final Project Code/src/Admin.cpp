@@ -95,11 +95,11 @@ void Admin::showMenu() {
 
 void Admin::registerNewUser() {
     int nextID = generateNextLibraryID(lib);  
-RegisterUser newUser;
-newUser.promptUserData(term, nextID); 
-newUser.printSummary();
-newUser.saveToFile(lib);
-    }
+    RegisterUser newUser;
+    newUser.promptUserData(term, nextID); 
+    newUser.printSummary();
+    newUser.saveToFile(lib);
+}
 
 void Admin::editUserInfo() {
     cout << "\n--- User Management Menu ---\n";
