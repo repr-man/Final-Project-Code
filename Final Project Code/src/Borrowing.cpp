@@ -79,12 +79,20 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
             auto first = term.promptForInput<string>("Enter admin first name");
             auto last = term.promptForInput<string>("Enter admin last name");
             auto password = term.promptForInput<string>("Enter admin password");
-            auto res = lib.search(
-                {Librarian::First, Librarian::Last, Librarian::Password},
+            auto usersRes = lib.search(
+                {User::First, User::Last, User::Password},
                 {first, last, password}
             );
-            if (res.size() == 0) {
+            if (usersRes.size() == 0) {
                 term.printError("Invalid admin credentials.");
+                continue;
+            }
+            auto librariansRes = lib.search(
+                {Librarian::Id},
+                {std::to_string(usersRes[0].id)}
+            );
+            if (librariansRes.size() == 0) {
+                term.printError("User is not an admin.");
                 continue;
             }
         }

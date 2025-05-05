@@ -116,11 +116,8 @@ Library::Library() {
 
     auto librariansFileText = readFile(Librarian::SaveFileLocation);
     for(auto& line : splitBy(librariansFileText, '\n')) {
-        auto segments = splitBy(line, ';');
         librarians.push_back(Librarian(
-            std::string(segments[0]),
-            std::string(segments[1]),
-            std::string(segments[2])
+            std::stoull(std::string(line))
         ));
     }
 }
