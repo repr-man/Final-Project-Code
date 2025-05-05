@@ -92,6 +92,7 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
         for (auto i : toBorrow) {
             items[i - 1].borrowerID = user.user.id;
             user.user.numCheckedOut += 1;
+            lib.flushVector<User>();
             auto name = items[i - 1].name;
             lib.addHistory(user.user.id, std::move(name));
         }
