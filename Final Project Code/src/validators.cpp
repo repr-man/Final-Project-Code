@@ -1,4 +1,5 @@
 #include "validators.hpp"
+#include <algorithm>
 #include <cctype>
 #include <ranges>
 #include <string>
@@ -22,7 +23,11 @@ const std::string validateLibraryID(std::string_view str) {
 }
 
 const std::string validateRole(std::string_view role) {
-    if (role != "student" && role != "faculty" && role != "staff") {
+    auto r = std::string(role);
+    std::transform(r.begin(), r.end(), r.begin(), [](auto c){
+        return std::tolower(c);
+    });
+    if (r!= "student" && r != "faculty" && r!= "staff") {
         return "Role must be one of: 'student', 'faculty', 'staff'.";
     }
     return "";
