@@ -57,7 +57,7 @@ void Admin::showMenu() {
                     }
                     case 2: {
                         using enum InventoryItem::FieldTag;
-                        auto res = s.searchInventory(lib, term);
+                        auto res = s.searchInventory(lib, term, *this);
                         if (!res) break;
                         if (res->size() == 0) {
                             cout << "No results found.\n";

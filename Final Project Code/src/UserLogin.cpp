@@ -95,7 +95,7 @@ void UserLogin::showMenu() {
             case 3: {
                 using enum InventoryItem::FieldTag;
                 while (true) {
-                    auto res = SearchFunction().searchInventory(lib, term);
+                    auto res = SearchFunction().searchInventory(lib, term, *this);
                     if (!res) break;
                     if (res->size() == 0) {
                         cout << "No results found.\n";
