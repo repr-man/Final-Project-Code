@@ -287,7 +287,16 @@ void Admin::editInventory() {
             string publisher = term.promptForInput<string>("Enter publisher");
             string borrowed = "-1"; 
 
-            lib.addInventory(std::move(type), std::move(name), std::move(author), std::move(publisher), std::move(borrowed));
+            auto itemExists = lib.addInventory(
+                std::move(type),
+                std::move(name),
+                std::move(author),
+                std::move(publisher),
+                std::move(borrowed));
+            if (itemExists) {
+                term.printError("An item named '" + name + "' already exists in the inventory.");
+                break;
+            }
             cout << "Item added successfully!\n";
             break;
         }

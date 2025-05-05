@@ -178,10 +178,15 @@ ResultList<User> Library::allUsers() {
 }
 
 // to add inventory
-void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
+bool Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
+    auto existing = search({InventoryItem::Name}, {name});
+    if (existing.size() > 0) {
+        return true;
+    }
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
     flushVector<InventoryItem>();
+    return false;
 }
 
 void Library::addHistory(uint64_t userID, std::string&& name) {
