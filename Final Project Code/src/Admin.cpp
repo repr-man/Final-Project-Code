@@ -1,4 +1,5 @@
 #include "Admin.hpp"
+#include <cstdint>
 
 
 bool Admin::login(string inputUser, string inputPass) {
@@ -413,7 +414,7 @@ void Admin::updateUserInfo(User& user) {
         switch (field) {
             using enum User::FieldTag;
             case ID:
-                user.id = term.promptForInput<long, validateLibraryID>("Enter new Library ID");
+                user.id = term.promptForInput<uint64_t, validateLibraryID>("Enter new Library ID");
                 break;
             case Role:
                 user.role = term.promptForInput<string, validateRole>("Enter new role");
@@ -436,7 +437,7 @@ void Admin::updateUserInfo(User& user) {
                 user.email = term.promptForInput<string, validateEmail>("Enter new email");
                 break;
             case InstitutionID:
-                user.institutionId = term.promptForInput<long>("Enter new institution ID");
+                user.institutionId = term.promptForInput<uint64_t>("Enter new institution ID");
                 break;
             default:
                 UNREACHABLE;

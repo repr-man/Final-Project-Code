@@ -2,6 +2,7 @@
 #include "library.hpp"
 #include "terminal.hpp"
 #include "validators.hpp"
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -34,7 +35,7 @@ public:
         phone = term.promptForInput<string, validatePhone>("Enter Phone Number");
         email = term.promptForInput<string, validateEmail>("Enter Email");
         password = term.promptForInput<string>("Enter Password");
-        schoolID = to_string(term.promptForInput<long, validateInstitutionID>(
+        schoolID = to_string(term.promptForInput<uint64_t, validateInstitutionID>(
             "Enter School ID (e.g. campus ID)"
         ));
     }

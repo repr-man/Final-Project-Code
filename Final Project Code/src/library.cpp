@@ -1,5 +1,6 @@
 #include "library.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <string>
 #include <string_view>
@@ -91,7 +92,7 @@ Library::Library() {
     for(auto& line : splitBy(usersFileText, '\n')) {
         auto segments = splitBy(line, ';');
         users.push_back(User(
-            std::stoll(std::string(segments[0])),
+            std::stoull(std::string(segments[0])),
             std::string(segments[1]),
             std::string(segments[2]),
             std::string(segments[3]),
@@ -99,8 +100,8 @@ Library::Library() {
             std::string(segments[5]),
             std::string(segments[6]),
             std::string(segments[7]),
-            std::stoll(std::string(segments[8])),
-            std::stoi(std::string(segments[9]))
+            std::stoull(std::string(segments[8])),
+            std::stoul(std::string(segments[9]))
         ));
     }
 
@@ -108,7 +109,7 @@ Library::Library() {
     for(auto& line : splitBy(historyFileText, '\n')) {
         auto segments = splitBy(line, ';');
         history.push_back(HistoryItem(
-            std::stoll(std::string(segments[0])),
+            std::stoull(std::string(segments[0])),
             std::string(segments[1])
         ));
     }
@@ -183,14 +184,14 @@ void Library::addInventory(string&& type, string&& name, string&& author, string
     flushVector<InventoryItem>();
 }
 
-void Library::addHistory(long userID, std::string&& name) {
+void Library::addHistory(uint64_t userID, std::string&& name) {
     auto newItem = HistoryItem(userID, std::move(name));
     history.push_back(newItem);
     flushVector<HistoryItem>();
 }
 
 void Library::addUser(
-    long userID,
+    uint64_t userID,
     std::string&& role,
     std::string&& first,
     std::string&& last,
@@ -209,7 +210,7 @@ void Library::addUser(
         std::move(phone),
         std::move(email),
         std::move(password),
-        std::move(std::stoll(institutionId)),
+        std::move(std::stoull(institutionId)),
         0
     );
     users.push_back(newItem);

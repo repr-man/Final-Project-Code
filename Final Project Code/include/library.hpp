@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <filesystem>
 #include <ranges>
 #include <string_view>
@@ -81,10 +82,10 @@ public:
         std::string&& type,
         std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
-    void addHistory(long userID, std::string&& name);
+    void addHistory(uint64_t userID, std::string&& name);
 
     void addUser(
-        long userID,
+        uint64_t userID,
         std::string&& role,
         std::string&& first,
         std::string&& last,

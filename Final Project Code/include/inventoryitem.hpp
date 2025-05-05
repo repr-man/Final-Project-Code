@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -8,7 +9,7 @@
 class InventoryItem : public LibraryStorageType {
 public:
     std::string type, name, author, publisher;
-    int borrowerID;
+    uint64_t borrowerID;
     
     static constexpr int Offset = 0;
     inline static const auto SaveFileLocation
@@ -38,7 +39,7 @@ public:
         std::string&& name,
         std::string&& author,
         std::string&& publisher,
-        int borrowerID
+        uint64_t borrowerID
     );
  
     bool matches(FieldTag field, const std::string& value) const;

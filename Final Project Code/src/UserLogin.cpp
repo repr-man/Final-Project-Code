@@ -1,4 +1,5 @@
 #include "UserLogin.hpp"
+#include <cstdint>
 
 
 void UserLogin::attemptLogin(Library& lib, Terminal& term) {
@@ -6,7 +7,7 @@ void UserLogin::attemptLogin(Library& lib, Terminal& term) {
 
     while (true) {
         cout << "\n--- User Login ---\n";
-        inputID = to_string(term.promptForInput<long, validateLibraryID>(
+        inputID = to_string(term.promptForInput<uint64_t, validateLibraryID>(
             "Enter your Library ID (10 digits)"
         ));
         inputPassword = term.promptForInput<string>("Enter your password");
