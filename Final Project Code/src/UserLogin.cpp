@@ -57,7 +57,7 @@ void UserLogin::showMenu() {
         cout << "3. Search Function\n";
         cout << "4. Print User Summary\n";
         cout << "5. Logout\n";
-        int choice = term.promptForInput<int, validateNumRange<1, 5>> ("Enter your choice");
+        int choice = term.promptForInput<uint32_t, validateNumRange<1, 5>> ("Enter your choice");
 
         switch (choice) {
             case 1: {
@@ -109,7 +109,7 @@ void UserLogin::showMenu() {
                         "Borrow Items",
                         "Exit"
                     });
-                    auto choice = term.promptForInput<int, validateNumRange<1, 3>>(
+                    auto choice = term.promptForInput<uint32_t, validateNumRange<1, 3>>(
                         "Enter your choice"
                     );
                     switch (choice) {

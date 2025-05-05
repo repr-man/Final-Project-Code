@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdio>
 #include <iostream>
 #include "main.hpp"
@@ -23,7 +24,7 @@ void Main::main() try {
     while (true) {
         cout << "\nLibrary Management System\n";
         cout << "1. Register New User\n2. Admin Login\n3. User Login\n4. Exit\n";
-        choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
+        choice = term.promptForInput<uint32_t, validateNumRange<1, 4>>("Enter your choice");
 
         switch (choice) {
             case 1: {// register new users

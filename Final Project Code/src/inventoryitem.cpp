@@ -69,7 +69,7 @@ std::string InventoryItem::serialize() const {
     name + ';' +
     author + ';' +
     publisher + ';' +
-    std::to_string(borrowerID);
+    std::to_string((int64_t) borrowerID);
 }
 
 Row InventoryItem::provideRow() const {

@@ -44,7 +44,7 @@ requires std::is_base_of_v<UserHolder, T>
 void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<InventoryItem>& items) {
     bool doneBorrowing = false;
     while (!doneBorrowing) {
-        auto toBorrow = term.promptForInput<vector<int>>(
+        auto toBorrow = term.promptForInput<vector<uint32_t>>(
             "Enter the #s of items to borrow (0 to cancel)"
         );
         if (toBorrow.size() > 4) {
@@ -58,7 +58,7 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
                 break;
             }
             if (i > items.size()) {
-                term.printError("Invalid item number `" + to_string(i) + "`.");
+                term.printError("Invalid item number `" + to_string((int) i) + "`.");
                 shouldContinue = true;
                 break;
             }
