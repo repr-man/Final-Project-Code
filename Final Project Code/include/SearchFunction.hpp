@@ -23,9 +23,9 @@ public:
     retry: {
             term.printOptions("--- Search for User ---", {
                 "ID",
+                "Role",
                 "First Name",
                 "Last Name",
-                "Role",
                 "Address",
                 "Phone Number",
                 "Email",
