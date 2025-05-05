@@ -123,6 +123,7 @@ void UserLogin::showMenu() {
                     }
                     break;
                 }
+                break;
             }
             case 4:
                 printUserSummary();

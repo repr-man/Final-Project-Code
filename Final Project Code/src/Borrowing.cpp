@@ -51,6 +51,7 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
             term.printError("You may not borrow more than 4 items.");
             continue;
         }
+        bool shouldContinue = false;
         for (auto i : toBorrow) {
             if (i == 0) {
                 doneBorrowing = true;
@@ -58,14 +59,17 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
             }
             if (i > items.size()) {
                 term.printError("Invalid item number `" + to_string(i) + "`.");
+                shouldContinue = true;
                 break;
             }
             if (items[i - 1].borrowerID != -1) {
                 term.printError("Item `" + items[i - 1].name + "` is already borrowed.");
+                shouldContinue = true;
                 break;
             }
         }
         if (doneBorrowing) { break; }
+        if (shouldContinue) { continue; }
 
         if constexpr (std::is_same_v<T, UserLogin>) {
             if (user.user.numCheckedOut >= 4) {
