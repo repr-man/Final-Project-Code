@@ -27,4 +27,4 @@
 27;staff;Christopher;Smith;567 Cherry St;555-909-0101;christopher.smith@example.com;P@sswOrdM3;703925425;0
 28;student;Ella;Brown;890 Elm Ave;555-010-1212;ella.brown@example.com;P@sswOrdL0l;1680872394;0
 29;student;James;Helbringer;8485 China;814-502-5591;jhelbringer@gmail.com;P@ssword01;1667723708;0
-30;student;aixa;escobar;3376 downham;8145025591;aixahelbringer@gmail.com;password;123456789;1
+30;student;aixa;escobar;3376 downham;8145025591;aixahelbringer@gmail.com;password;123456789;0

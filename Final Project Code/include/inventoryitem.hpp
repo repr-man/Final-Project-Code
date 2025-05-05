@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <string>
 
-#include "printable.hpp"
+#include "librarystoragetype.hpp"
 
-class InventoryItem : public Printable<5> {
+class InventoryItem : public LibraryStorageType {
 public:
     std::string type, name, author, publisher;
     int borrowerID;
@@ -29,6 +29,8 @@ public:
     static constexpr auto Publisher = FieldTag::Publisher;
     static constexpr auto BorrowerID = FieldTag::BorrowerID;
 
+    static std::string to_string(const InventoryItem::FieldTag& item);
+    friend std::ostream& operator<<(std::ostream& os, const InventoryItem::FieldTag& item);
     friend std::istream& operator>>(std::istream& is, InventoryItem::FieldTag& item);
 
 	InventoryItem(
@@ -43,7 +45,9 @@ public:
 
     std::string serialize() const;
     
-    std::array<std::string, 5> providePrintableData() const override;
+    Row provideRow() const override;
+    
+    std::string get(FieldTag field) const;
     
     friend class Library;
 };

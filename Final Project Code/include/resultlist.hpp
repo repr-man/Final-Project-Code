@@ -3,11 +3,10 @@
 #include <vector>
 
 #include "librarystoragetype.hpp"
-#include "printable.hpp"
 
 class Library;
 
-template <typename T> requires LibraryStorageType<T>
+template <typename T> requires IsLibraryStorageType<T>
 class ResultList {
     std::vector<T*> items;
     Library& lib;
@@ -17,10 +16,14 @@ class ResultList {
     
 public:
     ResultList(Library& lib) : lib(lib) {}
-    ResultList(ResultList& lib) = delete;
-    ResultList(const ResultList& other) = delete;
 
+    ResultList(ResultList& other) = delete;
+    ResultList(const ResultList& other) = delete;
     ResultList& operator=(const ResultList& other) = delete;
+
+    ResultList(ResultList&& other) : items(std::move(other.items)), lib(other.lib), modified(other.modified) {
+        other.modified = false;
+    }
     ResultList& operator=(ResultList&& other) {
         items = std::move(other.items);
         modified = other.modified;
@@ -29,7 +32,7 @@ public:
     }
     
     ~ResultList();
-    
+
     T& operator[](int index);
     const T& operator[](int index) const;
 
@@ -37,5 +40,20 @@ public:
 
     void remove(int index);
 
+    template <typename U> requires IsLibraryStorageType<U>
+    const ResultList<T> join(T::FieldTag field, const ResultList<U>& other, U::FieldTag otherField) const {
+        ResultList<T> res(lib);
+        for(auto otherItem : other.items) {
+            for(auto item : items) {
+                if(item->matches(field, otherItem->get(otherField))) {
+                    res.items.push_back(item);
+                }
+            }
+        }
+        return res;
+    }
+
+    template <typename U> requires IsLibraryStorageType<U>
+    friend class ResultList;
     friend class Library;
 };

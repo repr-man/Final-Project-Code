@@ -8,6 +8,11 @@
 
 using namespace std;
 
+template <typename T> requires IsLibraryStorageType<T>
+std::vector<T>* Library::computeVectorFromOffset() {
+    return (std::vector<T>*)(this) + T::Offset;
+}
+
 /// Reads the entire contents of a file into a buffer.
 std::string Library::readFile(const std::filesystem::path& filename) {
     //auto path = std::filesystem::current_path().append(filename);
@@ -36,7 +41,7 @@ auto Library::splitBy(const std::string_view text, const char delimiter) {
     return res;
 }
 
-template <typename T> requires LibraryStorageType<T>
+template <typename T> requires IsLibraryStorageType<T>
 void Library::flushVector() {
     auto vec = (std::vector<T>*)(this) + T::Offset;
     auto file = std::ofstream(T::SaveFileLocation);
@@ -47,7 +52,7 @@ void Library::flushVector() {
 }
 
 
-template <typename T> requires LibraryStorageType<T>
+template <typename T> requires IsLibraryStorageType<T>
 ResultList<T> Library::searchVector(
     std::vector<typename T::FieldTag>& fields,
     std::vector<std::string>& values,
@@ -212,9 +217,9 @@ void Library::addUser(
 }
 
 
-template <typename T> requires LibraryStorageType<T>
+template <typename T> requires IsLibraryStorageType<T>
 void Library::remove(T* item) {
-    auto vec = (std::vector<T>*)(this) + T::Offset;
+    auto vec = computeVectorFromOffset<T>();
     int idx = item - &*vec->cbegin();
     vec->erase(vec->begin() + idx);
 }

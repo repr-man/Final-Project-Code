@@ -48,7 +48,7 @@ void Main::main() try {
                 if (res.size() > 0) {
                     cout << "Admin login successful.\n";
                     string fullName = inputFirst + " " + inputLast;
-                    Admin admin(lib, term, fullName, inputPass);
+                    Admin admin(lib, term, res[0], fullName, inputPass);
                     admin.showMenu();
                 }
                 else {

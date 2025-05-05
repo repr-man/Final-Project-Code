@@ -1,5 +1,7 @@
 #include "terminal.hpp"
 
+std::vector<int> Terminal::columnWidths{};
+
 void Terminal::printOptions(
     std::string_view prompt,
     std::initializer_list<std::string_view> options
@@ -13,7 +15,7 @@ void Terminal::printOptions(
     std::cout << std::endl;
 }
 
-void Terminal::printError(std::string_view message) const {
+void Terminal::printError(std::string message) const {
     if constexpr(isWindows) {
         std::cout << "### ERROR ###\n" << message << '\n';
     } else {

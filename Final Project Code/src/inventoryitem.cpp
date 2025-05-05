@@ -1,13 +1,36 @@
 #include "inventoryitem.hpp"
 #include "util.hpp"
+#include <vector>
 
 
 using namespace std;
 
+std::string InventoryItem::to_string(const InventoryItem::FieldTag& item) {
+    switch (item) {
+        case InventoryItem::Type:
+            return "Type";
+        case InventoryItem::Name:
+            return "Name";
+        case InventoryItem::Author:
+            return "Author";
+        case InventoryItem::Publisher:
+            return "Publisher";
+        case InventoryItem::BorrowerID:
+            return "Borrower ID";
+        default:
+            UNREACHABLE;
+    }
+}
+
+ostream& operator<<(ostream& os, const InventoryItem::FieldTag& item) {
+    os << InventoryItem::to_string(item);
+    return os;
+}
+
 std::istream& operator>>(std::istream& is, InventoryItem::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<InventoryItem::FieldTag>(val);
+    item = static_cast<InventoryItem::FieldTag>(val - 1);
     return is;
 }
 
@@ -48,12 +71,28 @@ std::string InventoryItem::serialize() const {
     std::to_string(borrowerID);
 }
 
-std::array<std::string, 5> InventoryItem::providePrintableData() const {
-    return {
+Row InventoryItem::provideRow() const {
+    return Row(std::vector{
         type,
         name,
         author,
         publisher,
         std::to_string(borrowerID)
-    };
+    });
+}
+
+std::string InventoryItem::get(InventoryItem::FieldTag field) const {
+    switch (field) {
+        case Type:
+            return type;
+        case Name:
+            return name;
+        case Author:
+            return author;
+        case Publisher:
+            return publisher;
+        case BorrowerID:
+            return std::to_string(borrowerID);
+    }
+    UNREACHABLE;
 }

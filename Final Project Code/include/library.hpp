@@ -22,6 +22,10 @@ class Library {
 
     /// Reads the entire contents of a file into a buffer.
     //static std::string readFile(const std::string& filename);
+    //
+
+    template <typename T> requires IsLibraryStorageType<T>
+    std::vector<T>* computeVectorFromOffset();
 
     std::string readFile(const std::filesystem::path& filename);
 
@@ -29,7 +33,7 @@ class Library {
     static auto splitBy(const std::string_view text, const char delimiter);
 
     /// Implements the searching functionality for the earch methods.
-    template <typename T> requires LibraryStorageType<T>
+    template <typename T> requires IsLibraryStorageType<T>
     ResultList<T> searchVector(
         std::vector<typename T::FieldTag>& fields,
         std::vector<std::string>& values,
@@ -91,11 +95,11 @@ public:
         std::string&& institutionId
     );
 
-    template <typename T> requires LibraryStorageType<T>
+    template <typename T> requires IsLibraryStorageType<T>
     void remove(T* item);
 
     /// Writes the entire contents of a buffer to a file.
-    template <typename T> requires LibraryStorageType<T>
+    template <typename T> requires IsLibraryStorageType<T>
     void flushVector();
 
     /// Writes all the contents to disk.

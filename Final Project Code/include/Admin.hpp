@@ -1,7 +1,9 @@
 #pragma once
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <ranges>
 #include <string>
 #include "Borrowing.hpp"
 #include "RegisterUser.hpp"
@@ -10,22 +12,19 @@
 #include "library.hpp"
 #include "resultlist.hpp"
 #include "terminal.hpp"
+#include "user.hpp"
 #include "util.hpp"
 #include "validators.hpp"
 
 
 using namespace std;
 
-class Admin {
-private:
-    Library& lib;
-    Terminal& term;
-    string username, password;
+class Admin : public UserHolder {
 public:
-    Admin(Library& lib, Terminal& term, string user, string pass) : lib(lib), term(term), username(user), password(pass) {}
+    Admin(Library& lib, Terminal& term, User& user, string username, string pass) : UserHolder(lib, term, user, username, pass) {}
 
     bool login(string inputUser, string inputPass) {
-        return (inputUser == username && inputPass == password);
+        return (inputUser == userID && inputPass == password);
     }
 
     void showMenu() {
@@ -67,14 +66,19 @@ public:
                 SearchFunction s;
                 switch (choice) {
                     case 1: {
+                        using enum User::FieldTag;
                         auto res = s.searchUser(lib, term);
-                        term.printTable(res, "ID", "Role", "First Name", "Last Name", "Address", "Phone Number", "Email", "Password", "Institution ID", "# Items Borrowed");
-                        editUserInfoAfterSearch(res);
+                        if (!res) break;
+                        term.printTable(*res, ID, Role, First, Last);
+                        editUserInfoAfterSearch(*res);
                         break;
                     }
                     case 2: {
+                        using enum InventoryItem::FieldTag;
                         auto res = s.searchInventory(lib, term);
-                        term.printTable(res, "Type", "Name", "Author", "Publisher", "Borrower ID");
+                        if (!res) break;
+                        term.printTable(*res, Type, Name, Author, Publisher, BorrowerID);
+                        manageInventoryAfterSearch(*res);
                         break;
                     }
                     case 3:
@@ -196,6 +200,87 @@ private:
         }
     }
 
+    void manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
+        cout << "\n--- Inventory Menu ---\n";
+        cout << "1. Borrow Items\n";
+        cout << "2. Delete Items\n";
+        cout << "3. Edit Items\n";
+        cout << "4. Back to Admin Menu\n";
+        int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
+
+        switch (choice) {
+        case 1:
+            Borrowing b;
+            b.borrowItems(lib, term, *this, res);
+            break;
+        case 2: {
+            auto selection = term.promptForInput<vector<int>>(
+                "Enter the #s of the items to select (0 to cancel)"
+            );
+            while (true) {
+                if (std::any_of(selection.begin(), selection.end(), [](int i) {
+                    return i == 0; })
+                ) {
+                    cout << "Operation cancelled.\n";
+                    return;
+                } else if (auto pos = std::find_if(selection.begin(), selection.end(),
+                    [&](int i) {
+                        return i < 0 || i > res.size();
+                    }
+                ); pos == selection.end()) {
+                    term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
+                                    "`. Number must be in range [0, " + to_string(res.size()) +
+                                    "]");
+                    selection = term.promptForInput<vector<int>>("Try again");
+                } else {
+                    break;
+                }
+            }
+
+            for (auto i : selection) {
+                res.remove(i - 1);
+            }
+            cout << "Items deleted successfully.\n";
+            break;
+        }
+        case 3: {
+            auto selection = term.promptForInput<vector<int>>(
+                "Enter the #s of the items to select (0 to cancel)"
+            );
+            while (true) {
+                if (std::any_of(selection.begin(), selection.end(), [](int i) {
+                    return i == 0; })
+                ) {
+                    cout << "Operation cancelled.\n";
+                    return;
+                } else if (auto pos = std::find_if(selection.begin(), selection.end(),
+                    [&](int i) {
+                        return i < 0 || i > res.size();
+                    }
+                ); pos == selection.end()) {
+                    term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
+                                    "`. Number must be in range [0, " + to_string(res.size()) +
+                                    "]");
+                    selection = term.promptForInput<vector<int>>("Try again");
+                } else {
+                    break;
+                }
+            }
+
+            for (auto i : selection) {
+                cout << "\n=== Item " << i << " ===";
+                updateInventoryItem(res[i - 1]);
+            }
+            cout << "Items updated successfully.\n";
+            break;
+        }
+        case 4:
+            cout << "Returning to Admin Menu...\n";
+            break;
+        default:
+            UNREACHABLE;
+        }
+    }
 
     void editInventory() {
         cout << "\n--- Inventory Menu ---\n";
@@ -271,18 +356,7 @@ private:
                 );
             }
 
-            // Prompt for new values
-            string newType = term.promptForInput<string>("Enter new type");
-            string newName = term.promptForInput<string>("Enter new name/title");
-            string newAuthor = term.promptForInput<string>("Enter new author");
-            string newPublisher = term.promptForInput<string>("Enter new publisher");
-
-            // Apply updates
-            items[editIndex - 1].type = std::move(newType);
-            items[editIndex - 1].name = std::move(newName);
-            items[editIndex - 1].author = std::move(newAuthor);
-            items[editIndex - 1].publisher = std::move(newPublisher);
-            cout << "Item updated successfully.\n";
+            updateInventoryItem(items[editIndex - 1]);
             break;
         }
         case 4:
@@ -333,15 +407,18 @@ private:
 
     void updateUserInfo(User& user) {
         term.printOptions("--- Select Fields to Update ---", {
+            "ID",
+            "Role",
             "First Name",
             "Last Name",
             "Address",
             "Phone Number",
-            "Email"
+            "Email",
+            "Institution ID"
         });
         auto fields = term.promptForInput<
             vector<User::FieldTag>,
-            validateNumRange<1, 5>
+            validateNumRange<1, 8>
         >(
             "Enter space-separated list of fields to update"
         );
@@ -349,6 +426,12 @@ private:
         for (auto& field : fields) {
             switch (field) {
                 using enum User::FieldTag;
+                case ID:
+                    user.id = term.promptForInput<long, validateLibraryID>("Enter new Library ID");
+                    break;
+                case Role:
+                    user.role = term.promptForInput<string, validateRole>("Enter new role");
+                    break;
                 case First:
                     user.first = term.promptForInput<string>("Enter new first name");
                     break;
@@ -366,6 +449,9 @@ private:
                 case Email:
                     user.email = term.promptForInput<string, validateEmail>("Enter new email");
                     break;
+                case InstitutionID:
+                    user.institutionId = term.promptForInput<long>("Enter new institution ID");
+                    break;
                 default:
                     UNREACHABLE;
             }
@@ -375,42 +461,51 @@ private:
     }
 
     void showAllUsers() {
-        std::ifstream file("data/users.txt");
-        if (!file.is_open()) {
-            std::cout << "Error: Could not open users.txt\n";
+        using enum User::FieldTag;
+
+        auto res = lib.allUsers();
+        if (res.size() == 0) {
+            cout << "No registered users.\n";
             return;
         }
+        term.printTable(res, ID, Role, First, Last, Address, Phone,
+                        Email, Password, InstitutionID, NumCheckedOut);
+    }
 
-        std::cout << "\n--- Registered Users ---\n";
-        std::cout << std::left
-            << std::setw(15) << "ID"
-            << std::setw(20) << "First Name"
-            << std::setw(25) << "Last Name" << "\n";
-        std::cout << std::string(60, '-') << "\n";
+    void updateInventoryItem(InventoryItem& item) {
+        term.printOptions("--- Select Fields to Update ---", {
+            "Type",
+            "Name",
+            "Author",
+            "Publisher"
+        });
+        auto fields = term.promptForInput<
+            vector<InventoryItem::FieldTag>,
+            validateNumRange<1, 4>
+        >(
+            "Enter space-separated list of fields to update"
+        );
 
-        std::string line;
-        while (std::getline(file, line)) {
-            std::stringstream ss(line);
-            std::string token;
-
-            std::string id, role, first, last;
-
-            // Parse using ';' as delimiter
-            std::getline(ss, id, ';');      // 0 - ID
-            std::getline(ss, role, ';');    // 1 - Role
-            std::getline(ss, first, ';');   // 2 - First Name
-            std::getline(ss, last, ';');    // 3 - Last Name
-
-            if (!id.empty() && !first.empty() && !last.empty()) {
-                std::cout << std::left
-                    << std::setw(15) << id
-                    << std::setw(20) << first
-                    << std::setw(25) << last << "\n";
+        for (auto& field : fields) {
+            switch (field) {
+                using enum InventoryItem::FieldTag;
+                case Type:
+                    item.type = term.promptForInput<string>("Enter new type");
+                    break;
+                case Name:
+                    item.name = term.promptForInput<string>("Enter new name/title");
+                    break;
+                case Author:
+                    item.author = term.promptForInput<string>("Enter new author");
+                    break;
+                case Publisher:
+                    item.publisher = term.promptForInput<string>("Enter new publisher");
+                    break;
+                default:
+                    UNREACHABLE;
             }
         }
 
-        file.close();
+        cout << "Item updated successfully.\n";
     }
-
-
-}; // end of admin class
+};

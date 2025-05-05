@@ -1,9 +1,13 @@
 #pragma once
 #include <cstdio>
 #include <iostream>
+#include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
+#include "Admin.hpp"
+#include "UserLogin.hpp"
 #include "inventoryitem.hpp"
 #include "library.hpp"
 #include "terminal.hpp"
@@ -15,7 +19,7 @@ using namespace std;
 
 class SearchFunction {
 public:
-    auto searchUser(Library& lib, Terminal& term) {
+    std::optional<ResultList<User>> searchUser(Library& lib, Terminal& term) {
     retry: {
             term.printOptions("--- Search for User ---", {
                 "ID",
@@ -27,49 +31,12 @@ public:
                 "Email",
                 "Institution ID"
             });
-            auto rawCategories = term.promptForInput<
-                vector<int>,
-                validateNumRange<1, 8>
+            auto categories = term.promptForInput<
+                vector<User::FieldTag>,
+                validateNumRange<0, 8>
             >(
-                "Enter space-separated list of search categories"
+                "Enter space-separated list of search categories (0 to cancel)"
             );
-            vector<User::FieldTag> categories;
-            for (auto& category : rawCategories) {
-                switch (category) {
-                    using enum User::FieldTag;
-                    case 1:
-                        categories.push_back(ID);
-                        break;
-                    case 2:
-                        categories.push_back(First);
-                        break;
-                    case 3:
-                        categories.push_back(Last);
-                        break;
-                    case 4:
-                        categories.push_back(Role);
-                        break;
-                    case 5:
-                        categories.push_back(Address);
-                        break;
-                    case 6:
-                        categories.push_back(Phone);
-                        break;
-                    case 7:
-                        categories.push_back(Email);
-                        break;
-                    case 8:
-                        categories.push_back(InstitutionID);
-                        break;
-                    default:
-                        term.printError(
-                            "Invalid search category '"s
-                            + to_string(category)
-                            + "'. Please try again."
-                        );
-                        goto retry;
-                }
-            }
 
             vector<string> queries;
             for (auto& category : categories) {
@@ -103,16 +70,16 @@ public:
                         );
                         break;
                     default:
-                        UNREACHABLE;
+                        return std::nullopt;
                 }
                 queries.push_back(std::move(res));
             }
 
-            return lib.search(categories, std::move(queries));
+            return std::optional(lib.search(categories, std::move(queries)));
         }
     }
 
-    auto searchInventory(Library& lib, Terminal& term) {
+    std::optional<ResultList<InventoryItem>> searchInventory(Library& lib, Terminal& term) {
         term.printOptions("--- Search for Inventory ---", {
             "Type",
             "Name",
@@ -122,9 +89,9 @@ public:
         });
         auto categories = term.promptForInput<
             std::vector<InventoryItem::FieldTag>,
-            validateNumRange<1, 5>
+            validateNumRange<0, 5>
             >(
-                "Enter space-separated list of search categories"
+                "Enter space-separated list of search categories (0 to cancel)"
             );
 
         vector<string> queries;
@@ -150,10 +117,10 @@ public:
                     );
                     break;
                 default:
-                    UNREACHABLE;
+                    return std::nullopt;
             }
             queries.push_back(std::move(res));
         }
-        return lib.search(categories, std::move(queries));
+        return std::optional(lib.search(categories, std::move(queries)));
     }
 };

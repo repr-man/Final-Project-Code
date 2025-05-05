@@ -1,11 +1,29 @@
 #include "librarian.hpp"
 #include "util.hpp"
+#include <vector>
 
+std::string Librarian::to_string(const Librarian::FieldTag& item) {
+    switch (item) {
+        case Librarian::First:
+            return "First Name";
+        case Librarian::Last:
+            return "Last Name";
+        case Librarian::Password:
+            return "Password";
+        default:
+            UNREACHABLE;
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const Librarian::FieldTag& item) {
+    os << Librarian::to_string(item);
+    return os;
+}
 
 std::istream& operator>>(std::istream& is, Librarian::FieldTag& item) {
     int val;
     is >> val;
-    item = static_cast<Librarian::FieldTag>(val);
+    item = static_cast<Librarian::FieldTag>(val - 1);
     return is;
 }
 
@@ -36,10 +54,18 @@ std::string Librarian::serialize() const {
     password;
 }
 
-std::array<std::string, 3> Librarian::providePrintableData() const {
-    return {
-        first,
-        last,
-        password
-    };
+Row Librarian::provideRow() const {
+    return Row(std::vector{first, last, password});
+}
+
+std::string Librarian::get(Librarian::FieldTag field) const {
+    switch (field) {
+        case First:
+            return first;
+        case Last:
+            return last;
+        case Password:
+            return password;
+    }
+    UNREACHABLE;
 }
