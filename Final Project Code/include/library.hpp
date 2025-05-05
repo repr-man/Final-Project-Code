@@ -78,7 +78,7 @@ public:
     ResultList<User> allUsers();
 
     // to add an inventory item
-    void addInventory(
+    bool addInventory(
         std::string&& type,
         std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 

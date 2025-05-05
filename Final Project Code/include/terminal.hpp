@@ -262,10 +262,6 @@ public:
     void printError(std::string message) const;
 
     /// Prints a formatted table of strings.
-    ///
-    /// Note: We will probably remove this function once we fully flesh out
-    /// how we want to model our data and provide it via the `LibraryStorageType`
-    /// interface.
     template <IsLibraryStorageType T, typename... ColumnNames>
     requires (std::same_as<ColumnNames, typename T::FieldTag> && ...)
     void printTable(
