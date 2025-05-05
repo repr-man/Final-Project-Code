@@ -25,11 +25,11 @@ void Terminal::printError(std::string message) const {
 
 void Terminal::trimAndRecolor(std::string& str, int width) const {
     if constexpr(isWindows) {
-        auto last3 = str[width - 3];
+        /*auto last3 = str[width - 3];
         auto last2 = str[width - 2];
         auto last1 = str[width - 1];
         str.resize(width - 3);
-        str.append("...");
+        str.append("...");*/
     } else {
         auto last5 = str[width - 5];
         auto last4 = str[width - 4];

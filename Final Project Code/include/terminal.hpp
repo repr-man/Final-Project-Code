@@ -276,10 +276,10 @@ public:
         // Collect the tags and their associated names.
         constexpr int N = sizeof...(ColumnNames);
         columnWidths.resize(N + 1);
-        auto colTags = std::array{columnNames...};
+        auto colTags = std::array{ columnNames... };
         auto colNames = std::vector<std::string>{};
         colNames.resize(colTags.size());
-        for(auto [tag, name] : c9::zip(colTags, colNames)) {
+        for (auto [tag, name] : c9::zip(colTags, colNames)) {
             name = T::to_string(tag);
         }
 
@@ -288,38 +288,40 @@ public:
         auto fullWidth = N + 1 + indexColumnWidth;
         columnWidths.resize(N + 1);
         columnWidths[0] = indexColumnWidth;
-        for(auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
+        for (auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
             width = name.size();
         }
 
         // Calculate the preferred width of each column.
-        for(auto& row : rows) {
+        for (auto& row : rows) {
             auto rowItems = row.get<T>(columnNames...);
-            for(auto [width, item] : c9::zip(columnWidths | drop(1), rowItems)) {
-                width = std::max((unsigned long) width, item.size());
+            for (auto [width, item] : c9::zip(columnWidths | drop(1), rowItems)) {
+                width = std::max((unsigned long)width, (unsigned long)(item.size()));
             }
         }
         fullWidth += std::accumulate(columnWidths.begin(), columnWidths.end(), 0);
 
-        if(fullWidth > terminalWidth) {
+        if (fullWidth > terminalWidth) {
             // We need to shrink the width of some columns proportionally.
             auto adjustedWidth = N + 1 + indexColumnWidth;
-            for(auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
-                width = std::max(minTableCellWidth, width * terminalWidth / fullWidth);
+            for (auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
+                width = std::max(minTableCellWidth, (unsigned long)(width * terminalWidth / fullWidth));
                 adjustedWidth += width;
-                if(name.size() > width) {
+
+                if (name.size() > width) {
                     trimAndRecolor(name, width);
                 }
             }
-            for(auto& row : rows) {
-                for(const auto& [width, col] : c9::zip(columnWidths, row.get<T>(columnNames...))) {
-                    if(col.size() > width) {
+
+            for (auto& row : rows) {
+                for (const auto& [width, col] : c9::zip(columnWidths, row.get<T>(columnNames...))) {
+                    if (col.size() > width) {
                         trimAndRecolor(col, width);
                     }
                 }
             }
 
-            if(adjustedWidth > terminalWidth + 1) {
+            if (adjustedWidth > terminalWidth + 1) {
                 printError("Your terminal window is too small to display the table.");
                 return;
             }

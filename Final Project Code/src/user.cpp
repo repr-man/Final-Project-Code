@@ -30,7 +30,7 @@ std::string User::to_string(const User::FieldTag& item) {
     }
 }
 
-std::ostream& operator<<(ostream& os, const User::FieldTag& item) {
+std::ostream& operator<<(std::ostream& os, const User::FieldTag& item) {
     os << User::to_string(item);
     return os;
 }

@@ -180,7 +180,7 @@ ResultList<User> Library::allUsers() {
 void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
-
+    flushVector<InventoryItem>();
 }
 
 void Library::addHistory(long userID, std::string&& name) {
