@@ -47,6 +47,10 @@ void Admin::showMenu() {
                         using enum User::FieldTag;
                         auto res = s.searchUser(lib, term);
                         if (!res) break;
+                        if (res->size() == 0) {
+                            cout << "No results found.\n";
+                            break;
+                        }
                         term.printTable(*res, ID, Role, First, Last);
                         editUserInfoAfterSearch(*res);
                         break;
@@ -55,6 +59,10 @@ void Admin::showMenu() {
                         using enum InventoryItem::FieldTag;
                         auto res = s.searchInventory(lib, term);
                         if (!res) break;
+                        if (res->size() == 0) {
+                            cout << "No results found.\n";
+                            break;
+                        }
                         term.printTable(*res, Type, Name, Author, Publisher, BorrowerID);
                         manageInventoryAfterSearch(*res);
                         break;
