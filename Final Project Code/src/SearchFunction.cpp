@@ -34,9 +34,6 @@ std::optional<ResultList<User>> SearchFunction::searchUser(Library& lib, Termina
                 break;
             case Role:
                 res = term.promptForInput<string, validateRole>("Enter Role");
-                std::transform(res.begin(), res.end(), res.begin(), [](auto c){
-                    return std::tolower(c);
-                });
                 break;
             case Address:
                 res = term.promptForInput<string>("Enter Address");

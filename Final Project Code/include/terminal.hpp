@@ -197,8 +197,14 @@ public:
                 std::cout << "Please try again: ";
                 strStream.clear();
                 strStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            } else
-            return input;
+            } else {
+                if constexpr(validator == validateRole) {
+                    std::transform(input.begin(), input.end(), input.begin(), [](auto c){
+                        return std::tolower(c);
+                    });
+                }
+                return input;
+            }
         }
     }
 
