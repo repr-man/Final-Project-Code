@@ -110,16 +110,17 @@ class Terminal {
                                                        | take(items.size() - 1),
                                           items)
         ) {
-            std::cout << std::setw(width) << item;
+            std::cout << std::setw(width) << trimAndRecolor(item, width);
             std::cout << middleChar;
         }
-        std::cout << std::setw(columnWidths.back()) << items.back();
+        std::cout << std::setw(columnWidths.back())
+                  << trimAndRecolor(items.back(), columnWidths.back());
         std::cout << endChar << std::endl;
         std::cout.flags(oldAlignment);
     }
 
     /// Implements the fade effect on overly large cell content.
-    void trimAndRecolor(std::string& str, int width) const;
+    std::string trimAndRecolor(std::string str, int width) const;
 
 public:
     Terminal() {
@@ -308,20 +309,8 @@ public:
             // We need to shrink the width of some columns proportionally.
             uint32_t adjustedWidth = N + 1 + indexColumnWidth;
             for (auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
-                width = std::max(minTableCellWidth, width * terminalWidth / fullWidth);
+                width = std::max(minTableCellWidth, width * (terminalWidth - indexColumnWidth - 2) / fullWidth);
                 adjustedWidth += width;
-
-                if (name.size() > width) {
-                    trimAndRecolor(name, width);
-                }
-            }
-
-            for (auto& row : rows) {
-                for (const auto& [width, col] : c9::zip(columnWidths, row.get<T>(columnNames...))) {
-                    if (col.size() > width) {
-                        trimAndRecolor(col, width);
-                    }
-                }
             }
 
             if (adjustedWidth > terminalWidth + 1) {
