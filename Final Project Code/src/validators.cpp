@@ -42,7 +42,7 @@ const std::string validateInstitutionID(std::string_view str) {
     return "";
 }
 
-const std::string validatePhone(std::string value) {
+const std::string validatePhone(std::string_view value) {
     if (
         value.size() != 12
         || !std::isdigit(value[0])
