@@ -174,6 +174,25 @@ ResultList<User> Library::allUsers() {
     return ResultList<User>(*this, std::move(vec));
 }
 
+ResultList<HistoryItem> Library::allHistory() {
+    auto vec = std::vector<HistoryItem*>();
+    vec.reserve(history.size());
+    for(int i = 0; i < history.size(); ++i) {
+        vec.push_back(&history[i]);
+    }
+    return ResultList<HistoryItem>(*this, std::move(vec));
+}
+
+ResultList<Librarian> Library::allLibrarians() {
+    auto vec = std::vector<Librarian*>();
+    vec.reserve(librarians.size());
+    for(int i = 0; i < librarians.size(); ++i) {
+        vec.push_back(&librarians[i]);
+    }
+    return ResultList<Librarian>(*this, std::move(vec));
+}
+
+
 // to add inventory
 bool Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
     auto existing = search({InventoryItem::Name}, {name});

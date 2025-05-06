@@ -77,6 +77,12 @@ public:
     /// Returns a list of all the users in the library.
     ResultList<User> allUsers();
 
+    /// Returns a list of all the users in the library.
+    ResultList<HistoryItem> allHistory();
+
+    /// Returns a list of all the users in the library.
+    ResultList<Librarian> allLibrarians();
+
     // to add an inventory item
     bool addInventory(
         std::string&& type,
