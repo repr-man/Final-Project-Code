@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -8,8 +9,8 @@
 class User : public LibraryStorageType {
 public:
     std::string role, first, last, address, phone, email, password;
-    long id, institutionId;
-    int numCheckedOut;
+    uint64_t id, institutionId;
+    uint32_t numCheckedOut;
 
     static constexpr int Offset = 1;
     inline static const auto SaveFileLocation
@@ -46,7 +47,7 @@ public:
     friend std::istream& operator>>(std::istream& is, User::FieldTag& item);
 
     User(
-        long id,
+        uint64_t id,
         std::string&& role,
         std::string&& first,
         std::string&& last,
@@ -54,8 +55,8 @@ public:
         std::string&& phone,
         std::string&& email,
         std::string&& password,
-        long institutionId,
-        int numCheckedOut
+        uint64_t institutionId,
+        uint32_t numCheckedOut
     );
 
     bool matches(FieldTag field, const std::string& value) const noexcept;

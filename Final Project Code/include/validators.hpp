@@ -26,5 +26,5 @@ const std::string validateIdentity(std::string_view str);
 const std::string validateLibraryID(std::string_view str);
 const std::string validateRole(std::string_view role);
 const std::string validateInstitutionID(std::string_view str);
-const std::string validatePhone(std::string value);
+const std::string validatePhone(std::string_view value);
 const std::string validateEmail(std::string_view e);

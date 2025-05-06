@@ -1,6 +1,6 @@
 #include "terminal.hpp"
 
-std::vector<int> Terminal::columnWidths{};
+std::vector<uint32_t> Terminal::columnWidths{};
 
 void Terminal::printOptions(
     std::string_view prompt,
@@ -50,11 +50,3 @@ void Terminal::trimAndRecolor(std::string& str, int width) const {
         str.append(reset);
     }
 }
-
-//template std::vector<int> Terminal::promptForInput<std::vector<int>, validateNumRange<1, 8>>() const;
-//template std::string Terminal::promptForInput<std::string, validateIdentity>() const;
-//template std::string Terminal::promptForInput<std::string, validateLibraryID>() const;
-//template std::string Terminal::promptForInput<std::string, validateRole>() const;
-//template std::string Terminal::promptForInput<std::string, validateInstitutionID>() const;
-//template std::string Terminal::promptForInput<std::string, validatePhone>() const;
-//template std::string Terminal::promptForInput<std::string, validateEmail>() const;

@@ -1,4 +1,5 @@
 #include "Admin.hpp"
+#include <cstdint>
 
 
 bool Admin::login(string inputUser, string inputPass) {
@@ -16,7 +17,7 @@ void Admin::showMenu() {
         cout << "5. Active Users\n";
         cout << "6. Return Book\n";
         cout << "7. Logout\n";
-        choice = term.promptForInput<int, validateNumRange<1, 7>>("Enter your choice");
+        choice = term.promptForInput<uint32_t, validateNumRange<1, 7>>("Enter your choice");
 
         switch (choice) {
             case 1:
@@ -39,7 +40,7 @@ void Admin::showMenu() {
                 cout << "1. User\n";
                 cout << "2. Inventory\n";
                 cout << "3. Exit\n";
-                choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
+                choice = term.promptForInput<uint32_t, validateNumRange<1, 3>>("Enter your choice");
 
                 SearchFunction s;
                 switch (choice) {
@@ -47,14 +48,22 @@ void Admin::showMenu() {
                         using enum User::FieldTag;
                         auto res = s.searchUser(lib, term);
                         if (!res) break;
+                        if (res->size() == 0) {
+                            cout << "No results found.\n";
+                            break;
+                        }
                         term.printTable(*res, ID, Role, First, Last);
                         editUserInfoAfterSearch(*res);
                         break;
                     }
                     case 2: {
                         using enum InventoryItem::FieldTag;
-                        auto res = s.searchInventory(lib, term);
+                        auto res = s.searchInventory(lib, term, *this);
                         if (!res) break;
+                        if (res->size() == 0) {
+                            cout << "No results found.\n";
+                            break;
+                        }
                         term.printTable(*res, Type, Name, Author, Publisher, BorrowerID);
                         manageInventoryAfterSearch(*res);
                         break;
@@ -87,11 +96,11 @@ void Admin::showMenu() {
 
 void Admin::registerNewUser() {
     int nextID = generateNextLibraryID(lib);  
-RegisterUser newUser;
-newUser.promptUserData(term, nextID); 
-newUser.printSummary();
-newUser.saveToFile(lib);
-    }
+    RegisterUser newUser;
+    newUser.promptUserData(term, nextID); 
+    newUser.printSummary();
+    newUser.saveToFile(lib);
+}
 
 void Admin::editUserInfo() {
     cout << "\n--- User Management Menu ---\n";
@@ -99,7 +108,7 @@ void Admin::editUserInfo() {
     cout << "2. Update User Information\n";
     cout << "3. Delete User\n";
     cout << "4. Back to Admin Menu\n";
-    int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
+    int choice = term.promptForInput<uint32_t, validateNumRange<1, 4>>("Enter your choice");
 
     switch (choice) {
         case 1: { // Register New User
@@ -119,7 +128,7 @@ void Admin::editUserInfo() {
                 cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
             }
 
-            int userIndex = term.promptForInput<int>(
+            int userIndex = term.promptForInput<uint32_t>(
                 "Enter the number of the user to update (0 to cancel)"
             );
             while (true) {
@@ -129,9 +138,10 @@ void Admin::editUserInfo() {
                 } else if (userIndex > 0 && userIndex <= users.size()) {
                     break;
                 }
-                userIndex = term.promptForInput<int>(
-                    "Invalid choice. Enter a valid user number"
-                );
+                term.printError("Invalid choice `" + to_string((int) userIndex) +
+                                "`. Number must be in range [1, " +
+                                to_string(users.size()) + "]");
+                userIndex = term.promptForInput<uint32_t>("Try again");
             }
 
             updateUserInfo(users[userIndex - 1]);
@@ -150,7 +160,7 @@ void Admin::editUserInfo() {
                 cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
             }
 
-            int delUserIndex = term.promptForInput<int>(
+            int delUserIndex = term.promptForInput<uint32_t>(
                 "Enter the number of the user to delete (0 to cancel)"
             );
             while (true) {
@@ -160,9 +170,10 @@ void Admin::editUserInfo() {
                 } else if (delUserIndex > 0 && delUserIndex <= users.size()) {
                     break;
                 }
-                delUserIndex = term.promptForInput<int>(
-                    "Invalid choice. Enter a valid user number"
-                );
+                term.printError("Invalid choice `" + to_string((int) delUserIndex) +
+                                "`. Number must be in range [1, " +
+                                to_string(users.size()) + "]");
+                delUserIndex = term.promptForInput<uint32_t>("Try again");
             }
 
             users.remove(delUserIndex - 1);
@@ -184,7 +195,7 @@ void Admin::manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
     cout << "2. Delete Items\n";
     cout << "3. Edit Items\n";
     cout << "4. Back to Admin Menu\n";
-    int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
+    int choice = term.promptForInput<uint32_t, validateNumRange<1, 4>>("Enter your choice");
 
     switch (choice) {
         case 1:
@@ -192,7 +203,7 @@ void Admin::manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
             b.borrowItems(lib, term, *this, res);
             break;
         case 2: {
-            auto selection = term.promptForInput<vector<int>>(
+            auto selection = term.promptForInput<vector<uint32_t>>(
                 "Enter the #s of the items to select (0 to cancel)"
             );
             while (true) {
@@ -209,7 +220,7 @@ void Admin::manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
                     term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
                                     "`. Number must be in range [0, " + to_string(res.size()) +
                                     "]");
-                    selection = term.promptForInput<vector<int>>("Try again");
+                    selection = term.promptForInput<vector<uint32_t>>("Try again");
                 } else {
                     break;
                 }
@@ -222,7 +233,7 @@ void Admin::manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
             break;
         }
         case 3: {
-            auto selection = term.promptForInput<vector<int>>(
+            auto selection = term.promptForInput<vector<uint32_t>>(
                 "Enter the #s of the items to select (0 to cancel)"
             );
             while (true) {
@@ -239,7 +250,7 @@ void Admin::manageInventoryAfterSearch(ResultList<InventoryItem>& res) {
                     term.printError("Invalid choice `" + to_string(pos - selection.begin()) +
                                     "`. Number must be in range [0, " + to_string(res.size()) +
                                     "]");
-                    selection = term.promptForInput<vector<int>>("Try again");
+                    selection = term.promptForInput<vector<uint32_t>>("Try again");
                 } else {
                     break;
                 }
@@ -266,7 +277,7 @@ void Admin::editInventory() {
     cout << "2. Delete Item\n";
     cout << "3. Edit Item\n";
     cout << "4. Back to Admin Menu\n";
-    int choice = term.promptForInput<int, validateNumRange<1, 4>>("Enter your choice");
+    int choice = term.promptForInput<uint32_t, validateNumRange<1, 4>>("Enter your choice");
 
     switch (choice) {
         case 1: {
@@ -276,7 +287,16 @@ void Admin::editInventory() {
             string publisher = term.promptForInput<string>("Enter publisher");
             string borrowed = "-1"; 
 
-            lib.addInventory(std::move(type), std::move(name), std::move(author), std::move(publisher), std::move(borrowed));
+            auto itemExists = lib.addInventory(
+                std::move(type),
+                std::move(name),
+                std::move(author),
+                std::move(publisher),
+                std::move(borrowed));
+            if (itemExists) {
+                term.printError("An item named '" + name + "' already exists in the inventory.");
+                break;
+            }
             cout << "Item added successfully!\n";
             break;
         }
@@ -293,12 +313,20 @@ void Admin::editInventory() {
                 cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int delIndex = term.promptForInput<int>(
+            int delIndex = term.promptForInput<uint32_t>(
                 "Enter the number of the item to delete (0 to cancel)"
             );
-            if (delIndex == 0) {
-                cout << "Delete cancelled.\n";
-                break;
+            while (true) {
+                if (delIndex == 0) {
+                    cout << "Delete cancelled.\n";
+                    break;
+                } else if (delIndex > 0 && delIndex <= items.size()) {
+                    break;
+                }
+                term.printError("Invalid choice `" + to_string((int) delIndex) +
+                                "`. Number must be in range [1, " +
+                                to_string(items.size()) + "]");
+                delIndex = term.promptForInput<uint32_t>("Try again");
             }
 
             items.remove(delIndex - 1);
@@ -319,7 +347,7 @@ void Admin::editInventory() {
                 cout << i + 1 << ". " << items[i].name << " by " << items[i].author << "\n";
             }
 
-            int editIndex = term.promptForInput<int>(
+            int editIndex = term.promptForInput<uint32_t>(
                 "Enter the number of the item to edit (0 to cancel)"
             );
             while (true) {
@@ -329,9 +357,10 @@ void Admin::editInventory() {
                 } else if (editIndex > 0 && editIndex <= items.size()) {
                     break;
                 }
-                editIndex = term.promptForInput<int>(
-                    "Invalid choice. Enter a valid item number"
-                );
+                term.printError("Invalid choice `" + to_string((int) editIndex) +
+                                "`. Number must be in range [1, " +
+                                to_string(items.size()) + "]");
+                editIndex = term.promptForInput<uint32_t>("Try again");
             }
 
             updateInventoryItem(items[editIndex - 1]);
@@ -350,9 +379,9 @@ void Admin::editUserInfoAfterSearch(ResultList<User>& res) {
     cout << "1. Update User Information\n";
     cout << "2. Delete User\n";
     cout << "3. Back to Admin Menu\n";
-    int choice = term.promptForInput<int, validateNumRange<1, 3>>("Enter your choice");
+    int choice = term.promptForInput<uint32_t, validateNumRange<1, 3>>("Enter your choice");
 
-    int userIndex = term.promptForInput<int>(
+    int userIndex = term.promptForInput<uint32_t>(
         "Enter the number of the user to update (0 to cancel)"
     );
     while (true) {
@@ -362,7 +391,7 @@ void Admin::editUserInfoAfterSearch(ResultList<User>& res) {
         } else if (userIndex > 0 && userIndex <= res.size()) {
             break;
         }
-        userIndex = term.promptForInput<int>(
+        userIndex = term.promptForInput<uint32_t>(
             "Invalid choice. Enter a valid user number"
         );
     }
@@ -405,7 +434,7 @@ void Admin::updateUserInfo(User& user) {
         switch (field) {
             using enum User::FieldTag;
             case ID:
-                user.id = term.promptForInput<long, validateLibraryID>("Enter new Library ID");
+                user.id = term.promptForInput<uint64_t, validateLibraryID>("Enter new Library ID");
                 break;
             case Role:
                 user.role = term.promptForInput<string, validateRole>("Enter new role");
@@ -428,7 +457,7 @@ void Admin::updateUserInfo(User& user) {
                 user.email = term.promptForInput<string, validateEmail>("Enter new email");
                 break;
             case InstitutionID:
-                user.institutionId = term.promptForInput<long>("Enter new institution ID");
+                user.institutionId = term.promptForInput<uint64_t>("Enter new institution ID");
                 break;
             default:
                 UNREACHABLE;

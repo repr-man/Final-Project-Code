@@ -1,5 +1,6 @@
 #include "user.hpp"
 #include "util.hpp"
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,7 @@ std::istream& operator>>(std::istream& is, User::FieldTag& item) {
 }
 
 User::User(
-    long id,
+    uint64_t id,
     std::string&& role,
     std::string&& first,
     std::string&& last,
@@ -51,8 +52,8 @@ User::User(
     std::string&& phone,
     std::string&& email,
     std::string&& password,
-    long institutionId,
-    int numCheckedOut
+    uint64_t institutionId,
+    uint32_t numCheckedOut
 ) : id(id),
     role(role),
     first(first),
@@ -68,7 +69,7 @@ User::User(
 bool User::matches(User::FieldTag field, const std::string& value) const noexcept {
     switch (field) {
         case ID:
-            return id == std::stoll(value);
+            return id == std::stoull(value);
         case Role:
             return role == value;
         case First:
@@ -84,9 +85,9 @@ bool User::matches(User::FieldTag field, const std::string& value) const noexcep
         case Password:
             return password == value;
         case InstitutionID:
-            return institutionId == std::stoll(value);
+            return institutionId == std::stoull(value);
         case NumCheckedOut:
-            return numCheckedOut == std::stoi(value);
+            return numCheckedOut == std::stoul(value);
     }
     UNREACHABLE;
 }

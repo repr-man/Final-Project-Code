@@ -53,6 +53,37 @@ public:
         return res;
     }
 
+    class ResultListIterator {
+        ResultList& list;
+        int index = 0;
+
+        ResultListIterator(ResultList& list, int index) : list(list), index(index) {}
+
+    public:
+        ResultListIterator& operator++() {
+            index++;
+            return *this;
+        }
+
+        bool operator!=(const ResultListIterator& other) const {
+            return index != other.index;
+        }
+
+        T& operator*() {
+            return list[index];
+        }
+
+        friend class ResultList;
+    };
+
+    ResultListIterator begin() {
+        return ResultListIterator(*this, 0);
+    }
+
+    ResultListIterator end() {
+        return ResultListIterator(*this, items.size());
+    }
+
     template <typename U> requires IsLibraryStorageType<U>
     friend class ResultList;
     friend class Library;

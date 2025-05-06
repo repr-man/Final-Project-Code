@@ -1,4 +1,5 @@
 #include "UserLogin.hpp"
+#include <cstdint>
 
 
 void UserLogin::attemptLogin(Library& lib, Terminal& term) {
@@ -6,7 +7,7 @@ void UserLogin::attemptLogin(Library& lib, Terminal& term) {
 
     while (true) {
         cout << "\n--- User Login ---\n";
-        inputID = to_string(term.promptForInput<long, validateLibraryID>(
+        inputID = to_string(term.promptForInput<uint64_t, validateLibraryID>(
             "Enter your Library ID (10 digits)"
         ));
         inputPassword = term.promptForInput<string>("Enter your password");
@@ -56,7 +57,7 @@ void UserLogin::showMenu() {
         cout << "3. Search Function\n";
         cout << "4. Print User Summary\n";
         cout << "5. Logout\n";
-        int choice = term.promptForInput<int, validateNumRange<1, 5>> ("Enter your choice");
+        int choice = term.promptForInput<uint32_t, validateNumRange<1, 5>> ("Enter your choice");
 
         switch (choice) {
             case 1: {
@@ -95,7 +96,7 @@ void UserLogin::showMenu() {
             case 3: {
                 using enum InventoryItem::FieldTag;
                 while (true) {
-                    auto res = SearchFunction().searchInventory(lib, term);
+                    auto res = SearchFunction().searchInventory(lib, term, *this);
                     if (!res) break;
                     if (res->size() == 0) {
                         cout << "No results found.\n";
@@ -108,7 +109,7 @@ void UserLogin::showMenu() {
                         "Borrow Items",
                         "Exit"
                     });
-                    auto choice = term.promptForInput<int, validateNumRange<1, 3>>(
+                    auto choice = term.promptForInput<uint32_t, validateNumRange<1, 3>>(
                         "Enter your choice"
                     );
                     switch (choice) {
@@ -123,6 +124,7 @@ void UserLogin::showMenu() {
                     }
                     break;
                 }
+                break;
             }
             case 4:
                 printUserSummary();

@@ -1,12 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <filesystem>
 #include "librarystoragetype.hpp"
 
 class HistoryItem : public LibraryStorageType {
 public:
-    long userID;
+    uint64_t userID;
     std::string name;
 
     static constexpr int Offset = 2;
@@ -27,7 +28,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const HistoryItem::FieldTag& item);
     friend std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item);
 
-    HistoryItem(long userID, std::string&& name);
+    HistoryItem(uint64_t userID, std::string&& name);
 
     bool matches(FieldTag field, const std::string& value) const;
 

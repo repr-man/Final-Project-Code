@@ -1,5 +1,6 @@
 #include "history.hpp"
 #include "util.hpp"
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,7 @@ std::istream& operator>>(std::istream& is, HistoryItem::FieldTag& item) {
     return is;
 }
 
-HistoryItem::HistoryItem(long userID, std::string&& name)
+HistoryItem::HistoryItem(uint64_t userID, std::string&& name)
 : userID(userID),
   name(name)
 {}
@@ -34,7 +35,7 @@ HistoryItem::HistoryItem(long userID, std::string&& name)
 bool HistoryItem::matches(HistoryItem::FieldTag field, const std::string& value) const {
     switch (field) {
         case UserID:
-            return userID == std::stoll(value);
+            return userID == std::stoull(value);
         case Name:
             return name == value;
     }

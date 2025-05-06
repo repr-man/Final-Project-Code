@@ -44,28 +44,32 @@ requires std::is_base_of_v<UserHolder, T>
 void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<InventoryItem>& items) {
     bool doneBorrowing = false;
     while (!doneBorrowing) {
-        auto toBorrow = term.promptForInput<vector<int>>(
+        auto toBorrow = term.promptForInput<vector<uint32_t>>(
             "Enter the #s of items to borrow (0 to cancel)"
         );
         if (toBorrow.size() > 4) {
             term.printError("You may not borrow more than 4 items.");
             continue;
         }
+        bool shouldContinue = false;
         for (auto i : toBorrow) {
             if (i == 0) {
                 doneBorrowing = true;
                 break;
             }
             if (i > items.size()) {
-                term.printError("Invalid item number `" + to_string(i) + "`.");
+                term.printError("Invalid item number `" + to_string((int) i) + "`.");
+                shouldContinue = true;
                 break;
             }
             if (items[i - 1].borrowerID != -1) {
                 term.printError("Item `" + items[i - 1].name + "` is already borrowed.");
+                shouldContinue = true;
                 break;
             }
         }
         if (doneBorrowing) { break; }
+        if (shouldContinue) { continue; }
 
         if constexpr (std::is_same_v<T, UserLogin>) {
             if (user.user.numCheckedOut >= 4) {
@@ -75,12 +79,20 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
             auto first = term.promptForInput<string>("Enter admin first name");
             auto last = term.promptForInput<string>("Enter admin last name");
             auto password = term.promptForInput<string>("Enter admin password");
-            auto res = lib.search(
-                {Librarian::First, Librarian::Last, Librarian::Password},
+            auto usersRes = lib.search(
+                {User::First, User::Last, User::Password},
                 {first, last, password}
             );
-            if (res.size() == 0) {
+            if (usersRes.size() == 0) {
                 term.printError("Invalid admin credentials.");
+                continue;
+            }
+            auto librariansRes = lib.search(
+                {Librarian::Id},
+                {std::to_string(usersRes[0].id)}
+            );
+            if (librariansRes.size() == 0) {
+                term.printError("User is not an admin.");
                 continue;
             }
         }
@@ -88,6 +100,7 @@ void Borrowing::borrowItems(Library& lib, Terminal& term, T& user, ResultList<In
         for (auto i : toBorrow) {
             items[i - 1].borrowerID = user.user.id;
             user.user.numCheckedOut += 1;
+            lib.flushVector<User>();
             auto name = items[i - 1].name;
             lib.addHistory(user.user.id, std::move(name));
         }

@@ -1,5 +1,6 @@
 #include "library.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <string>
 #include <string_view>
@@ -91,7 +92,7 @@ Library::Library() {
     for(auto& line : splitBy(usersFileText, '\n')) {
         auto segments = splitBy(line, ';');
         users.push_back(User(
-            std::stoll(std::string(segments[0])),
+            std::stoull(std::string(segments[0])),
             std::string(segments[1]),
             std::string(segments[2]),
             std::string(segments[3]),
@@ -99,8 +100,8 @@ Library::Library() {
             std::string(segments[5]),
             std::string(segments[6]),
             std::string(segments[7]),
-            std::stoll(std::string(segments[8])),
-            std::stoi(std::string(segments[9]))
+            std::stoull(std::string(segments[8])),
+            std::stoul(std::string(segments[9]))
         ));
     }
 
@@ -108,18 +109,15 @@ Library::Library() {
     for(auto& line : splitBy(historyFileText, '\n')) {
         auto segments = splitBy(line, ';');
         history.push_back(HistoryItem(
-            std::stoll(std::string(segments[0])),
+            std::stoull(std::string(segments[0])),
             std::string(segments[1])
         ));
     }
 
     auto librariansFileText = readFile(Librarian::SaveFileLocation);
     for(auto& line : splitBy(librariansFileText, '\n')) {
-        auto segments = splitBy(line, ';');
         librarians.push_back(Librarian(
-            std::string(segments[0]),
-            std::string(segments[1]),
-            std::string(segments[2])
+            std::stoull(std::string(line))
         ));
     }
 }
@@ -176,21 +174,45 @@ ResultList<User> Library::allUsers() {
     return ResultList<User>(*this, std::move(vec));
 }
 
+ResultList<HistoryItem> Library::allHistory() {
+    auto vec = std::vector<HistoryItem*>();
+    vec.reserve(history.size());
+    for(int i = 0; i < history.size(); ++i) {
+        vec.push_back(&history[i]);
+    }
+    return ResultList<HistoryItem>(*this, std::move(vec));
+}
+
+ResultList<Librarian> Library::allLibrarians() {
+    auto vec = std::vector<Librarian*>();
+    vec.reserve(librarians.size());
+    for(int i = 0; i < librarians.size(); ++i) {
+        vec.push_back(&librarians[i]);
+    }
+    return ResultList<Librarian>(*this, std::move(vec));
+}
+
+
 // to add inventory
-void Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
+bool Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
+    auto existing = search({InventoryItem::Name}, {name});
+    if (existing.size() > 0) {
+        return true;
+    }
     InventoryItem newItem(std::move(type), std::move(name), std::move(author), std::move(publisher), std::stoi(borrowerID));
     inventory.push_back(newItem);
     flushVector<InventoryItem>();
+    return false;
 }
 
-void Library::addHistory(long userID, std::string&& name) {
+void Library::addHistory(uint64_t userID, std::string&& name) {
     auto newItem = HistoryItem(userID, std::move(name));
     history.push_back(newItem);
     flushVector<HistoryItem>();
 }
 
 void Library::addUser(
-    long userID,
+    uint64_t userID,
     std::string&& role,
     std::string&& first,
     std::string&& last,
@@ -209,7 +231,7 @@ void Library::addUser(
         std::move(phone),
         std::move(email),
         std::move(password),
-        std::move(std::stoll(institutionId)),
+        std::move(std::stoull(institutionId)),
         0
     );
     users.push_back(newItem);

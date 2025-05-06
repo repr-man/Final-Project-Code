@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <cstdint>
 #include <initializer_list>
 #include <iomanip>
 #include <ios>
@@ -39,9 +40,9 @@ constexpr bool isWindows = false;
 
 /// Encapsulates IO-related components of the program.
 class Terminal {
-    constexpr static auto minTableCellWidth = 5lu;
+    constexpr static uint32_t minTableCellWidth = 5;
     
-    int terminalWidth = 0;
+    uint32_t terminalWidth = 0;
 
     #ifdef _WIN32
     unsigned long consoleMode;
@@ -64,7 +65,7 @@ class Terminal {
     constexpr static std::string_view colorError = "\x1b[0;31m";
     #endif
 
-    static std::vector<int> columnWidths;
+    static std::vector<uint32_t> columnWidths;
 
     /// Draws a border row of a table.
     template <int N>
@@ -78,12 +79,12 @@ class Terminal {
 
         std::cout << startChar;
         for(auto width : columnWidths | take(columnWidths.size() - 1)) {
-            for(auto _ : iota(0, width)) {
+            for(auto _ : iota(0u, width)) {
                 std::cout << fillChar;
             }
             std::cout << middleChar;
         }
-        for(auto _ : iota(0, columnWidths.back())) {
+        for(auto _ : iota(0u, columnWidths.back())) {
             std::cout << fillChar;
         }
         std::cout << endChar << std::endl;
@@ -196,8 +197,14 @@ public:
                 std::cout << "Please try again: ";
                 strStream.clear();
                 strStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            } else
-            return input;
+            } else {
+                if constexpr(validator == validateRole) {
+                    std::transform(input.begin(), input.end(), input.begin(), [](auto c){
+                        return std::tolower(c);
+                    });
+                }
+                return input;
+            }
         }
     }
 
@@ -261,10 +268,6 @@ public:
     void printError(std::string message) const;
 
     /// Prints a formatted table of strings.
-    ///
-    /// Note: We will probably remove this function once we fully flesh out
-    /// how we want to model our data and provide it via the `LibraryStorageType`
-    /// interface.
     template <IsLibraryStorageType T, typename... ColumnNames>
     requires (std::same_as<ColumnNames, typename T::FieldTag> && ...)
     void printTable(
@@ -284,8 +287,8 @@ public:
         }
 
         // Start off with each column's width being the width of the column name.
-        auto indexColumnWidth = std::to_string(rows.size()).size();
-        auto fullWidth = N + 1 + indexColumnWidth;
+        uint32_t indexColumnWidth = std::to_string(rows.size()).size();
+        uint32_t fullWidth = N + 1 + indexColumnWidth;
         columnWidths.resize(N + 1);
         columnWidths[0] = indexColumnWidth;
         for (auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
@@ -303,9 +306,9 @@ public:
 
         if (fullWidth > terminalWidth) {
             // We need to shrink the width of some columns proportionally.
-            auto adjustedWidth = N + 1 + indexColumnWidth;
+            uint32_t adjustedWidth = N + 1 + indexColumnWidth;
             for (auto [width, name] : c9::zip(columnWidths | drop(1), colNames)) {
-                width = std::max(minTableCellWidth, (unsigned long)(width * terminalWidth / fullWidth));
+                width = std::max(minTableCellWidth, width * terminalWidth / fullWidth);
                 adjustedWidth += width;
 
                 if (name.size() > width) {

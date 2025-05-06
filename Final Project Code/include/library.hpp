@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <filesystem>
 #include <ranges>
 #include <string_view>
@@ -76,15 +77,21 @@ public:
     /// Returns a list of all the users in the library.
     ResultList<User> allUsers();
 
+    /// Returns a list of all the users in the library.
+    ResultList<HistoryItem> allHistory();
+
+    /// Returns a list of all the users in the library.
+    ResultList<Librarian> allLibrarians();
+
     // to add an inventory item
-    void addInventory(
+    bool addInventory(
         std::string&& type,
         std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
 
-    void addHistory(long userID, std::string&& name);
+    void addHistory(uint64_t userID, std::string&& name);
 
     void addUser(
-        long userID,
+        uint64_t userID,
         std::string&& role,
         std::string&& first,
         std::string&& last,

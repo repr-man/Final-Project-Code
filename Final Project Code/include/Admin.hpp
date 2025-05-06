@@ -9,16 +9,13 @@
 #include "RegisterUser.hpp"
 #include "Return.hpp"
 #include "SearchFunction.hpp"
+#include "UserHolder.hpp"
 #include "library.hpp"
 #include "resultlist.hpp"
 #include "terminal.hpp"
 #include "user.hpp"
 #include "util.hpp"
 #include "validators.hpp"
-
-#include "UserHolder.hpp" 
-
-
 
 using namespace std;
 

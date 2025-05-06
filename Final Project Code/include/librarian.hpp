@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -7,7 +8,7 @@
 
 class Librarian : public LibraryStorageType {
 public:
-    std::string first, last, password;
+    uint64_t id;
 
     static constexpr int Offset = 3;
     inline static const auto SaveFileLocation
@@ -16,23 +17,17 @@ public:
         : std::filesystem::current_path() / "data" / "librarians.txt";
 
     enum class FieldTag {
-        First,
-        Last,
-        Password
+        Id
     };
 
-    static constexpr auto First = FieldTag::First;
-    static constexpr auto Last = FieldTag::Last;
-    static constexpr auto Password = FieldTag::Password;
+    static constexpr auto Id = FieldTag::Id;
 
     static std::string to_string(const Librarian::FieldTag& item);
     friend std::ostream& operator<<(std::ostream& os, const Librarian::FieldTag& item);
     friend std::istream& operator>>(std::istream& is, Librarian::FieldTag& item);
 
     Librarian(
-        std::string&& first,
-        std::string&& last,
-        std::string&& password
+        uint64_t id
     );
 
     bool matches(FieldTag field, const std::string& value) const;

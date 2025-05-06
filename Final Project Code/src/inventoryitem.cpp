@@ -1,5 +1,6 @@
 #include "inventoryitem.hpp"
 #include "util.hpp"
+#include <cstdint>
 #include <vector>
 
 
@@ -39,7 +40,7 @@ InventoryItem::InventoryItem(
     std::string&& name,
     std::string&& author,
     std::string&& publisher,
-    int borrowerID
+    uint64_t borrowerID
 ) : type(type),
     name(name),
     author(author),
@@ -68,7 +69,7 @@ std::string InventoryItem::serialize() const {
     name + ';' +
     author + ';' +
     publisher + ';' +
-    std::to_string(borrowerID);
+    std::to_string((int64_t) borrowerID);
 }
 
 Row InventoryItem::provideRow() const {
