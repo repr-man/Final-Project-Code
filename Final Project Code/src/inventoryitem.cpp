@@ -78,7 +78,7 @@ Row InventoryItem::provideRow() const {
         name,
         author,
         publisher,
-        std::to_string(borrowerID)
+        std::to_string(static_cast<int64_t>(borrowerID))
     });
 }
 
