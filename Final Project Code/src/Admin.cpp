@@ -380,6 +380,10 @@ void Admin::editUserInfoAfterSearch(ResultList<User>& res) {
     cout << "2. Delete User\n";
     cout << "3. Back to Admin Menu\n";
     int choice = term.promptForInput<uint32_t, validateNumRange<1, 3>>("Enter your choice");
+    if (choice == 3) {
+        cout << "Returning to Admin Menu...\n";
+        return;
+    }
 
     int userIndex = term.promptForInput<uint32_t>(
         "Enter the number of the user to update (0 to cancel)"
@@ -403,9 +407,6 @@ void Admin::editUserInfoAfterSearch(ResultList<User>& res) {
         case 2:
             res.remove(userIndex - 1);
             cout << "User deleted successfully.\n";
-            break;
-        case 3:
-            cout << "Returning to Admin Menu...\n";
             break;
         default:
             UNREACHABLE;
