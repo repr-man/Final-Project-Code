@@ -65,12 +65,6 @@ void ResultList<T>::remove(int index) {
                 lib.remove(&librarian);
             }
         }
-    } else if constexpr (std::is_same_v<T, Librarian>) {
-        for(auto& user : lib.allUsers()) {
-            if(user.id == items[index]->id) {
-                lib.remove(&user);
-            }
-        }
     }
 
     lib.remove(items[index]);

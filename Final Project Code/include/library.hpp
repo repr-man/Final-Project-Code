@@ -102,6 +102,8 @@ public:
         std::string&& institutionId
     );
 
+    void addLibrarian(uint64_t userID);
+
     template <typename T> requires IsLibraryStorageType<T>
     void remove(T* item);
 

@@ -1,5 +1,6 @@
 #include "Admin.hpp"
 #include <cstdint>
+#include <string>
 
 
 bool Admin::login(string inputUser, string inputPass) {
@@ -107,8 +108,9 @@ void Admin::editUserInfo() {
     cout << "1. Register New User\n";
     cout << "2. Update User Information\n";
     cout << "3. Delete User\n";
-    cout << "4. Back to Admin Menu\n";
-    int choice = term.promptForInput<uint32_t, validateNumRange<1, 4>>("Enter your choice");
+    cout << "4. Change User Admin Status\n";
+    cout << "5. Back to Admin Menu\n";
+    int choice = term.promptForInput<uint32_t, validateNumRange<1, 5>>("Enter your choice");
 
     switch (choice) {
         case 1: { // Register New User
@@ -176,12 +178,84 @@ void Admin::editUserInfo() {
                 delUserIndex = term.promptForInput<uint32_t>("Try again");
             }
 
+            if (this->user.id == users[delUserIndex - 1].id) {
+                term.printError("You may not delete your own account.");
+                break;
+            }
+
             users.remove(delUserIndex - 1);
             cout << "User deleted successfully.\n";
             break;
         }
 
-        case 4:
+        case 4: {
+            auto users = lib.allUsers();
+            if (users.size() == 0) {
+                cout << "No users to update.\n";
+                break;
+            }
+
+            cout << "\n--- Registered Users ---\n";
+            for (size_t i = 0; i < users.size(); ++i) {
+                cout << i + 1 << ". " << users[i].first << " " << users[i].last << "\n";
+            }
+
+            int userIndex = term.promptForInput<uint32_t>(
+                "Enter the number of the user to update (0 to cancel)"
+            );
+            while (true) {
+                if (userIndex == 0) {
+                    cout << "Update cancelled.\n";
+                    return;
+                } else if (userIndex > 0 && userIndex <= users.size()) {
+                    break;
+                }
+                term.printError("Invalid choice `" + to_string((int) userIndex) +
+                                "`. Number must be in range [1, " +
+                                to_string(users.size()) + "]");
+                userIndex = term.promptForInput<uint32_t>("Try again");
+            }
+
+            auto& u = users[userIndex - 1];
+            if (this->user.id == u.id) {
+                term.printError("You may not change your own permissions..");
+                break;
+            }
+            
+            auto res = lib.search({Librarian::Id}, {std::to_string(u.id)});
+            if (res.size() == 0) {
+                std::cout << "\nUser " << u.first << " " << u.last
+                          << " is not a Librarian. Would you like to make them one?\n"
+                             "1. Yes\n"
+                             "2. No\n";
+                int choice = term.promptForInput<uint32_t, validateNumRange<1, 2>>(
+                    "Enter your choice"
+                );
+                if (choice == 1) {
+                    lib.addLibrarian(u.id);
+                    cout << "User updated successfully.\n";
+                } else {
+                    cout << "Returning to Admin Menu...\n";
+                }
+            } else {
+                std::cout << "\nUser " << u.first << " " << u.last
+                          << " is already a Librarian.\n"
+                             "Would you like to revoke their permissions?\n"
+                             "1. Yes\n"
+                             "2. No\n";
+                int choice = term.promptForInput<uint32_t, validateNumRange<1, 2>>(
+                    "Enter your choice"
+                );
+                if (choice == 1) {
+                    res.remove(0);
+                    cout << "User updated successfully.\n";
+                } else {
+                    cout << "Returning to Admin Menu...\n";
+                }
+            }
+        }
+
+        case 5:
             cout << "Returning to Admin Menu...\n";
             break;
         default:

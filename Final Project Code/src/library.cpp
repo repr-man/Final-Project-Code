@@ -238,6 +238,11 @@ void Library::addUser(
     flushVector<User>();
 }
 
+void Library::addLibrarian(uint64_t userID) {
+    auto newItem = Librarian(userID);
+    librarians.push_back(newItem);
+    flushVector<Librarian>();
+}
 
 template <typename T> requires IsLibraryStorageType<T>
 void Library::remove(T* item) {
