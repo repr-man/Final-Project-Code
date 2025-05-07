@@ -42,12 +42,10 @@ public:
         uint64_t borrowerID
     );
  
-    bool matches(FieldTag field, const std::string& value) const;
-
-    std::string serialize() const;
-    
+    std::string serialize() const override;
     Row provideRow() const override;
     
+    bool matches(FieldTag field, const std::string& value) const;
     std::string get(FieldTag field) const;
     
     friend class Library;
