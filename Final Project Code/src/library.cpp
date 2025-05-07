@@ -16,7 +16,6 @@ std::vector<T>* Library::computeVectorFromOffset() {
 
 /// Reads the entire contents of a file into a buffer.
 std::string Library::readFile(const std::filesystem::path& filename) {
-    //auto path = std::filesystem::current_path().append(filename);
     std::ifstream file = std::ifstream(filename);
     return std::string(
         std::istreambuf_iterator<char>(file),
@@ -63,8 +62,8 @@ ResultList<T> Library::search(
     auto& vec = *computeVectorFromOffset<T>();
     std::vector<T*> results;
     for(auto& item : vec) {
-        for (int i = 0; i < fields.size();i++) {
-            if (!item.matches(fields[i], values[i])) {
+        for (auto [field, value] : c9::zip(fields, values)) {
+            if (!item.matches(field, value)) {
                 goto end;
             }
         }
