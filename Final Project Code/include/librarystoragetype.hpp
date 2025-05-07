@@ -2,6 +2,7 @@
 
 #include <array>
 #include <concepts>
+#include <iostream>
 #include <filesystem>
 #include <ranges>
 #include <span>
@@ -11,23 +12,29 @@
 
 class Row;
 
-/// An interface for types that can provide information to a table.
-/// `N` is the number of columns of data the type provides.
+/// An interface for types that are stored in a `Library` and can provide
+/// rows of information to a table.
 class LibraryStorageType {
 public:
     virtual ~LibraryStorageType() {}
     virtual Row provideRow() const = 0;
+    virtual std::string serialize() const = 0;
 };
 
 template <typename T>
 concept IsLibraryStorageType =
     std::is_base_of_v<LibraryStorageType, T> &&
     requires (T t) {
-        typename T::FieldTag;
         { T::Offset } -> std::convertible_to<int>;
         { T::SaveFileLocation } -> std::same_as<const std::filesystem::path&>;
+
+        requires std::is_enum_v<typename T::FieldTag>;
         requires requires (typename T::FieldTag tag) {
-            { t.get(tag) } -> std::convertible_to<std::string>;
+            { t.get(tag) } -> std::same_as<std::string>;
+            { t.matches(tag, std::string{}) } -> std::same_as<bool>;
+            { T::to_string(tag) } -> std::same_as<std::string>;
+            { std::cout << tag } -> std::same_as<std::ostream&>;
+            { std::cin >> tag } -> std::same_as<std::istream&>;
         };
     };
 

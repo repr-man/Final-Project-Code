@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <stdexcept>
 #include "library.hpp"
 
@@ -14,10 +15,10 @@
 }
 
 inline int generateNextLibraryID(Library& lib) {
-    int nextID = -1;
-    for (int i = 0; i < lib.allUsers().size(); ++i) {
-        if (lib.allUsers()[i].id > nextID) {
-            nextID = lib.allUsers()[i].id;
+    uint64_t nextID = 0;
+    for (auto& user : lib.all<User>()) {
+        if (user.id > nextID) {
+            nextID = user.id;
         }
     }
     return nextID + 1;

@@ -33,60 +33,46 @@ class Library {
     /// Creates a view of `std::string_view`s that are split by a delimiter.
     static auto splitBy(const std::string_view text, const char delimiter);
 
-    /// Implements the searching functionality for the earch methods.
-    template <typename T> requires IsLibraryStorageType<T>
-    ResultList<T> searchVector(
-        std::vector<typename T::FieldTag>& fields,
-        std::vector<std::string>& values,
-        std::vector<T>& vec
-    );
-
 public:
 	Library();
 
     ~Library();
 
-    /// Searches the library for inventory items based on the given fields.
+    /// Implements the searching functionality for the earch methods.
+    template <typename T> requires IsLibraryStorageType<T>
+    ResultList<T> search(
+        const std::vector<typename T::FieldTag>& fields,
+        const std::vector<std::string>& values
+    );
+
     ResultList<InventoryItem> search(
-        std::vector<InventoryItem::FieldTag> fields,
-        std::vector<std::string> values
+        const std::vector<InventoryItem::FieldTag>& fields,
+        const std::vector<std::string>& values
     );
-
-    /// Searches the library for users based on the given fields.
     ResultList<User> search(
-        std::vector<User::FieldTag> fields,
-        std::vector<std::string> values
+        const std::vector<User::FieldTag>& fields,
+        const std::vector<std::string>& values
     );
-
-    /// Searches the library for history items based on the given fields.
     ResultList<HistoryItem> search(
-        std::vector<HistoryItem::FieldTag> fields,
-        std::vector<std::string> values
+        const std::vector<HistoryItem::FieldTag>& fields,
+        const std::vector<std::string>& values
     );
-
-    /// Searches the library for librarians based on the given fields.
     ResultList<Librarian> search(
-        std::vector<Librarian::FieldTag> fields,
-        std::vector<std::string> values
+        const std::vector<Librarian::FieldTag>& fields,
+        const std::vector<std::string>& values
     );
 
-
-    /// Returns a list of all the inventory items in the library.
-    ResultList<InventoryItem> allInventory();
-
-    /// Returns a list of all the users in the library.
-    ResultList<User> allUsers();
-
-    /// Returns a list of all the users in the library.
-    ResultList<HistoryItem> allHistory();
-
-    /// Returns a list of all the users in the library.
-    ResultList<Librarian> allLibrarians();
+    template <typename T> requires IsLibraryStorageType<T>
+    ResultList<T> all();
 
     // to add an inventory item
     bool addInventory(
         std::string&& type,
-        std::string&& name, std::string&& author, std::string&& publisher, std::string&& borrowerID);
+        std::string&& name,
+        std::string&& author,
+        std::string&& publisher,
+        std::string&& borrowerID
+    );
 
     void addHistory(uint64_t userID, std::string&& name);
 
@@ -101,6 +87,8 @@ public:
         std::string&& password,
         std::string&& institutionId
     );
+
+    void addLibrarian(uint64_t userID);
 
     template <typename T> requires IsLibraryStorageType<T>
     void remove(T* item);
