@@ -119,7 +119,7 @@ void Admin::editUserInfo() {
             break;
         }
         case 2:{ // Update User
-            auto users = lib.allUsers();
+            auto users = lib.all<User>();
             if (users.size() == 0) {
                 cout << "No users to update.\n";
                 break;
@@ -151,7 +151,7 @@ void Admin::editUserInfo() {
         }
 
         case 3: { // Delete User
-            auto users = lib.allUsers();
+            auto users = lib.all<User>();
             if (users.size() == 0) {
                 cout << "No users to delete.\n";
                 break;
@@ -189,7 +189,7 @@ void Admin::editUserInfo() {
         }
 
         case 4: {
-            auto users = lib.allUsers();
+            auto users = lib.all<User>();
             if (users.size() == 0) {
                 cout << "No users to update.\n";
                 break;
@@ -375,7 +375,7 @@ void Admin::editInventory() {
             break;
         }
         case 2: {
-            auto items = lib.allInventory();
+            auto items = lib.all<InventoryItem>();
 
             if (items.size() == 0) {
                 cout << "No items in inventory to delete.\n";
@@ -409,7 +409,7 @@ void Admin::editInventory() {
         }
         case 3: {
             // Edit Item
-            auto items = lib.allInventory();
+            auto items = lib.all<InventoryItem>();
 
             if (items.size() == 0) {
                 cout << "No items in inventory to edit.\n";
@@ -545,7 +545,7 @@ void Admin::updateUserInfo(User& user) {
 void Admin::showAllUsers() {
     using enum User::FieldTag;
 
-    auto res = lib.allUsers();
+    auto res = lib.all<User>();
     if (res.size() == 0) {
         cout << "No registered users.\n";
         return;

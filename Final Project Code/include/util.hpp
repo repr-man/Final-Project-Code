@@ -16,7 +16,7 @@
 
 inline int generateNextLibraryID(Library& lib) {
     uint64_t nextID = 0;
-    for (auto& user : lib.allUsers()) {
+    for (auto& user : lib.all<User>()) {
         if (user.id > nextID) {
             nextID = user.id;
         }

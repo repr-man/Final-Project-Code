@@ -64,7 +64,7 @@ void UserLogin::showMenu() {
                 using enum InventoryItem::FieldTag;
                 cout << "Displaying available books...\n";
                 term.printTable(
-                    lib.allInventory(),
+                    lib.all<InventoryItem>(),
                     Type, Name, Author, Publisher
                 );
                 break;
@@ -82,7 +82,7 @@ void UserLogin::showMenu() {
 
                 cout << "\n--- Borrowing History ---\n";
                 auto history = lib.search({HistoryItem::UserID}, {userID});
-                auto inventory = lib.allInventory();
+                auto inventory = lib.all<InventoryItem>();
                 if (history.size() == 0 || inventory.size() == 0) {
                     cout << "No borrowing history found.\n";
                 } else {

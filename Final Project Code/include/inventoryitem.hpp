@@ -1,10 +1,9 @@
 #pragma once
 
+#include "librarystoragetype.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <string>
-
-#include "librarystoragetype.hpp"
 
 class InventoryItem : public LibraryStorageType {
 public:

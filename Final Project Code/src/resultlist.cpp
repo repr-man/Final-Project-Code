@@ -44,23 +44,23 @@ void ResultList<T>::remove(int index) {
             assert(borrower.size() == 1);
             borrower[0].numCheckedOut -= 1;
         }
-        for(HistoryItem& hist : lib.allHistory()) {
+        for(HistoryItem& hist : lib.all<HistoryItem>()) {
             if(hist.name == items[index]->name) {
                 lib.remove(&hist);
             }
         }
     } else if constexpr (std::is_same_v<T, User>) {
-        for(auto& inv : lib.allInventory()) {
+        for(auto& inv : lib.all<InventoryItem>()) {
             if(inv.borrowerID == items[index]->id) {
                 inv.borrowerID = -1;
             }
         }
-        for(auto& hist : lib.allHistory()) {
+        for(auto& hist : lib.all<HistoryItem>()) {
             if(hist.userID == items[index]->id) {
                 lib.remove(&hist);
             }
         }
-        for(auto& librarian : lib.allLibrarians()) {
+        for(auto& librarian : lib.all<Librarian>()) {
             if(librarian.id == items[index]->id) {
                 lib.remove(&librarian);
             }

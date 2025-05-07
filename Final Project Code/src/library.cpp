@@ -54,15 +54,15 @@ void Library::flushVector() {
 
 
 template <typename T> requires IsLibraryStorageType<T>
-ResultList<T> Library::searchVector(
-    std::vector<typename T::FieldTag>& fields,
-    std::vector<std::string>& values,
-    std::vector<T>& vec
+ResultList<T> Library::search(
+    const std::vector<typename T::FieldTag>& fields,
+    const std::vector<std::string>& values
 ) {
     assert(fields.size() == values.size());
 
+    auto& vec = *computeVectorFromOffset<T>();
     std::vector<T*> results;
-    for(auto& item: vec) {
+    for(auto& item : vec) {
         for (int i = 0; i < fields.size();i++) {
             if (!item.matches(fields[i], values[i])) {
                 goto end;
@@ -74,6 +74,26 @@ ResultList<T> Library::searchVector(
 
     return ResultList(*this, std::move(results));
 }
+
+ResultList<InventoryItem> Library::search(
+    const std::vector<InventoryItem::FieldTag>& fields,
+    const std::vector<std::string>& values
+) { return search<InventoryItem>(fields, values); }
+
+ResultList<User> Library::search(
+    const std::vector<User::FieldTag>& fields,
+    const std::vector<std::string>& values
+) { return search<User>(fields, values); }
+
+ResultList<HistoryItem> Library::search(
+    const std::vector<HistoryItem::FieldTag>& fields,
+    const std::vector<std::string>& values
+) { return search<HistoryItem>(fields, values); }
+
+ResultList<Librarian> Library::search(
+    const std::vector<Librarian::FieldTag>& fields,
+    const std::vector<std::string>& values
+) { return search<Librarian>(fields, values); }
 
 Library::Library() {
     auto bookFileText = readFile(InventoryItem::SaveFileLocation);
@@ -122,76 +142,21 @@ Library::Library() {
     }
 }
 
-
-
-/// Searches the library for inventory items based on the given fields.
-ResultList<InventoryItem> Library::search(
-    std::vector<InventoryItem::FieldTag> fields,
-    std::vector<std::string> values
-) {
-    return searchVector(fields, values, inventory);
-}
-
-/// Searches the library for users based on the given fields.
-ResultList<User> Library::search(
-    std::vector<User::FieldTag> fields,
-    std::vector<std::string> values
-) {
-    return searchVector(fields, values, users);
-}
-
-/// Searches the library for history items based on the given fields.
-ResultList<HistoryItem> Library::search(
-    std::vector<HistoryItem::FieldTag> fields,
-    std::vector<std::string> values
-) {
-    return searchVector(fields, values, history);
-}
-
-/// Searches the library for librarians based on the given fields.
-ResultList<Librarian> Library::search(
-    std::vector<Librarian::FieldTag> fields,
-    std::vector<std::string> values
-) {
-    return searchVector(fields, values, librarians);
-}
-
-ResultList<InventoryItem> Library::allInventory() {
-    auto vec = std::vector<InventoryItem*>();
-    vec.reserve(inventory.size());
-    for(int i = 0; i < inventory.size(); ++i) {
-        vec.push_back(&inventory[i]);
+template <typename T> requires IsLibraryStorageType<T>
+ResultList<T> Library::all() {
+    auto& libVec = *computeVectorFromOffset<T>();
+    auto vec = std::vector<T*>();
+    vec.reserve(libVec.size());
+    for(int i = 0; i < libVec.size(); ++i) {
+        vec.push_back(&libVec[i]);
     }
-    return ResultList<InventoryItem>(*this, std::move(vec));
+    return ResultList<T>(*this, std::move(vec));
 }
 
-ResultList<User> Library::allUsers() {
-    auto vec = std::vector<User*>();
-    vec.reserve(users.size());
-    for(int i = 0; i < users.size(); ++i) {
-        vec.push_back(&users[i]);
-    }
-    return ResultList<User>(*this, std::move(vec));
-}
-
-ResultList<HistoryItem> Library::allHistory() {
-    auto vec = std::vector<HistoryItem*>();
-    vec.reserve(history.size());
-    for(int i = 0; i < history.size(); ++i) {
-        vec.push_back(&history[i]);
-    }
-    return ResultList<HistoryItem>(*this, std::move(vec));
-}
-
-ResultList<Librarian> Library::allLibrarians() {
-    auto vec = std::vector<Librarian*>();
-    vec.reserve(librarians.size());
-    for(int i = 0; i < librarians.size(); ++i) {
-        vec.push_back(&librarians[i]);
-    }
-    return ResultList<Librarian>(*this, std::move(vec));
-}
-
+template ResultList<InventoryItem> Library::all<InventoryItem>();
+template ResultList<User> Library::all<User>();
+template ResultList<HistoryItem> Library::all<HistoryItem>();
+template ResultList<Librarian> Library::all<Librarian>();
 
 // to add inventory
 bool Library::addInventory(string&& type, string&& name, string&& author, string&& publisher, string&& borrowerID) {
